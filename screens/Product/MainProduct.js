@@ -1,15 +1,25 @@
-import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
-import { Container, Header, Tab, Tabs, ScrollableTab } from 'native-base';
+import React, { Component } from "react";
+import { Dimensions } from "react-native";
+import { Container, Header, Tab, Tabs, ScrollableTab } from "native-base";
 
-import CatelogScreen from './Catelog';
-import FavoriteScreen from './Favorite';
+import CatelogScreen from "./Catelog";
+import FavoriteScreen from "./Favorite";
+
+import ProfileHeader from "../../components/ProfileHeader";
 
 class MainProductScreen extends Component {
+    static navigationOptions = ({ navigation }) => ({
+        headerLeft: <ProfileHeader />
+    });
+
     render() {
         return (
             <Container>
-                <Tabs renderTabBar={() => <ScrollableTab style={{ borderBottomWidth: 0 }} />}>
+                <Tabs
+                    renderTabBar={() => (
+                        <ScrollableTab style={{ borderBottomWidth: 0 }} />
+                    )}
+                >
                     <Tab heading="Catelog">
                         <CatelogScreen />
                     </Tab>
@@ -18,7 +28,7 @@ class MainProductScreen extends Component {
                     </Tab>
                 </Tabs>
             </Container>
-        )
+        );
     }
 }
 

@@ -1,32 +1,39 @@
-import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Container, Header, Item, Text, Input, Icon, Button } from 'native-base';
+import React, { Component } from "react";
+import { View, ScrollView, TextInput, StyleSheet } from "react-native";
+import {
+    Container,
+    Header,
+    Item,
+    Text,
+    Input,
+    Icon,
+    Button
+} from "native-base";
+
+import styles from "../../styles";
 
 class CatelogScreen extends Component {
     render() {
         return (
             <Container>
-                <Header searchBar>
-                    <Item>
-                        <Icon name="ios-search" />
-                        <Input placeholder="Search products" />
-                    </Item>
-                </Header>
-                <View style={styles.container}>
-                    <Text>CatelogScreen</Text>
+                <View style={styles.search.searchBar}>
+                    <View style={styles.search.searchBar__container}>
+                        <Icon
+                            name="ios-search"
+                            style={{ fontSize: 20, color: "#363636" }}
+                        />
+                        <TextInput
+                            placeholder="Search..."
+                            style={styles.search.searchBar__text}
+                        />
+                    </View>
                 </View>
+                <ScrollView>
+                    <Text>CatelogScreen</Text>
+                </ScrollView>
             </Container>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-});
 
 export default CatelogScreen;
