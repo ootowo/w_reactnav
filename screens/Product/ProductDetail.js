@@ -81,6 +81,9 @@ class ProductDetailScreen extends Component {
             </View>
           </View>
         </ScrollView>
+        <TouchableOpacity style={styles.addToCartBtn}>
+          <Text style={styles.addToCartBtn__text}>Add To Cart</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -89,9 +92,23 @@ class ProductDetailScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: "column",
     backgroundColor: "#fff"
   },
-  wrapper: {},
+  wrapper: {
+    flex: 1
+  },
+  addToCartBtn: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "#FF0000",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  addToCartBtn__text: {
+    fontWeight: "bold",
+    color: "#FFFFFF"
+  },
   productDetail__thumbnail: {
     height: 300,
     padding: 10,

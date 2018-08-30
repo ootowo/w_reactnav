@@ -44,7 +44,10 @@ class BookViewer extends Component {
           onLoad={() => this.hideSpinner()}
           bounces={false}
           scrollEnabled={false}
-          source={{ uri: "http://www.africau.edu/images/default/sample.pdf" }}
+          source={{
+            uri:
+              "https://images.samsung.com/is/content/samsung/p5/th/microsite/2018/allnewarrival2018/pdf/makro.pdf"
+          }}
         />{" "}
         {this.state.visible && (
           <ActivityIndicator

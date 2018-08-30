@@ -13,24 +13,27 @@ import OfferScreen from "../screens/Home/Offer";
 import SettingScreen from "../screens/Home/Setting";
 
 import MailViewScreen from "../screens/Home/MailView";
+import ProductCatelogViewScreen from "../screens/Home/ProductCatelogView";
 import NewsViewScreen from "../screens/Home/NewsView";
 import EntertainmentViewScreen from "../screens/Home/EntertainmentView";
 import OfferViewScreen from "../screens/Home/OfferView";
 
 export default createStackNavigator({
-    MainMenu: MainMenuScreen,
-    Coupon: CouponScreen,
-    Mail: MailScreen,
-    ProductCatalog: ProductCatalogScreen,
-    Privillage: PrivillageScreen,
-    News: NewsScreen,
-    Entertainment: EntertainmentScreen,
-    OfficialWeb: OfficialWebScreen,
-    Offer: OfferScreen,
-    Setting: SettingScreen,
+  MainMenu: MainMenuScreen,
+  Coupon: CouponScreen,
+  Mail: MailScreen,
+  ProductCatalog: ProductCatalogScreen,
+  Privillage: PrivillageScreen,
+  News: NewsScreen,
+  Entertainment: EntertainmentScreen,
+  OfficialWeb: OfficialWebScreen,
+  Offer: OfferScreen,
+  Setting: SettingScreen,
 
-    MailView: MailViewScreen,
-    NewsView: NewsViewScreen,
-    EntertainmentView: EntertainmentViewScreen,
-    OfferView: OfferViewScreen
+  MailView: MailViewScreen,
+
+  NewsView: NewsViewScreen,
+  ProductCatelogView: ProductCatelogViewScreen,
+  EntertainmentView: EntertainmentViewScreen,
+  OfferView: OfferViewScreen
 });

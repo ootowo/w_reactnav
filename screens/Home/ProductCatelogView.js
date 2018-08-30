@@ -3,9 +3,9 @@ import { View, Text } from "react-native";
 
 import BookViewer from "../../components/BookViewer";
 
-class MailView extends Component {
+class ProductCatelogView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Makro Mail",
+    title: "Catelog",
     headerTintColor: "#000000",
     headerBackTitle: null
   });
@@ -14,4 +14,4 @@ class MailView extends Component {
   }
 }
 
-export default MailView;
+export default ProductCatelogView;

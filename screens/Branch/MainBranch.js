@@ -16,7 +16,9 @@ import {
 
 import ProfileHeader from "../../components/ProfileHeader";
 import CardHeader from "../../components/CardHeader";
+import MapPopup from "../../components/MapPopup";
 
+const { Marker, Callout } = MapView;
 class MainBranchScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerLeft: <ProfileHeader />,
@@ -26,6 +28,7 @@ class MainBranchScreen extends Component {
   constructor(props) {
     super(props);
 
+    this.renderMapView = this.renderMapView.bind(this);
     this._getOptionListArea = this._getOptionListArea.bind(this);
     this._getOptionListBranch = this._getOptionListBranch.bind(this);
     this._setOptionArea = this._setOptionArea.bind(this);
@@ -55,6 +58,55 @@ class MainBranchScreen extends Component {
     this.setState({ branch });
   }
 
+  renderMapMarker = (item, key) => {
+    return (
+      <Marker
+        image={require("../../assets/makro_pin.png")}
+        coordinate={item.location}
+      >
+        <Callout tooltip={true}>
+          <MapPopup title="Bangbon" tel="02-900-9000" />
+        </Callout>
+      </Marker>
+    );
+  };
+
+  renderMapView() {
+    const marker = [
+      {
+        location: {
+          latitude: 13.702822,
+          longitude: 100.445577
+        }
+      },
+      {
+        location: {
+          latitude: 13.718646,
+          longitude: 100.479137
+        }
+      },
+      {
+        location: {
+          latitude: 13.671983,
+          longitude: 100.456542
+        }
+      }
+    ];
+    return (
+      <MapView
+        style={styles.mapView__map}
+        initialRegion={{
+          latitude: 13.736717,
+          longitude: 100.523186,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421
+        }}
+      >
+        {marker.map(this.renderMapMarker)}
+      </MapView>
+    );
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -69,13 +121,13 @@ class MainBranchScreen extends Component {
                 defaultValue="Area"
                 onSelect={this._setOptionArea.bind(this)}
               >
-                <Option>Alberta</Option>
-                <Option>British Columbia</Option>
-                <Option>Manitoba</Option>
-                <Option>New Brunswick</Option>
-                <Option>Newfoundland and Labrador</Option>
-                <Option>Northwest Territories</Option>
-                <Option>Nova Scotia</Option>
+                <Option>Bangkok</Option>
+                <Option>Central</Option>
+                <Option>West</Option>
+                <Option>East</Option>
+                <Option>North</Option>
+                <Option>Northeastern</Option>
+                <Option>South</Option>
               </Select>
               <OptionList ref="OPTIONLIST_AREA" />
             </View>
@@ -88,32 +140,17 @@ class MainBranchScreen extends Component {
                 defaultValue="Branch"
                 onSelect={this._setOptionBranch.bind(this)}
               >
-                <Option>Alberta</Option>
+                <Option>Kanlapaphruk</Option>
                 <Option>British Columbia</Option>
                 <Option>Manitoba</Option>
                 <Option>New Brunswick</Option>
                 <Option>Newfoundland and Labrador</Option>
                 <Option>Northwest Territories</Option>
-                <Option>Nova Scotia</Option>
-                <Option>Nunavut</Option>
-                <Option>Ontario</Option>
-                <Option>Prince Edward Island</Option>
-                <Option>Quebec</Option>
-                <Option>Saskatchewan</Option>
-                <Option>Yukon</Option>
               </Select>
               <OptionList ref="OPTIONLIST_BRANCH" />
             </View>
           </View>
-          <MapView
-            style={styles.mapView__map}
-            initialRegion={{
-              latitude: 37.78825,
-              longitude: -122.4324,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
-            }}
-          />
+          {this.renderMapView()}
         </View>
         <TouchableHighlight style={styles.navigateButton}>
           <Text style={styles.navigateButton__text}>Navigate</Text>

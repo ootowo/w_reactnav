@@ -20,8 +20,8 @@ import css from "../../styles";
 
 class MainPromotionScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerLeft: <ProfileHeader />,
-    headerRight: <CardHeader />
+    title: "Promotions",
+    headerTintColor: "#000000"
   });
 
   constructor(props) {

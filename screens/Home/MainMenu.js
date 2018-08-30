@@ -22,7 +22,11 @@ import {
 import { openSocialModal } from "../../actions/modalAction";
 import ProfileHeader from "../../components/ProfileHeader";
 import CardHeader from "../../components/CardHeader";
+import { Banner } from "../../components/Banner";
+
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+
+import css from "../../styles";
 
 class MainMenuScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -50,16 +54,14 @@ class MainMenuScreen extends Component {
           style={styles.redBg}
           source={require("../../assets/home_bg.png")}
         />
+
         <ScrollView style={styles.wrapper}>
-          <TouchableOpacity style={styles.banner} onPress={this.onPressBanner}>
-            <Image
-              style={styles.banner__image}
-              source={{
-                uri:
-                  "http://www.brandage.com/images/content/41F1919-D18E73D-078048E.png"
-              }}
-            />
-          </TouchableOpacity>
+          <Banner
+            image={{
+              uri:
+                "http://www.brandage.com/images/content/41F1919-D18E73D-078048E.png"
+            }}
+          />
           <View style={styles.menuGrid}>
             <View style={styles.menuGridCell}>
               <TouchableOpacity
@@ -197,16 +199,6 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     width: "100%"
-  },
-  banner: {
-    width: "100%",
-    height: 180,
-    backgroundColor: "#FFFFFF"
-  },
-  banner__image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover"
   },
   menuGrid: {
     flex: 0,

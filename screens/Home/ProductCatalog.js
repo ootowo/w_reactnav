@@ -10,6 +10,7 @@ import {
   StyleSheet
 } from "react-native";
 
+import { BannerDark } from "../../components/Banner";
 import styles from "../../styles/bookShelf";
 
 class CatelogScreen extends Component {
@@ -139,7 +140,7 @@ class CatelogScreen extends Component {
     return (
       <TouchableOpacity
         style={styles.bookItem}
-        onPress={() => navigate("MailView")}
+        onPress={() => navigate("ProductCatelogView")}
       >
         <View style={{ width: "100%", height: "100%" }}>
           <Image style={styles.bookItem__thumbnail} source={item.image} />
@@ -165,7 +166,7 @@ class CatelogScreen extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          style={{ paddingTop: 10 }}
+          style={{ flex: 1, paddingTop: 10 }}
           data={this.state.data}
           numColumns={2}
           renderItem={this.renderCatelogItem}
@@ -175,6 +176,12 @@ class CatelogScreen extends Component {
           refreshing={this.state.refreshing}
           // onEndReached={this.handleLoadMore}
           // onEndReachedThreshold={50}
+        />
+        <BannerDark
+          image={{
+            uri:
+              "https://insideretail.asia/wp-content/uploads/2016/11/Marko-Cash-carry.jpg"
+          }}
         />
       </View>
     );

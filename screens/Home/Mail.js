@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet
 } from "react-native";
+import { BannerDark } from "../../components/Banner";
 
 import styles from "../../styles/bookShelf";
 
@@ -152,7 +153,7 @@ class MailScreen extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          style={{ paddingTop: 10 }}
+          style={{ flex: 1, paddingTop: 10 }}
           data={this.state.data}
           numColumns={2}
           renderItem={this.renderBookItem}
@@ -162,6 +163,12 @@ class MailScreen extends Component {
           refreshing={this.state.refreshing}
           // onEndReached={this.handleLoadMore}
           // onEndReachedThreshold={50}
+        />
+        <BannerDark
+          image={{
+            uri:
+              "http://www.chiangmaicitylife.com/wp-content/uploads/2017/07/APIS2847-1350x900.jpg"
+          }}
         />
       </View>
     );
