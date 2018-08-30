@@ -29,7 +29,6 @@ class EntertainmentScreen extends Component {
   }
 
   componentDidMount() {
-    moment.locale("th");
     // this.makeRemoteRequest();
     const mockup = [
       {
@@ -73,9 +72,7 @@ class EntertainmentScreen extends Component {
   }
   makeRemoteRequest() {
     const { page, seed } = this.state;
-    // const url = `https://randomuser.me/api/?seed=${seed}&page=${page}&results=20`;
-    const url =
-      "http://webhose.io/filterWebContent?token=de2d8fea-738b-4b11-82ca-05c776b155bb&format=json&sort=crawled&q=sport%20language%3Athai";
+    const url = `https://jsonplaceholder.typicode.com/albums`;
     this.setState({ loading: true });
     fetch(url)
       .then(res => res.json())
