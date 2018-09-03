@@ -7,7 +7,10 @@ export class Banner extends Component {
     return (
       <View style={[{ width: "100%" }, this.props.style]}>
         <TouchableOpacity
-          style={css.banner.banner}
+          style={[
+            css.banner.banner,
+            this.props.mini ? css.banner.banner_mini : css.banner.banner_normal
+          ]}
           onPress={this.onPressBanner}
         >
           <Image style={css.banner.banner__image} source={this.props.image} />
@@ -33,7 +36,10 @@ export class BannerDark extends Component {
     return (
       <View style={[{ width: "100%" }, this.props.style]}>
         <TouchableOpacity
-          style={css.banner.banner}
+          style={[
+            css.banner.banner,
+            this.props.mini ? css.banner.banner_mini : css.banner.banner_normal
+          ]}
           onPress={this.onPressBanner}
         >
           <Image style={css.banner.banner__image} source={this.props.image} />

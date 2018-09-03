@@ -133,7 +133,7 @@ class MainMenuScreen extends Component {
                 <Text style={styles.menuButton__text}>Entertainment</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.menuGridCell}>
+            {/* <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
                 onPress={this.props.openSocialModal}
@@ -143,8 +143,8 @@ class MainMenuScreen extends Component {
                 </View>
                 <Text style={styles.menuButton__text}>Social Networks</Text>
               </TouchableOpacity>
-            </View>
-            <View style={styles.menuGridCell}>
+            </View> */}
+            {/* <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
                 onPress={this.onPressOpenWebSite}
@@ -154,7 +154,7 @@ class MainMenuScreen extends Component {
                 </View>
                 <Text style={styles.menuButton__text}>Makro Click!</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}

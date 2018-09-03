@@ -178,6 +178,7 @@ class CatelogScreen extends Component {
           // onEndReachedThreshold={50}
         />
         <BannerDark
+          mini={true}
           image={{
             uri:
               "https://insideretail.asia/wp-content/uploads/2016/11/Marko-Cash-carry.jpg"

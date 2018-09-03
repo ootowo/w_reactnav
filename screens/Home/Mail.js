@@ -165,6 +165,7 @@ class MailScreen extends Component {
           // onEndReachedThreshold={50}
         />
         <BannerDark
+          mini={true}
           image={{
             uri:
               "http://www.chiangmaicitylife.com/wp-content/uploads/2017/07/APIS2847-1350x900.jpg"

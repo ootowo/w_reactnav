@@ -11,6 +11,7 @@ import EntertainmentScreen from "../screens/Home/Entertainment";
 import OfficialWebScreen from "../screens/Home/OfficialWeb";
 import OfferScreen from "../screens/Home/Offer";
 import SettingScreen from "../screens/Home/Setting";
+import ShelfSelectorScreen from "../screens/Home/ShelfSelector";
 
 import MailViewScreen from "../screens/Home/MailView";
 import ProductCatelogViewScreen from "../screens/Home/ProductCatelogView";
@@ -29,9 +30,9 @@ export default createStackNavigator({
   OfficialWeb: OfficialWebScreen,
   Offer: OfferScreen,
   Setting: SettingScreen,
+  ShelfSelector: ShelfSelectorScreen,
 
   MailView: MailViewScreen,
-
   NewsView: NewsViewScreen,
   ProductCatelogView: ProductCatelogViewScreen,
   EntertainmentView: EntertainmentViewScreen,

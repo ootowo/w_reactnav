@@ -40,6 +40,7 @@ class SettingScreen extends Component {
   }
 
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <Root>
         <View style={styles.container}>
@@ -113,6 +114,17 @@ class SettingScreen extends Component {
                     <Text>Languages</Text>
                     <Text note numberOfLines={1}>
                       English
+                    </Text>
+                  </Body>
+                  <Right>
+                    <Icon name="arrow-forward" />
+                  </Right>
+                </ListItem>
+                <ListItem onPress={() => navigate("ShelfSelector")}>
+                  <Body>
+                    <Text>Shelf Style</Text>
+                    <Text note numberOfLines={1}>
+                      Style 1
                     </Text>
                   </Body>
                   <Right>

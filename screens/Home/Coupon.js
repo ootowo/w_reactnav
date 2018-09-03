@@ -19,7 +19,13 @@ class CouponScreen extends Component {
 
   renderCouponItem = (item, key) => {
     return (
-      <View key={key} style={styles.couponItem}>
+      <View
+        key={key}
+        style={[
+          styles.couponItem,
+          item.expired ? styles.couponItem_expired : null
+        ]}
+      >
         {item.image ? (
           <View style={styles.couponItem__thumbnail}>
             <Image
@@ -37,8 +43,15 @@ class CouponScreen extends Component {
           <Text style={styles.couponItem__detail_offerdetail}>
             {item.detail}
           </Text>
-          <Text style={styles.couponItem__detail_offerexpire}>
-            {item.expire}
+          <Text
+            style={[
+              styles.couponItem__detail_offerexpire,
+              item.expired
+                ? styles.couponItem__detail_offerexpired
+                : styles.couponItem__detail_offernotexpire
+            ]}
+          >
+            {item.expired ? "Expired" : item.expire}
           </Text>
         </View>
         <TouchableOpacity style={styles.couponItem__submit}>
@@ -50,7 +63,13 @@ class CouponScreen extends Component {
 
   renderUsedCoupon = (item, key) => {
     return (
-      <View key={key} style={styles.couponItem}>
+      <View
+        key={key}
+        style={[
+          styles.couponItem,
+          item.expired ? styles.couponItem_expired : null
+        ]}
+      >
         {item.image ? (
           <View style={styles.couponItem__thumbnail}>
             <Image
@@ -68,8 +87,15 @@ class CouponScreen extends Component {
           <Text style={styles.couponItem__detail_offerdetail}>
             {item.detail}
           </Text>
-          <Text style={styles.couponItem__detail_offerexpire}>
-            {item.expire}
+          <Text
+            style={[
+              styles.couponItem__detail_offerexpire,
+              item.expired
+                ? styles.couponItem__detail_offerexpired
+                : styles.couponItem__detail_offernotexpire
+            ]}
+          >
+            {item.expired ? "Expired" : item.expire}
           </Text>
         </View>
       </View>
@@ -104,7 +130,8 @@ class CouponScreen extends Component {
             "https://5.imimg.com/data5/OJ/GB/MY-3665829/fancy-basket-small-500x500.jpg"
         },
         detail: "Earn Plastic Basket when order over 200 Baht",
-        expire: "Expire 30 Sep 2018"
+        expire: "Expire 30 Sep 2018",
+        expired: true
       }
     ];
     return (
@@ -130,6 +157,7 @@ class CouponScreen extends Component {
           </Tab>
         </Tabs>
         <BannerDark
+          mini={true}
           image={{
             uri:
               "https://brandinside.asia/wp-content/uploads/2018/07/shutterstock_10451594111323r.jpg"
@@ -158,6 +186,9 @@ const styles = StyleSheet.create({
     shadowColor: "#000000",
     shadowOpacity: 0.1,
     flexDirection: "row"
+  },
+  couponItem_expired: {
+    opacity: 0.65
   },
   couponItem__thumbnail: {
     flex: 0,
@@ -190,8 +221,13 @@ const styles = StyleSheet.create({
   },
   couponItem__detail_offerexpire: {
     textAlign: "center",
-    fontSize: 10,
+    fontSize: 10
+  },
+  couponItem__detail_offernotexpire: {
     color: "#B1AFB0"
+  },
+  couponItem__detail_offerexpired: {
+    color: "#FF0000"
   },
   couponItem__submit: {
     flex: 0,

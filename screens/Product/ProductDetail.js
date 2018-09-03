@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     flex: 0
   },
   productDetail__title_oldprice: {
-    color: "#e5e5e5",
+    color: "#a4a4a4",
     textDecorationLine: "line-through",
     marginBottom: 5
   },

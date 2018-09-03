@@ -53,6 +53,18 @@ class MainProfileScreen extends Component {
                   <ListItem itemDivider />
                   <ListItem icon>
                     <Left>
+                      <FontAwesome
+                        name="facebook-official"
+                        size={20}
+                        color="#3b5998"
+                      />
+                    </Left>
+                    <Body>
+                      <Text>Follow me on Facebook</Text>
+                    </Body>
+                  </ListItem>
+                  <ListItem icon>
+                    <Left>
                       <FontAwesome name="sign-out" size={20} color="#FF0000" />
                     </Left>
                     <Body>

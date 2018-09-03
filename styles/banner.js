@@ -32,12 +32,17 @@ export default StyleSheet.create({
   },
   banner: {
     width: "100%",
-    height: 180,
     backgroundColor: "#FFFFFF"
   },
   banner__image: {
     width: "100%",
     height: "100%",
     resizeMode: "cover"
+  },
+  banner_normal: {
+    height: 180
+  },
+  banner_mini: {
+    height: 100
   }
 });
