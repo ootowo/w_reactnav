@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Switch } from "react-native";
+import { View, Text, StyleSheet, Switch, Alert } from "react-native";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 import {
   Root,
   Container,
@@ -14,6 +16,9 @@ import {
 } from "native-base";
 import call from "react-native-phone-call";
 
+import { checkNotificationGrant } from "../../apis/settingApi";
+import { makeConfig, makeConfigAsync } from "../../actions/settingAction";
+
 class SettingScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: "Settings",
@@ -24,19 +29,27 @@ class SettingScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      LANG_BUTTONS: ["English", "ไทย", "cancel"],
+      LANG_BUTTONS: ["English", "Cambodia", "Cancel"],
+      LANG_BUTTON_VALUES: ["en", "ka"],
       LANG_CANCEL_INDEX: 2,
       LANG_CLICKED_INDEX: -1,
-      ringtones: false,
-      ringtones_disabled: false,
-      notification: false
+      ringtones_disabled: false
     };
+
+    this.setConfig = this.setConfig.bind(this);
   }
 
   componentDidMount() {
-    if (!this.state.notification) {
+    if (!this.props.setting.params.notification) {
       this.setState({ ringtones_disabled: true });
     }
+  }
+
+  setConfig({ key, value }) {
+    const oldSetting = this.props.setting.params;
+    return new Promise((resolve, reject) => {
+      this.props.makeConfigAsync({ key, value, oldSetting }, resolve, reject);
+    });
   }
 
   render() {
@@ -62,9 +75,9 @@ class SettingScreen extends Component {
                   <Right>
                     <Switch
                       disabled={this.state.ringtones_disabled}
-                      value={this.state.ringtones}
+                      value={this.props.setting.params.ringtone}
                       onValueChange={value => {
-                        this.setState({ ringtones: value });
+                        this.setConfig({ key: "ringtone", value });
                       }}
                     />
                   </Right>
@@ -78,18 +91,29 @@ class SettingScreen extends Component {
                   </Body>
                   <Right>
                     <Switch
-                      value={this.state.notification}
+                      value={this.props.setting.params.notification}
                       onValueChange={value => {
                         if (value) {
-                          this.setState({
-                            ringtones_disabled: false,
-                            notification: value
-                          });
+                          const grant = checkNotificationGrant();
+                          if (grant !== "granted") {
+                            this.setConfig({ key: "notification", value });
+                            this.setState({
+                              ringtones_disabled: false
+                            });
+                          }
                         } else {
+                          if (this.props.setting.params.ringtone) {
+                            this.setConfig({
+                              key: "ringtone",
+                              value: false
+                            }).then(() => {
+                              this.setConfig({ key: "notification", value });
+                            });
+                          } else {
+                            this.setConfig({ key: "notification", value });
+                          }
                           this.setState({
-                            ringtones_disabled: true,
-                            notification: value,
-                            ringtones: false
+                            ringtones_disabled: true
                           });
                         }
                       }}
@@ -102,18 +126,28 @@ class SettingScreen extends Component {
                       {
                         options: this.state.LANG_BUTTONS,
                         cancelButtonIndex: this.state.LANG_CANCEL_INDEX,
-                        title: "กรุณาเลือกภาษา"
+                        title: "Please Select Language"
                       },
                       buttonIndex => {
+                        if (buttonIndex < this.state.LANG_BUTTONS.length - 1) {
+                          this.setConfig({
+                            key: "language",
+                            value: this.state.LANG_BUTTON_VALUES[buttonIndex]
+                          });
+                        }
                         this.setState({ LANG_CLICKED_INDEX: buttonIndex });
                       }
                     )
                   }
                 >
                   <Body>
-                    <Text>Languages</Text>
+                    <Text>Language</Text>
                     <Text note numberOfLines={1}>
-                      English
+                      {this.state.LANG_BUTTON_VALUES.map((lang, key) => {
+                        if (this.props.setting.params.language == lang) {
+                          return this.state.LANG_BUTTONS[key];
+                        }
+                      })}
                     </Text>
                   </Body>
                   <Right>
@@ -124,7 +158,7 @@ class SettingScreen extends Component {
                   <Body>
                     <Text>Shelf Style</Text>
                     <Text note numberOfLines={1}>
-                      Style 1
+                      Style {this.props.setting.params.shelf}
                     </Text>
                   </Body>
                   <Right>
@@ -164,4 +198,12 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SettingScreen;
+const mapStateToProps = state => ({
+  setting: state.settingReducer
+});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ makeConfig, makeConfigAsync }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SettingScreen);

@@ -13,6 +13,7 @@ import {
   Select,
   updatePosition
 } from "react-native-dropdown";
+import RNPickerSelect from "react-native-picker-select";
 
 import ProfileHeader from "../../components/ProfileHeader";
 import CardHeader from "../../components/CardHeader";
@@ -21,46 +22,41 @@ import MapPopup from "../../components/MapPopup";
 const { Marker, Callout } = MapView;
 class MainBranchScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerLeft: <ProfileHeader />,
+    headerLeft: <ProfileHeader navigation={navigation} />,
     headerRight: <CardHeader />
   });
 
   constructor(props) {
     super(props);
+    this.inputRefs = {};
+    this.state = {
+      selectedSector: undefined,
+      sectors: [
+        { label: "Bangkok", value: "bangkok" },
+        { label: "Central", value: "central" },
+        { label: "North", value: "north" },
+        { label: "South", value: "south" },
+        { label: "North East", value: "north-east" }
+      ],
+      selectedBranch: undefined,
+      branches: [
+        { label: "Bangkok", value: "bangkok" },
+        { label: "Central", value: "central" },
+        { label: "North", value: "north" },
+        { label: "South", value: "south" },
+        { label: "North East", value: "north-east" }
+      ]
+    };
 
     this.renderMapView = this.renderMapView.bind(this);
-    this._getOptionListArea = this._getOptionListArea.bind(this);
-    this._getOptionListBranch = this._getOptionListBranch.bind(this);
-    this._setOptionArea = this._setOptionArea.bind(this);
-    this._setOptionBranch = this._setOptionBranch.bind(this);
   }
 
-  componentDidMount() {
-    updatePosition(this.refs["SELECT_AREA"]);
-    updatePosition(this.refs["OPTIONLIST_AREA"]);
-    updatePosition(this.refs["SELECT_BRANCH"]);
-    updatePosition(this.refs["OPTIONLIST_BRANCH"]);
-  }
-
-  _getOptionListArea() {
-    return this.refs["OPTIONLIST_AREA"];
-  }
-
-  _getOptionListBranch() {
-    return this.refs["OPTIONLIST_BRANCH"];
-  }
-
-  _setOptionArea(area) {
-    this.setState({ area });
-  }
-
-  _setOptionBranch(branch) {
-    this.setState({ branch });
-  }
+  componentDidMount() {}
 
   renderMapMarker = (item, key) => {
     return (
       <Marker
+        key={key}
         image={require("../../assets/makro_pin.png")}
         coordinate={item.location}
       >
@@ -112,42 +108,19 @@ class MainBranchScreen extends Component {
       <View style={styles.container}>
         <View style={styles.mapView}>
           <View style={styles.mapView__menu}>
-            <View style={styles.mapView__menu_dropdown}>
-              <Select
-                style={{ backgroundColor: "#FFFFFF" }}
-                width={(Dimensions.get("screen").width - 40) / 2}
-                ref="SELECT_AREA"
-                optionListRef={this._getOptionListArea.bind(this)}
-                defaultValue="Area"
-                onSelect={this._setOptionArea.bind(this)}
-              >
-                <Option>Bangkok</Option>
-                <Option>Central</Option>
-                <Option>West</Option>
-                <Option>East</Option>
-                <Option>North</Option>
-                <Option>Northeastern</Option>
-                <Option>South</Option>
-              </Select>
-              <OptionList ref="OPTIONLIST_AREA" />
-            </View>
-            <View style={styles.mapView__menu_dropdown}>
-              <Select
-                style={{ backgroundColor: "#FFFFFF" }}
-                width={(Dimensions.get("screen").width - 20) / 2}
-                ref="SELECT_BRANCH"
-                optionListRef={this._getOptionListBranch.bind(this)}
-                defaultValue="Branch"
-                onSelect={this._setOptionBranch.bind(this)}
-              >
-                <Option>Kanlapaphruk</Option>
-                <Option>British Columbia</Option>
-                <Option>Manitoba</Option>
-                <Option>New Brunswick</Option>
-                <Option>Newfoundland and Labrador</Option>
-                <Option>Northwest Territories</Option>
-              </Select>
-              <OptionList ref="OPTIONLIST_BRANCH" />
+            <View style={[styles.mapView__menu_dropdown]}>
+              <RNPickerSelect
+                style={{ ...pickerStyles }}
+                placeholder={{ label: "Branch", value: null }}
+                items={this.state.branches}
+                onValueChange={value => {
+                  this.setState({ selectedBranch: value });
+                }}
+                value={this.state.selectedBranch}
+                ref={el => {
+                  this.inputRefs.branchPicker = el;
+                }}
+              />
             </View>
           </View>
           {this.renderMapView()}
@@ -189,6 +162,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "50%"
   },
+  mapView__menu_dropdown__left: {
+    paddingRight: 5
+  },
+  mapView__menu_dropdown__right: {
+    paddingRight: 5
+  },
   navigateButton: {
     flex: 0,
     width: "100%",
@@ -200,6 +179,37 @@ const styles = StyleSheet.create({
   navigateButton__text: {
     fontWeight: "bold",
     color: "#FFFFFF"
+  }
+});
+const pickerStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 14,
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e5e5e5",
+    backgroundColor: "#FFFFFF",
+    flex: 1,
+    width: "100%"
+  },
+  inputAndroid: {
+    paddingTop: 13,
+    paddingHorizontal: 10,
+    paddingBottom: 12,
+    borderWidth: 1,
+    borderColor: "#e5e5e5",
+    backgroundColor: "#FFFFFF",
+    flex: 1,
+    width: "100%"
+  },
+  icon: {
+    top: 20,
+    right: 15,
+    borderTopWidth: 6,
+    borderRightWidth: 6,
+    borderLeftWidth: 6,
+    borderTopColor: "#999999"
   }
 });
 

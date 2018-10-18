@@ -1,20 +1,32 @@
+import "intl";
+import "intl/locale-data/jsonp/en";
+import "intl/locale-data/jsonp/th";
+import "intl/locale-data/jsonp/ka";
+
 import React from "react";
+import { View, StatusBar, Platform } from "react-native";
 import { Provider } from "react-redux";
 import { AppLoading, Asset, Font } from "expo";
-import { Text, View } from "react-native";
-import { IntlProvider, addLocaleData } from "react-intl";
-import en from "react-intl/locale-data/en";
-import th from "react-intl/locale-data/th";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { addLocaleData } from "react-intl";
+import { useScreens } from "react-native-screens";
+import {
+  Entypo,
+  FontAwesome,
+  Ionicons,
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Octicons
+} from "@expo/vector-icons";
 
-import CoreNavigation from "./navigations";
-import CoreModal from "./modals";
-
+import CoreApp from "./core/CoreApp";
 import store from "./store";
 
-const __DEFAULT_LOCALE = "en";
-addLocaleData(en);
-addLocaleData(th);
+const enLocale = require("react-intl/locale-data/en");
+const thLocale = require("react-intl/locale-data/th");
+const kaLocale = require("react-intl/locale-data/ka");
+
+addLocaleData([...enLocale, ...thLocale, ...kaLocale]);
+// useScreens();
 
 console.disableYellowBox = true;
 const cacheImages = images => {
@@ -38,7 +50,31 @@ class App extends React.Component {
 
   async _loadAssetsAsync() {
     const imageAssets = cacheImages([
-      "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+      // Coupon Seperator
+      require("./assets/coupon_sep/coupon_sep.png"),
+
+      // Shelf Preview
+      require("./assets/shelfs/shelf_style_1/preview/shelf.png"),
+      require("./assets/shelfs/shelf_style_2/preview/shelf.png"),
+      require("./assets/shelfs/shelf_style_3/preview/shelf.png"),
+      require("./assets/shelfs/shelf_style_4/preview/shelf.png"),
+      require("./assets/shelfs/shelf_style_5/preview/shelf.png"),
+
+      require("./assets/shelfs/shelf_style_1/left/shelf.png"),
+      require("./assets/shelfs/shelf_style_2/left/shelf.png"),
+      require("./assets/shelfs/shelf_style_3/left/shelf.png"),
+      require("./assets/shelfs/shelf_style_4/left/shelf.png"),
+      require("./assets/shelfs/shelf_style_5/left/shelf.png"),
+
+      require("./assets/shelfs/shelf_style_1/right/shelf.png"),
+      require("./assets/shelfs/shelf_style_2/right/shelf.png"),
+      require("./assets/shelfs/shelf_style_3/right/shelf.png"),
+      require("./assets/shelfs/shelf_style_4/right/shelf.png"),
+      require("./assets/shelfs/shelf_style_5/right/shelf.png"),
+
+      require("./assets/home_bg.png"),
+      require("./assets/makro_cam_logo.png"),
+      require("./assets/makro_card.png")
     ]);
     const fontAssets = cacheFonts([
       {
@@ -46,7 +82,11 @@ class App extends React.Component {
         Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf")
       },
       ...FontAwesome.font,
-      ...Ionicons.font
+      ...Ionicons.font,
+      ...Entypo.font,
+      ...MaterialIcons.font,
+      ...MaterialCommunityIcons.font,
+      ...Octicons.font
     ]);
 
     await Promise.all([...imageAssets, ...fontAssets]);
@@ -64,12 +104,10 @@ class App extends React.Component {
     }
     return (
       <Provider store={store}>
-        <IntlProvider locale={__DEFAULT_LOCALE} textComponent={Text}>
-          <View style={{ width: "100%", height: "100%" }}>
-            <CoreNavigation />
-            <CoreModal />
-          </View>
-        </IntlProvider>
+        <View style={{ flex: 1, backgroundColor: "#000000" }}>
+          <StatusBar translucent backgroundColor={"#000000"} />
+          <CoreApp />
+        </View>
       </Provider>
     );
   }

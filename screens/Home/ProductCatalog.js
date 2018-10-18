@@ -3,15 +3,16 @@ import {
   View,
   Text,
   Image,
-  ImageBackground,
+  Dimensions,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet
 } from "react-native";
+import { connect } from "react-redux";
+import { Banner } from "../../components/Banner";
 
-import { BannerDark } from "../../components/Banner";
-import styles from "../../styles/bookShelf";
+import { getFile } from "../../utils/shelfFilePath";
 
 class CatelogScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -28,10 +29,14 @@ class CatelogScreen extends Component {
       page: 1,
       seed: 1,
       error: null,
-      refreshing: true
+      refreshing: true,
+      bannerHeight: 0,
+      bookCoverWidth: 0
     };
     this.handleRefresh = this.handleRefresh.bind(this);
     this.handleLoadMore = this.handleLoadMore.bind(this);
+
+    this.makeCalculateStackHeight = this.makeCalculateStackHeight.bind(this);
 
     this.renderCatelogItem = this.renderCatelogItem.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
@@ -125,6 +130,12 @@ class CatelogScreen extends Component {
     );
   }
 
+  makeCalculateStackHeight() {
+    const { height } = Dimensions.get("window");
+    const { bannerHeight } = this.state;
+    return height / 3 - (bannerHeight - 15);
+  }
+
   renderFooter() {
     if (!this.state.loading) return null;
 
@@ -139,11 +150,32 @@ class CatelogScreen extends Component {
     const { navigate } = this.props.navigation;
     return (
       <TouchableOpacity
-        style={styles.bookItem}
-        onPress={() => navigate("ProductCatelogView")}
+        style={[styles.bookItem, { height: this.makeCalculateStackHeight() }]}
+        onPress={() => navigate("ProducrCatelogView")}
       >
-        <View style={{ width: "100%", height: "100%" }}>
-          <Image style={styles.bookItem__thumbnail} source={item.image} />
+        <View
+          style={{
+            width: "100%",
+            height: "100%",
+            paddingBottom: 38
+          }}
+        >
+          <View style={styles.bookItem__thumbnail}>
+            <Image
+              style={{
+                width: this.state.bookCoverWidth,
+                height: "100%",
+                backgroundColor: "#FFFFFF"
+              }}
+              resizeMode="cover"
+              source={item.image}
+              onLayout={e =>
+                this.setState({
+                  bookCoverWidth: e.nativeEvent.layout.height / 1.54
+                })
+              }
+            />
+          </View>
           <View style={styles.bookItem__title}>
             <Text style={styles.bookItem__title_text} numberOfLines={2}>
               {item.title}
@@ -153,8 +185,8 @@ class CatelogScreen extends Component {
             style={styles.bookItem__bg}
             source={
               this.checkIndexIsEven(item.id)
-                ? require("../../assets/shelf_bg_l/shelf_bg_l.png")
-                : require("../../assets/shelf_bg_r/shelf_bg_r.png")
+                ? getFile(this.props.setting.params.shelf, "left")
+                : getFile(this.props.setting.params.shelf, "right")
             }
           />
         </View>
@@ -163,6 +195,15 @@ class CatelogScreen extends Component {
   };
 
   render() {
+    const { catalog } = this.props.banner;
+    const catalogBannerImages = catalog.map(banner => {
+      return {
+        uri: banner.filePath
+      };
+    });
+    const catalogBannerURLs = catalog.map(banner => {
+      return banner.url;
+    });
     return (
       <View style={styles.container}>
         <FlatList
@@ -177,16 +218,78 @@ class CatelogScreen extends Component {
           // onEndReached={this.handleLoadMore}
           // onEndReachedThreshold={50}
         />
-        <BannerDark
-          mini={true}
-          image={{
-            uri:
-              "https://insideretail.asia/wp-content/uploads/2016/11/Marko-Cash-carry.jpg"
+        <Banner
+          onLayout={event => {
+            this.setState({ bannerHeight: event.nativeEvent.layout.height });
           }}
+          darkmode
+          mini={true}
+          images={catalogBannerImages}
+          urls={catalogBannerURLs}
         />
       </View>
     );
   }
 }
 
-export default CatelogScreen;
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFFFFF",
+    width: "100%",
+    height: "100%"
+  },
+  bookShelf__bg: {
+    flex: 1,
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    resizeMode: "repeat"
+  },
+  bookItem: {
+    width: "50%",
+    // height: "100%" / 3,
+    flex: 1,
+    alignItems: "center"
+  },
+  bookItem__bg: {
+    width: "100%",
+    height: 45,
+    position: "absolute",
+    bottom: 0,
+    resizeMode: "cover",
+    zIndex: 98
+  },
+  bookItem__thumbnail: {
+    width: "100%",
+    height: "100%",
+    zIndex: 99,
+    alignItems: "center"
+  },
+  bookItem__title: {
+    width: "100%" - 14,
+    padding: 8,
+    borderRadius: 15,
+    backgroundColor: "rgba(136, 136, 136, 0.8)",
+    position: "absolute",
+    bottom: 40,
+    left: 7,
+    right: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 15,
+    zIndex: 99
+  },
+  bookItem__title_text: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "bold",
+    textAlign: "center",
+    backgroundColor: "transparent"
+  }
+});
+
+const mapStateToProps = state => ({
+  setting: state.settingReducer,
+  banner: state.bannerReducer
+});
+export default connect(mapStateToProps)(CatelogScreen);

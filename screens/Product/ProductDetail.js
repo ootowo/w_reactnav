@@ -7,7 +7,7 @@ import {
   Image,
   StyleSheet
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -30,14 +30,14 @@ class ProductDetailScreen extends Component {
               style={styles.productDetail__thumbnail_image}
               source={{
                 uri:
-                  "https://www.sinthanee.com/image/cache/product/2016-09-21/blender/tefal%20bl233-1000x1000.jpg"
+                  "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
               }}
             />
           </View>
           <View style={styles.productDetail__title}>
             <View style={styles.productDetail__title_head}>
               <Text style={styles.productDetail__title_head_text}>
-                Otto #BE127/127A 2 litre|1200 watts
+                Otto Heavy Duty Blender
               </Text>
               <TouchableOpacity
                 style={styles.productDetail__title_head_favbutton}
@@ -57,8 +57,13 @@ class ProductDetailScreen extends Component {
               Price 2590.00 Baht
             </Text>
             <Text style={styles.productDetail__title_newprice}>
-              Special Price 1390.00 Baht
+              Special Price 1000.00 Baht
             </Text>
+            <View style={styles.productDetail__promo}>
+              <Text style={styles.productDetail__promo_text}>
+                Promotion: Earn more 2 pcs
+              </Text>
+            </View>
           </View>
           <View style={styles.productDetail__details}>
             <View style={styles.productDetail__details_row}>
@@ -82,6 +87,12 @@ class ProductDetailScreen extends Component {
           </View>
         </ScrollView>
         <TouchableOpacity style={styles.addToCartBtn}>
+          <MaterialIcons
+            style={{ paddingRight: 10 }}
+            name="add-shopping-cart"
+            size={16}
+            color="#FFFFFF"
+          />
           <Text style={styles.addToCartBtn__text}>Add To Cart</Text>
         </TouchableOpacity>
       </View>
@@ -103,7 +114,8 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#FF0000",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    flexDirection: "row"
   },
   addToCartBtn__text: {
     fontWeight: "bold",
@@ -148,6 +160,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold"
   },
+  productDetail__promo: {
+    backgroundColor: "#FF0000",
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 5
+  },
+  productDetail__promo_text: { color: "#FFFFFF", fontWeight: "bold" },
   productDetail__details: {
     padding: 10
   },

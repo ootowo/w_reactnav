@@ -15,23 +15,23 @@ export default StyleSheet.create({
   },
   bookItem: {
     width: "50%",
-    height: 200,
+    height: "100%" / 3,
     flex: 1,
     alignItems: "center"
   },
   bookItem__bg: {
     width: "100%",
-    height: 100,
+    height: 80,
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    resizeMode: "contain",
+    resizeMode: "cover",
     zIndex: 98
   },
   bookItem__thumbnail: {
-    width: 105,
-    height: 130,
+    width: 75,
+    height: 95,
     backgroundColor: "#FFFFFF",
     zIndex: 99,
     alignSelf: "center"
@@ -40,9 +40,11 @@ export default StyleSheet.create({
     width: "100%" - 14,
     padding: 8,
     borderRadius: 15,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(136, 136, 136, 0.8)",
     position: "absolute",
-    bottom: 85,
+    bottom: 80,
+    left: 7,
+    right: 7,
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 15,
@@ -50,7 +52,7 @@ export default StyleSheet.create({
   },
   bookItem__title_text: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "bold",
     textAlign: "center",
     backgroundColor: "transparent"

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, Image, SafeAreaView, StyleSheet } from "react-native";
+import { View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import {
   Root,
   Container,
@@ -16,33 +16,61 @@ class MainProfileScreen extends Component {
     header: null
   });
 
+  renderProfile() {
+    return (
+      <View style={styles.profileHeader}>
+        <View
+          style={{
+            flex: 0,
+            width: "100%",
+            flexDirection: "row",
+            zIndex: 99,
+            position: "absolute",
+            bottom: 10,
+            left: 10
+          }}
+        >
+          <View style={styles.profileImage}>
+            <Image
+              style={styles.profileImage__photo}
+              source={{
+                uri:
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBapT6eBUt5RFRTxWPwztndojMWqgwoLLxD1lCwhUJ834nLXSk"
+              }}
+            />
+          </View>
+          <View style={styles.profileName}>
+            <Text style={styles.profileName__text}>Bryan Cool</Text>
+            <Text style={styles.profileName__number}>0123456789</Text>
+          </View>
+        </View>
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%"
+          }}
+        >
+          <Image
+            resizeMode="cover"
+            source={require("../../assets/home_bg.png")}
+            style={{ width: "100%", height: "100%", resizeMode: "cover" }}
+          />
+        </View>
+      </View>
+    );
+  }
   render() {
     return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: "#DDDDDD" }}
-        forceInset={{ bottom: "always", top: "always" }}
-      >
-        <View style={styles.container}>
-          <View style={styles.profileHeader}>
-            <View style={styles.profileImage}>
-              <Image
-                style={styles.profileImage__photo}
-                source={{
-                  uri:
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBapT6eBUt5RFRTxWPwztndojMWqgwoLLxD1lCwhUJ834nLXSk"
-                }}
-              />
-            </View>
-            <View style={styles.profileName}>
-              <Text style={styles.profileName__text}>Bryan Cool</Text>
-              <Text style={styles.profileName__number}>0123456789</Text>
-            </View>
-          </View>
-          <View style={styles.profileMenu}>
-            <Container>
-              <Content>
-                <List>
-                  <ListItem icon>
+      <View style={styles.container}>
+        {this.renderProfile()}
+        <View style={styles.profileMenu}>
+          <Container>
+            <Content>
+              <List>
+                {/* <ListItem icon>
                     <Left>
                       <Ionicons name="ios-heart" size={20} color="#635F62" />
                     </Left>
@@ -50,44 +78,43 @@ class MainProfileScreen extends Component {
                       <Text>Favorite Products</Text>
                     </Body>
                   </ListItem>
-                  <ListItem itemDivider />
-                  <ListItem icon>
-                    <Left>
-                      <FontAwesome
-                        name="facebook-official"
-                        size={20}
-                        color="#3b5998"
-                      />
-                    </Left>
-                    <Body>
-                      <Text>Follow me on Facebook</Text>
-                    </Body>
-                  </ListItem>
-                  <ListItem icon>
-                    <Left>
-                      <FontAwesome name="sign-out" size={20} color="#FF0000" />
-                    </Left>
-                    <Body>
-                      <Text>Logout</Text>
-                    </Body>
-                  </ListItem>
-                  <ListItem itemDivider>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: "bold",
-                        color: "#635F62"
-                      }}
-                    >
-                      Version 3.4 (2018)
-                    </Text>
-                  </ListItem>
-                </List>
-              </Content>
-            </Container>
-          </View>
+                  <ListItem itemDivider /> */}
+                <ListItem icon>
+                  <Left>
+                    <FontAwesome
+                      name="facebook-official"
+                      size={20}
+                      color="#3b5998"
+                    />
+                  </Left>
+                  <Body>
+                    <Text>Follow me on Facebook</Text>
+                  </Body>
+                </ListItem>
+                <ListItem icon>
+                  <Left>
+                    <FontAwesome name="sign-out" size={20} color="#FF0000" />
+                  </Left>
+                  <Body>
+                    <Text>Logout</Text>
+                  </Body>
+                </ListItem>
+                <ListItem itemDivider>
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      fontWeight: "bold",
+                      color: "#635F62"
+                    }}
+                  >
+                    Version 3.4 (2018)
+                  </Text>
+                </ListItem>
+              </List>
+            </Content>
+          </Container>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
@@ -99,14 +126,9 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     flex: 0,
-    flexDirection: "row",
     alignItems: "flex-end",
-    justifyContent: "center",
     width: "100%",
-    height: 130,
-    paddingHorizontal: 15,
-    paddingBottom: 10,
-    backgroundColor: "#FF0000"
+    height: 150
   },
   profileImage: {
     flex: 0,

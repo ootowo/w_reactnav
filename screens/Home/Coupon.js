@@ -4,11 +4,20 @@ import {
   ScrollView,
   Text,
   Image,
+  Alert,
   TouchableOpacity,
+  ActivityIndicator,
   StyleSheet
 } from "react-native";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
 import { Container, Header, Tab, Tabs, ScrollableTab } from "native-base";
-import { BannerDark } from "../../components/Banner";
+import { Banner } from "../../components/Banner";
+import moment from "moment";
+import { isEmpty } from "../../utils/validate";
+
+import { openCouponModal } from "../../actions/modalAction";
+import { fetchCouponData } from "../../apis/couponApi";
 
 class CouponScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -17,31 +26,65 @@ class CouponScreen extends Component {
     headerBackTitle: null
   });
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      usedCoupon: [],
+      availableCoupon: []
+    };
+  }
+
+  componentDidMount() {
+    this.setState({ loading: true });
+    fetchCouponData(1)
+      .then(res => {
+        this.setState({ loading: false });
+        if (!isEmpty(res.data)) {
+          this.setState({
+            availableCoupon: res.data.available,
+            usedCoupon: res.data.used
+          });
+        } else {
+          Alert.alert(
+            "Makro",
+            "These coupons are provided for our members only."
+          );
+        }
+      })
+      .catch(error => {
+        this.setState({ loading: false });
+        Alert.alert("Error while loading", JSON.stringify(error));
+      });
+  }
+
   renderCouponItem = (item, key) => {
+    const expireDate = moment(item.expireDate, "DD/MM/YYYY");
+    console.log(item);
     return (
       <View
         key={key}
         style={[
           styles.couponItem,
-          item.expired ? styles.couponItem_expired : null
+          expireDate < Date.now() ? styles.couponItem_expired : null
         ]}
       >
-        {item.image ? (
+        {item.imagePath ? (
           <View style={styles.couponItem__thumbnail}>
             <Image
               style={styles.couponItem__thumbnail_image}
-              source={item.image}
+              source={{ uri: item.imagePath }}
             />
           </View>
         ) : null}
         <View style={styles.couponItem__detail}>
-          {item.offer ? (
+          {!isEmpty(item.name.trim()) ? (
             <Text style={styles.couponItem__detail_offertitle}>
-              {item.offer}
+              {item.name}
             </Text>
           ) : null}
           <Text style={styles.couponItem__detail_offerdetail}>
-            {item.detail}
+            {item.description}
           </Text>
           <Text
             style={[
@@ -51,11 +94,20 @@ class CouponScreen extends Component {
                 : styles.couponItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : item.expire}
+            {expireDate < Date.now()
+              ? "Expired"
+              : "Expire on " + expireDate.format("D MMMM YYYY")}
           </Text>
         </View>
-        <TouchableOpacity style={styles.couponItem__submit}>
-          <Text style={styles.couponItem__submit_text}>Use!</Text>
+        <Image
+          style={styles.couponItem__sep}
+          source={require("../../assets/coupon_sep/coupon_sep.png")}
+        />
+        <TouchableOpacity
+          style={styles.couponItem__submit}
+          onPress={() => this.props.openCouponModal(item)}
+        >
+          <Text style={styles.couponItem__submit_text}>Use Now</Text>
         </TouchableOpacity>
       </View>
     );
@@ -70,18 +122,18 @@ class CouponScreen extends Component {
           item.expired ? styles.couponItem_expired : null
         ]}
       >
-        {item.image ? (
+        {item.imagePath ? (
           <View style={styles.couponItem__thumbnail}>
             <Image
               style={styles.couponItem__thumbnail_image}
-              source={item.image}
+              source={{ uri: item.imagePath }}
             />
           </View>
         ) : null}
         <View style={styles.couponItem__detail}>
-          {item.offer ? (
+          {!isEmpty(item.name.trim()) ? (
             <Text style={styles.couponItem__detail_offertitle}>
-              {item.offer}
+              {item.name}
             </Text>
           ) : null}
           <Text style={styles.couponItem__detail_offerdetail}>
@@ -95,75 +147,92 @@ class CouponScreen extends Component {
                 : styles.couponItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : item.expire}
+            {item.expired ? "Expired" : "Expire on " + item.expire}
+          </Text>
+          <Text style={styles.couponItem__detail_offeruseat}>
+            Used at {item.used_at}
           </Text>
         </View>
       </View>
     );
   };
+
   render() {
-    const mockup = [
-      {
-        id: 0,
-        offer: "200 ฿",
-        detail: "200 Baht off any order over 2000 Baht",
-        expire: "Expire 20 Sep 2018"
-      },
-      {
-        id: 1,
-        offer: "500 ฿",
-        detail: "500 Baht off any order over 5000 Baht",
-        expire: "Expire 30 Sep 2018"
-      }
-    ];
-    const mockup_used = [
-      {
-        id: 0,
-        offer: "500 ฿",
-        detail: "500 Baht off any order over 5000 Baht",
-        expire: "Expire 30 Sep 2018"
-      },
-      {
-        id: 1,
-        image: {
-          uri:
-            "https://5.imimg.com/data5/OJ/GB/MY-3665829/fancy-basket-small-500x500.jpg"
-        },
-        detail: "Earn Plastic Basket when order over 200 Baht",
-        expire: "Expire 30 Sep 2018",
-        expired: true
-      }
-    ];
+    const { availableCoupon, usedCoupon, loading } = this.state;
+    const { coupon } = this.props.banner;
+    const couponBannerImages = coupon.map(banner => {
+      return {
+        uri: banner.filePath
+      };
+    });
+    const couponBannerURLs = coupon.map(banner => {
+      return banner.url;
+    });
+
     return (
-      <Container>
-        <Tabs
-          renderTabBar={() => (
-            <ScrollableTab style={{ borderBottomWidth: 0 }} />
-          )}
-        >
-          <Tab heading="Available">
-            <View style={styles.container}>
-              <ScrollView style={styles.couponList}>
-                {mockup.map(this.renderCouponItem)}
-              </ScrollView>
-            </View>
-          </Tab>
-          <Tab heading="History">
-            <View style={styles.container}>
-              <ScrollView style={styles.couponList}>
-                {mockup_used.map(this.renderUsedCoupon)}
-              </ScrollView>
-            </View>
-          </Tab>
-        </Tabs>
-        <BannerDark
-          mini={true}
-          image={{
-            uri:
-              "https://brandinside.asia/wp-content/uploads/2018/07/shutterstock_10451594111323r.jpg"
-          }}
+      <View style={{ flex: 1 }}>
+        <Container style={{ flex: 1 }}>
+          <Tabs
+            tabBarUnderlineStyle={{ backgroundColor: "#FF0000" }}
+            renderTabBar={() => (
+              <ScrollableTab
+                style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }}
+              />
+            )}
+          >
+            <Tab
+              heading="Available"
+              tabStyle={{ backgroundColor: "#f2f2f2" }}
+              activeTabStyle={{ backgroundColor: "#f2f2f2" }}
+              textStyle={{ color: "#FF0000" }}
+              activeTextStyle={{ color: "#FF0000" }}
+            >
+              <View style={styles.container}>
+                {loading ? (
+                  <View
+                    style={{
+                      flex: 1,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      backgroundColor: "#FFFFFF",
+                      width: "100%",
+                      height: "100%",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <ActivityIndicator size="large" />
+                  </View>
+                ) : (
+                  <ScrollView style={styles.couponList}>
+                    {availableCoupon.map(this.renderCouponItem)}
+                  </ScrollView>
+                )}
+              </View>
+            </Tab>
+            <Tab
+              heading="History"
+              tabStyle={{ backgroundColor: "#f2f2f2" }}
+              activeTabStyle={{ backgroundColor: "#f2f2f2" }}
+              textStyle={{ color: "#FF0000" }}
+              activeTextStyle={{ color: "#FF0000" }}
+            >
+              <View style={styles.container}>
+                <ScrollView style={styles.couponList}>
+                  {/* {usedCoupon.map(this.renderUsedCoupon)} */}
+                </ScrollView>
+              </View>
+            </Tab>
+          </Tabs>
+        </Container>
+        <Banner
+          darkmode
+          mini
+          images={couponBannerImages}
+          urls={couponBannerURLs}
         />
-      </Container>
+      </View>
     );
   }
 }
@@ -180,11 +249,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 100,
     borderRadius: 5,
-    backgroundColor: "#FFFFFF",
     marginBottom: 15,
-    shadowOffset: { width: 0, height: 5 },
-    shadowColor: "#000000",
-    shadowOpacity: 0.1,
     flexDirection: "row"
   },
   couponItem_expired: {
@@ -192,11 +257,11 @@ const styles = StyleSheet.create({
   },
   couponItem__thumbnail: {
     flex: 0,
-    width: 60,
-    marginLeft: 10,
+    width: 100,
     height: 100,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF"
   },
   couponItem__thumbnail_image: {
     width: "100%",
@@ -206,21 +271,19 @@ const styles = StyleSheet.create({
   couponItem__detail: {
     flex: 1,
     padding: 15,
-    justifyContent: "center"
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF"
   },
   couponItem__detail_offertitle: {
     color: "#FF0000",
     fontSize: 24,
-    marginBottom: 10,
-    textAlign: "center"
+    marginBottom: 5
   },
   couponItem__detail_offerdetail: {
     fontSize: 13,
-    color: "#635F62",
-    textAlign: "center"
+    color: "#635F62"
   },
   couponItem__detail_offerexpire: {
-    textAlign: "center",
     fontSize: 10
   },
   couponItem__detail_offernotexpire: {
@@ -229,21 +292,39 @@ const styles = StyleSheet.create({
   couponItem__detail_offerexpired: {
     color: "#FF0000"
   },
+  couponItem__detail_offeruseat: {
+    fontSize: 10,
+    marginTop: 5
+  },
+  couponItem__sep: {
+    width: 14,
+    height: 100,
+    resizeMode: "contain"
+  },
   couponItem__submit: {
     flex: 0,
-    width: 100,
+    width: 80,
     height: 100,
-    backgroundColor: "#FF0000",
+    backgroundColor: "#FF7D7D",
     alignItems: "center",
     justifyContent: "center",
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5
+    paddingRight: 4
   },
   couponItem__submit_text: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#FFFFFF"
+    color: "#FFFFFF",
+    textAlign: "center"
   }
 });
 
-export default CouponScreen;
+const mapStateToProps = state => ({
+  model: state.modalReducer,
+  banner: state.bannerReducer
+});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ openCouponModal }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CouponScreen);

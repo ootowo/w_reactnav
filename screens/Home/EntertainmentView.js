@@ -10,38 +10,14 @@ import {
   Share,
   TouchableHighlight
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import ShareHeader from "../../components/ShareHeader";
 
 class EntertainmentView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: "Entertainment",
     headerBackTitle: null,
     headerTintColor: "#000000",
-    headerRight: (
-      <TouchableHighlight
-        style={{ marginRight: 15 }}
-        onPress={() => {
-          Share.share(
-            {
-              title: "Test Share",
-              message: "This message has a title",
-              url: "https://www.youtube.com/watch?v=IQKbhNIZMO0"
-            },
-            {
-              dialogTitle: "Test Share",
-              excludedActivityTypes: [
-                "com.apple.UIKit.activity.PostToTwitter",
-                "com.apple.uikit.activity.mail"
-              ]
-            }
-          )
-            .then(result => console.log(result))
-            .catch(errorMsg => console.log(errorMsg));
-        }}
-      >
-        <Ionicons name="ios-share-outline" size={25} />
-      </TouchableHighlight>
-    )
+    headerRight: <ShareHeader fontSize={false} />
   });
 
   constructor(props) {

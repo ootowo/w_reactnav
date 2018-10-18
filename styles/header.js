@@ -4,12 +4,13 @@ export default StyleSheet.create({
   headerProfile: {
     justifyContent: "center",
     flexDirection: "row",
-    paddingLeft: 15
+    paddingLeft: 15,
+    paddingBottom: 3
   },
   headerProfile__profileImage: {
     width: 40,
     height: 40,
-    backgroundColor: "#EEEEEE",
+    backgroundColor: "#000000",
     borderRadius: 20,
     flex: 0,
     overflow: "hidden"

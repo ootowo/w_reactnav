@@ -161,12 +161,18 @@ class OfferScreen extends Component {
             data={this.state.data}
             renderItem={({ item }) => (
               <ListItem
+                avatarStyle={{ width: 80, height: 80 }}
+                avatarContainerStyle={{ width: 80, height: 80 }}
                 title={`${item.title}`}
                 titleNumberOfLines={1}
                 subtitle={`${moment(item.date, "DD/MM/YYYY").format(
                   "DD MMM YYYY"
                 )}`}
-                containerStyle={{ borderBottomWidth: 0, marginVertical: 10 }}
+                avatar={{
+                  uri:
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPTv0mzZ9lqXoIaxb3aRM4XQwxXwk-7jbBSo_ENSXTKhxyPEj5"
+                }}
+                containerStyle={{ borderBottomWidth: 0 }}
                 onPress={() => navigate("OfferView")}
               />
             )}

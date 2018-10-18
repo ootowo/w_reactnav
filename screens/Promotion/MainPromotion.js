@@ -52,24 +52,9 @@ class MainPromotionScreen extends Component {
           uri:
             "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
         },
-        price: 2590.0
-      },
-      {
-        id: 1,
-        title: "Carnation SBC",
-        image: {
-          uri: "https://dynamic-cdn-makro.makroclick.com/bIaaxXP42.png"
-        },
-        price: 1230.0
-      },
-      {
-        id: 1,
-        title: "Carnation Unsweeted",
-        image: {
-          uri:
-            "https://image.makewebeasy.net/makeweb/0/JhZ1x9UPT/Products/นมสดคาร์เนชั่น_เอ็กซ์ตร้า_385_กรัม.jpg"
-        },
-        price: 1029.0
+        price: 2590.0,
+        special_price: 1000.0,
+        offer: "Earn more 2 pcs"
       }
     ];
     this.setState({ data: mockup });
@@ -153,9 +138,27 @@ class MainPromotionScreen extends Component {
               <Text numberOfLines={1} style={styles.productItem__title_text}>
                 {item.title}
               </Text>
-              <Text style={styles.productItem__title_price}>
+              {item.special_price ? (
+                <Text style={styles.productItem__title_price}>
+                  {item.special_price} ฿
+                </Text>
+              ) : null}
+              <Text
+                style={
+                  item.special_price
+                    ? styles.productItem__title_price_rem
+                    : styles.productItem__title_price
+                }
+              >
                 {item.price} ฿
               </Text>
+              {item.offer ? (
+                <View style={styles.productItem__title_offer}>
+                  <Text style={styles.productItem__title_offer_text}>
+                    Promotion: {item.offer}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           </View>
         </TouchableOpacity>
@@ -238,8 +241,22 @@ const styles = StyleSheet.create({
   productItem__title_price: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#FF0000",
-    marginTop: 10
+    color: "#FF0000"
+  },
+  productItem__title_price_rem: {
+    textDecorationLine: "line-through",
+    color: "#a4a4a4"
+  },
+  productItem__title_offer: {
+    backgroundColor: "#FF0000",
+    borderRadius: 5,
+    padding: 5,
+    marginTop: 5
+  },
+  productItem__title_offer_text: {
+    fontSize: 11,
+    color: "#FFFFFF",
+    fontWeight: "bold"
   }
 });
 

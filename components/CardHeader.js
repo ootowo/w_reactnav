@@ -1,15 +1,21 @@
 import React, { Component } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { openCardPreviewModal } from "../actions/modalAction";
 
 class CardHeader extends Component {
   render() {
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => this.props.openCardPreviewModal()}
+      >
         <Image
           style={styles.card__image}
           source={require("../assets/makro_card.png")}
         />
-      </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -27,4 +33,12 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CardHeader;
+const mapStateToProps = state => ({
+  modal: state.modalReducer
+});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ openCardPreviewModal }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CardHeader);

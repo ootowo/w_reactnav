@@ -45,6 +45,7 @@ class ProductListScreen extends Component {
             "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
         },
         price: 2590.0,
+        special_price: 1000.0,
         offer: "Earn more 2 pcs"
       },
       {
@@ -53,11 +54,10 @@ class ProductListScreen extends Component {
         image: {
           uri: "https://dynamic-cdn-makro.makroclick.com/bIaaxXP42.png"
         },
-        price: 1230.0,
-        special_price: 1000.0
+        price: 1230.0
       },
       {
-        id: 1,
+        id: 2,
         title: "Carnation Unsweeted",
         image: {
           uri:

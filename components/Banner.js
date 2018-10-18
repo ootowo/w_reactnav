@@ -1,61 +1,128 @@
 import React, { Component } from "react";
-import { View, TouchableOpacity, Image } from "react-native";
-import css from "../styles";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  Dimensions,
+  StyleSheet
+} from "react-native";
+import Swiper from "react-native-swiper";
 
 export class Banner extends Component {
+  async onPressOpenWebSite(address) {
+    if (address) {
+      await WebBrowser.openBrowserAsync(address);
+    }
+  }
+
   render() {
-    return (
-      <View style={[{ width: "100%" }, this.props.style]}>
-        <TouchableOpacity
+    const { style, images, darkmode, mini, urls } = this.props;
+    const { width } = Dimensions.get("window");
+    const bannerHeight = width / (mini ? 4.5 : 2.8);
+
+    if (images) {
+      return (
+        <View
+          onLayout={this.props.onLayout}
           style={[
-            css.banner.banner,
-            this.props.mini ? css.banner.banner_mini : css.banner.banner_normal
+            {
+              flex: 0,
+              width: "100%",
+              height: bannerHeight + 25,
+              paddingBottom: 5
+            },
+            style
           ]}
-          onPress={this.onPressBanner}
         >
-          <Image style={css.banner.banner__image} source={this.props.image} />
-        </TouchableOpacity>
-        <View style={css.banner.slideIndicator}>
-          <View
-            style={[
-              css.banner.slideIndicator__dot,
-              css.banner.slideIndicator__dot_active
-            ]}
-          />
-          <View style={css.banner.slideIndicator__dot} />
-          <View style={css.banner.slideIndicator__dot} />
-          <View style={css.banner.slideIndicator__dot} />
+          <Swiper
+            autoplay={true}
+            autoplayTimeout={5}
+            loop
+            height={bannerHeight}
+            dotStyle={
+              darkmode
+                ? styles.slideIndicator__dot_dark
+                : styles.slideIndicator__dot
+            }
+            activeDotStyle={
+              darkmode
+                ? styles.slideIndicator__dot_dark_active
+                : styles.slideIndicator__dot_active
+            }
+            paginationStyle={{
+              bottom: 0
+            }}
+          >
+            {images.map((image, key) => (
+              <TouchableOpacity
+                key={key}
+                style={[styles.banner, { height: bannerHeight }]}
+                onPress={() => this.onPressOpenWebSite(urls[key])}
+              >
+                <Image
+                  style={[styles.banner__image, { height: bannerHeight }]}
+                  source={image}
+                />
+              </TouchableOpacity>
+            ))}
+          </Swiper>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return null;
+    }
   }
 }
 
-export class BannerDark extends Component {
-  render() {
-    return (
-      <View style={[{ width: "100%" }, this.props.style]}>
-        <TouchableOpacity
-          style={[
-            css.banner.banner,
-            this.props.mini ? css.banner.banner_mini : css.banner.banner_normal
-          ]}
-          onPress={this.onPressBanner}
-        >
-          <Image style={css.banner.banner__image} source={this.props.image} />
-        </TouchableOpacity>
-        <View style={css.banner.slideIndicator}>
-          <View
-            style={[
-              css.banner.slideIndicator__dot_dark,
-              css.banner.slideIndicator__dot_dark_active
-            ]}
-          />
-          <View style={css.banner.slideIndicator__dot_dark} />
-          <View style={css.banner.slideIndicator__dot_dark} />
-          <View style={css.banner.slideIndicator__dot_dark} />
-        </View>
-      </View>
-    );
+const styles = StyleSheet.create({
+  slideIndicator: {
+    width: "100%",
+    paddingVertical: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row"
+  },
+  slideIndicator__dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#FFFFFF",
+    opacity: 0.4,
+    marginLeft: 5
+  },
+  slideIndicator__dot_active: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#FFFFFF",
+    opacity: 1,
+    marginLeft: 5
+  },
+  slideIndicator__dot_dark: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#000000",
+    opacity: 0.2,
+    marginLeft: 5
+  },
+  slideIndicator__dot_dark_active: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#000000",
+    opacity: 0.7,
+    marginLeft: 5
+  },
+  banner: {
+    flex: 0,
+    width: "100%",
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF"
+  },
+  banner__image: {
+    width: "100%",
+    resizeMode: "cover"
   }
-}
+});

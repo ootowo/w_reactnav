@@ -1,22 +1,31 @@
-import React from "react";
-import { Platform } from "react-native";
 import { createStackNavigator } from "react-navigation";
 
 import LoginScreen from "../screens/Login";
-import SelectBranchScreen from "../screens/SelectBranch";
+import RegisterScreen from "../screens/Register";
+import RegisterDoneScreen from "../screens/RegisterDone";
+import FacebookDoneScreen from "../screens/FacebookDone";
 import MainStack from "./MainStack";
 
-export default createStackNavigator(
-    {
-        Login: LoginScreen,
-        SelectBranch: SelectBranchScreen,
-        Main: MainStack
-    },
-    {
-        headerMode: "none",
-        cardStyle: {
-            paddingTop: Platform.OS == "ios" ? 0 : StatusBar.currentHeight,
-            backgroundColor: "#FFFFFF"
-        }
-    }
+const generalConfig = {
+  headerMode: "none",
+  cardStyle: {
+    backgroundColor: "#FFFFFF"
+  }
+};
+export const GuestStack = createStackNavigator(
+  {
+    Login: LoginScreen,
+    FacebookDone: FacebookDoneScreen,
+    Register: RegisterScreen,
+    RegisterDone: RegisterDoneScreen,
+    Main: MainStack
+  },
+  generalConfig
+);
+
+export const LoggedInStack = createStackNavigator(
+  {
+    Main: MainStack
+  },
+  generalConfig
 );

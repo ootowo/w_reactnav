@@ -7,27 +7,16 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from "react-native";
+import PDFReader from "rn-pdf-reader-js";
 
 class BookViewer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true,
-      images: [
-        { source: { uri: "http://i.imgur.com/gSmWCJF.jpg" } },
-        { source: { uri: "http://i.imgur.com/XP2BE7q.jpg" } },
-        { source: { uri: "http://i.imgur.com/5nltiUd.jpg" } },
-        { source: { uri: "http://i.imgur.com/6vOahbP.jpg" } },
-        { source: { uri: "http://i.imgur.com/kj5VXtG.jpg" } },
-        { source: { uri: "http://i.imgur.com/BN8RVGa.jpg" } },
-        { source: { uri: "http://i.imgur.com/jXbhTbv.jpg" } },
-        { source: { uri: "http://i.imgur.com/30s12Qj.jpg" } },
-        { source: { uri: "http://i.imgur.com/4A1Q49y.jpg" } },
-        { source: { uri: "http://i.imgur.com/JfVDTF9.jpg" } },
-        { source: { uri: "http://i.imgur.com/Vv4bmwR.jpg" } }
-      ]
+      visible: true
     };
 
     this.hideSpinner = this.hideSpinner.bind(this);
@@ -38,27 +27,55 @@ class BookViewer extends Component {
   }
 
   render() {
+    const { visible } = this.state;
     return (
       <View style={styles.container}>
-        <WebView
-          onLoad={() => this.hideSpinner()}
-          bounces={false}
-          scrollEnabled={false}
-          source={{
-            uri:
-              "https://images.samsung.com/is/content/samsung/p5/th/microsite/2018/allnewarrival2018/pdf/makro.pdf"
-          }}
-        />{" "}
-        {this.state.visible && (
-          <ActivityIndicator
-            style={{
-              position: "absolute",
-              top: "100%" / 2,
-              left: "100%" / 2
+        {Platform.OS == "ios" ? (
+          <WebView
+            style={{ flex: 1, width: "100%", height: "100%" }}
+            onLoad={() => this.hideSpinner()}
+            bounces={false}
+            scrollEnabled={false}
+            source={{
+              uri:
+                "https://firebasestorage.googleapis.com/v0/b/smatch-3fe15.appspot.com/o/MakroMail.PDF?alt=media&token=4bc34bf5-b197-4558-8d38-b925ef698a41"
             }}
-            size="large"
           />
-        )}{" "}
+        ) : (
+          <View
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: -25
+            }}
+          >
+            <PDFReader
+              source={{
+                uri:
+                  "https://firebasestorage.googleapis.com/v0/b/smatch-3fe15.appspot.com/o/MakroMail.PDF?alt=media&token=4bc34bf5-b197-4558-8d38-b925ef698a41"
+              }}
+            />
+          </View>
+        )}
+
+        {Platform.OS == "ios" && visible ? (
+          <View
+            style={{
+              flex: 1,
+              position: "absolute",
+              top: 0,
+              left: 0,
+              backgroundColor: "#FFFFFF",
+              width: "100%",
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
       </View>
     );
   }
