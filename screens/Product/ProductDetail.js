@@ -1,12 +1,6 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StyleSheet
-} from "react-native";
+
+import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 class ProductDetailScreen extends Component {
@@ -36,33 +30,19 @@ class ProductDetailScreen extends Component {
           </View>
           <View style={styles.productDetail__title}>
             <View style={styles.productDetail__title_head}>
-              <Text style={styles.productDetail__title_head_text}>
-                Otto Heavy Duty Blender
-              </Text>
-              <TouchableOpacity
-                style={styles.productDetail__title_head_favbutton}
-              >
+              <Text style={styles.productDetail__title_head_text}>Otto Heavy Duty Blender</Text>
+              <TouchableOpacity style={styles.productDetail__title_head_favbutton}>
                 {fav ? (
                   <Ionicons name="ios-heart" size={23} color="#FF0000" />
                 ) : (
-                  <Ionicons
-                    name="ios-heart-outline"
-                    size={23}
-                    color="#FF0000"
-                  />
+                  <Ionicons name="ios-heart-outline" size={23} color="#FF0000" />
                 )}
               </TouchableOpacity>
             </View>
-            <Text style={styles.productDetail__title_oldprice}>
-              Price 2590.00 Baht
-            </Text>
-            <Text style={styles.productDetail__title_newprice}>
-              Special Price 1000.00 Baht
-            </Text>
+            <Text style={styles.productDetail__title_oldprice}>Price 2590.00 Baht</Text>
+            <Text style={styles.productDetail__title_newprice}>Special Price 1000.00 Baht</Text>
             <View style={styles.productDetail__promo}>
-              <Text style={styles.productDetail__promo_text}>
-                Promotion: Earn more 2 pcs
-              </Text>
+              <Text style={styles.productDetail__promo_text}>Promotion: Earn more 2 pcs</Text>
             </View>
           </View>
           <View style={styles.productDetail__details}>
@@ -72,9 +52,7 @@ class ProductDetailScreen extends Component {
             </View>
             <View style={styles.productDetail__details_row}>
               <Text style={styles.productDetail__details_title}>Details</Text>
-              <Text style={styles.productDetail__details_text}>
-                Heavy-Duty Blender
-              </Text>
+              <Text style={styles.productDetail__details_text}>Heavy-Duty Blender</Text>
             </View>
             <View style={styles.productDetail__details_row}>
               <Text style={styles.productDetail__details_title}>Size</Text>

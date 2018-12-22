@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   Image,
@@ -139,9 +140,7 @@ class MainPromotionScreen extends Component {
                 {item.title}
               </Text>
               {item.special_price ? (
-                <Text style={styles.productItem__title_price}>
-                  {item.special_price} ฿
-                </Text>
+                <Text style={styles.productItem__title_price}>{item.special_price} ฿</Text>
               ) : null}
               <Text
                 style={
@@ -154,9 +153,7 @@ class MainPromotionScreen extends Component {
               </Text>
               {item.offer ? (
                 <View style={styles.productItem__title_offer}>
-                  <Text style={styles.productItem__title_offer_text}>
-                    Promotion: {item.offer}
-                  </Text>
+                  <Text style={styles.productItem__title_offer_text}>Promotion: {item.offer}</Text>
                 </View>
               ) : null}
             </View>
@@ -172,14 +169,8 @@ class MainPromotionScreen extends Component {
         <View style={styles.container}>
           <View style={css.search.searchBar}>
             <View style={css.search.searchBar__container}>
-              <Icon
-                name="ios-search"
-                style={{ fontSize: 20, color: "#363636" }}
-              />
-              <TextInput
-                placeholder="Search..."
-                style={css.search.searchBar__text}
-              />
+              <Icon name="ios-search" style={{ fontSize: 20, color: "#363636" }} />
+              <TextInput placeholder="Search..." style={css.search.searchBar__text} />
             </View>
           </View>
           <View style={styles.productList}>

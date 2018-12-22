@@ -1,6 +1,8 @@
 import React, { Component } from "react";
+
 import {
   View,
+  ScrollView,
   Text,
   TouchableOpacity,
   TextInput,
@@ -18,33 +20,49 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { BarCodeScanner, Permissions, Facebook } from "expo";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { _FACEBOOK_APP_ID } from "../utils/config";
+import { FormattedMessage } from "react-intl";
+import Flag from "react-native-flags";
 
-import { makeConfig } from "../actions/settingAction";
+import { _FACEBOOK_APP_ID } from "../utils/config";
+import { isEmpty } from "../utils/validate";
+
+import { makeConfigAsync } from "../actions/settingAction";
 import { authenLogin, authenFacebookLogin } from "../actions/userAction";
 
+const delay = time =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), time);
+  });
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       hasCameraPermission: false,
       showScannerModal: false,
-      memberCode: ""
+      memberCode: "",
+      keyboardIsShown: false,
+      read: null
     };
+
     this._requestCameraPermission = this._requestCameraPermission.bind(this);
     this.handleBarcodeReaded = this.handleBarcodeReaded.bind(this);
     this.changeLang = this.changeLang.bind(this);
     this.handleFacebookLogin = this.handleFacebookLogin.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.handleChangeLang = this.handleChangeLang.bind(this);
+
+    this._keyboardDidShow = this._keyboardDidShow.bind(this);
+    this._keyboardDidHide = this._keyboardDidHide.bind(this);
+
+    this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
   }
 
-  componentDidMount() {
-    this._requestCameraPermission();
-  }
+  componentWillMount() {}
 
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   changeLang(value) {
@@ -58,40 +76,98 @@ class LoginScreen extends Component {
     });
   };
 
+  _keyboardDidShow() {
+    this.setState({ keyboardIsShown: true });
+  }
+
+  _keyboardDidHide() {
+    this.setState({ keyboardIsShown: false });
+  }
+
   handleFacebookLogin = async () => {
-    const { type, token } = await Facebook.logInWithReadPermissionsAsync(
-      _FACEBOOK_APP_ID,
-      {
-        permissions: ["email", "public_profile"]
-      }
-    );
+    const { type, token } = await Facebook.logInWithReadPermissionsAsync(_FACEBOOK_APP_ID, {
+      permissions: ["email", "public_profile"]
+    });
     if (type === "success") {
       const response = await fetch(
         `https://graph.facebook.com/me?fields=id,first_name,last_name,picture,email&access_token=${token}`
       );
       const fbData = await response.json();
-      // this.props.authenFacebookLogin({ accessToken: token });
-      // this.props.navigation.navigate("FacebookDone");
+
+      new Promise((resolve, reject) => {
+        this.props.authenFacebookLogin({ accessToken: token, ...fbData }, resolve, reject);
+      })
+        .then(() => {
+          this.props.navigation.navigate("FacebookDone");
+        })
+        .catch(error => {
+          console.log(error.message);
+          Alert.alert("Makro", "Error while login, please try again");
+        });
     }
   };
 
   handleLogin() {
-    // this.props.authenLogin({ memberCode: this.state.memberCode });
-    Alert.alert("Error", "Member code not found");
-    this.props.navigation.navigate("Main");
+    if (!isEmpty(this.state.memberCode)) {
+      new Promise((resolve, reject) => {
+        this.props.authenLogin(this.state.memberCode, resolve, reject);
+      })
+        .then(res => {
+          this.props.navigation.navigate("Main");
+        })
+        .catch(error => {
+          console.log(error);
+          Alert.alert("Error", error);
+        });
+    }
   }
 
-  handleBarcodeReaded({ type, data }) {
-    // this.props.authenLogin({ memberCode: this.state.memberCode });
-    console.log(JSON.stringify(data));
+  handleBarcodeReaded = async ({ type, data }) => {
+    await delay(500);
+    if (this.state.read == data) return;
+    this.setState({ read: data, memberCode: data }, () => {
+      this.handleLogin();
+      this.setState({ read: null, showScannerModal: false });
+    });
+  };
+
+  handleChangeLang() {
+    const oldSetting = this.props.setting.params;
+    new Promise((resolve, reject) => {
+      switch (this.props.setting.params.language) {
+        case "en":
+          this.props.makeConfigAsync(
+            {
+              key: "language",
+              value: "ka",
+              oldSetting
+            },
+            resolve,
+            reject
+          );
+          break;
+        case "ka":
+          this.props.makeConfigAsync(
+            {
+              key: "language",
+              value: "en",
+              oldSetting
+            },
+            resolve,
+            reject
+          );
+          break;
+      }
+    });
   }
 
   render() {
     const { navigate } = this.props.navigation;
-    const { user } = this.props;
+    const { user, setting } = this.props;
+
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
           {user.loading ? (
             <View
               style={{
@@ -110,7 +186,19 @@ class LoginScreen extends Component {
             </View>
           ) : (
             <View style={{ flex: 1 }}>
-              <View style={styles.wrapper}>
+              <ScrollView style={styles.wrapper} keyboardShouldPersistTaps="always">
+                <View
+                  style={{
+                    flex: 0,
+                    width: "100%",
+                    alignItems: "flex-end",
+                    justifyContent: "flex-end"
+                  }}
+                >
+                  <TouchableOpacity onPress={this.handleChangeLang}>
+                    <Flag code={setting.params.language == "en" ? "KH" : "US"} size={32} />
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.logo}>
                   <Image
                     source={require("../assets/makro_cam_logo.png")}
@@ -119,11 +207,14 @@ class LoginScreen extends Component {
                 </View>
                 <View style={styles.login__form}>
                   <Text style={styles.login__message}>
-                    Makro Member, Please Scan Barcode for Login
+                    <FormattedMessage id="login.greeting" />
                   </Text>
                   <TouchableOpacity
                     style={styles.coupon__scanner_button}
-                    onPress={() => this.setState({ showScannerModal: true })}
+                    onPress={() => {
+                      this._requestCameraPermission();
+                      this.setState({ showScannerModal: true });
+                    }}
                   >
                     <MaterialCommunityIcons
                       style={styles.coupon__scanner_button_icon}
@@ -132,53 +223,57 @@ class LoginScreen extends Component {
                       color="#FFFFFF"
                     />
                     <Text style={styles.coupon__scanner_button_text}>
-                      Barcode Scan
+                      <FormattedMessage id="login.scanbarcode" />
                     </Text>
                   </TouchableOpacity>
                   <View style={styles.form__seperator}>
                     <View style={styles.form__seperator_line} />
                     <Text style={styles.form__seperator_text}>
-                      Or enter member id
+                      <FormattedMessage id="login.membernumber" />
                     </Text>
                   </View>
-                  <TextInput
-                    style={styles.cardid__field}
-                    placeholder="Member Card ID"
-                    underlineColorAndroid="transparent"
-                    value={this.state.memberCode}
-                    name="memberCode"
-                    onChange={this.onChange}
-                  />
-                  <TouchableOpacity
-                    style={styles.coupon__form_submit}
-                    onPress={() => {
-                      navigate("Main");
-                    }}
-                  >
-                    <Text style={styles.coupon__form_submit_text}>Login</Text>
+                  <FormattedMessage id="login.membernumber.field">
+                    {msg => (
+                      <TextInput
+                        style={styles.cardid__field}
+                        placeholder={msg}
+                        underlineColorAndroid="transparent"
+                        value={this.state.memberCode}
+                        name="memberCode"
+                        onChangeText={e => this.setState({ memberCode: e })}
+                      />
+                    )}
+                  </FormattedMessage>
+                  <TouchableOpacity style={styles.coupon__form_submit} onPress={this.handleLogin}>
+                    <Text style={styles.coupon__form_submit_text}>
+                      <FormattedMessage id="login.membernumber.submit" />
+                    </Text>
                   </TouchableOpacity>
                 </View>
-              </View>
-              <View style={styles.footer}>
-                {/* <Text style={styles.footer__message}>
+              </ScrollView>
+              {!this.state.keyboardIsShown && (
+                <View style={styles.footer}>
+                  {/* <Text style={styles.footer__message}>
               For your highest benefits such as discounts and privileges, please
               register an account.
             </Text> */}
-                <TouchableOpacity
-                  style={styles.facebook__login_button}
-                  onPress={() => navigate("FacebookDone")}
-                >
-                  <MaterialCommunityIcons
-                    style={styles.facebook__login_button_icon}
-                    name="facebook-box"
-                    size={20}
-                    color="#FFFFFF"
-                  />
-                  <Text style={styles.facebook__login_button_text}>
-                    Login with Facebook
-                  </Text>
-                </TouchableOpacity>
-                {/* <TouchableOpacity
+
+                  <TouchableOpacity
+                    style={styles.facebook__login_button}
+                    onPress={this.handleFacebookLogin}
+                  >
+                    <MaterialCommunityIcons
+                      style={styles.facebook__login_button_icon}
+                      name="facebook-box"
+                      size={20}
+                      color="#FFFFFF"
+                    />
+                    <Text style={styles.facebook__login_button_text}>
+                      <FormattedMessage id="login.facebook" />
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* <TouchableOpacity
                   style={[styles.coupon__form_submit, { marginTop: 10 }]}
                   onPress={() => {
                     navigate("Register");
@@ -186,7 +281,8 @@ class LoginScreen extends Component {
                 >
                   <Text style={styles.coupon__form_submit_text}>Register</Text>
                 </TouchableOpacity> */}
-              </View>
+                </View>
+              )}
             </View>
           )}
           <Modal
@@ -198,10 +294,7 @@ class LoginScreen extends Component {
               style={{ flex: 1 }}
               type={BarCodeScanner.Constants.Type.back}
               onBarCodeScanned={this.handleBarcodeReaded}
-              barCodeTypes={[
-                BarCodeScanner.Constants.BarCodeType.qr,
-                BarCodeScanner.Constants.BarCodeType.pdf417
-              ]}
+              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.ean13]}
             />
             <TouchableOpacity
               style={{
@@ -220,11 +313,11 @@ class LoginScreen extends Component {
                   color: "#FFFFFF"
                 }}
               >
-                Cancel
+                <FormattedMessage id="close" />
               </Text>
             </TouchableOpacity>
           </Modal>
-        </SafeAreaView>
+        </View>
       </TouchableWithoutFeedback>
     );
   }
@@ -240,12 +333,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     margin: 30,
-    flexDirection: "column",
-    alignItems: "center"
+    flexDirection: "column"
+    // alignItems: "center"
   },
   logo: {
     width: 200,
-    height: 90
+    height: 90,
+    alignSelf: "center"
   },
   logo__image: {
     width: "100%",
@@ -351,10 +445,7 @@ const mapStateToProps = state => ({
   user: state.userReducer
 });
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    { makeConfig, authenLogin, authenFacebookLogin },
-    dispatch
-  );
+  bindActionCreators({ makeConfigAsync, authenLogin, authenFacebookLogin }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

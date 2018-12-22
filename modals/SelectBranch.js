@@ -1,60 +1,92 @@
-import React, { Component } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { Component } from "react";
 import RNPickerSelect from "react-native-picker-select";
 
 import { closeSelectBranchModal } from "../actions/modalAction";
+import { makeConfigAsync } from "../actions/settingAction";
+import branches from "../utils/branches";
 
 class SelectBranchModal extends Component {
   constructor(props) {
     super(props);
     this.inputRefs = {};
     this.state = {
-      selectedSector: undefined,
-      sectors: [
-        { label: "Bangkok", value: "bangkok" },
-        { label: "Central", value: "central" },
-        { label: "North", value: "north" },
-        { label: "South", value: "south" },
-        { label: "North East", value: "north-east" }
-      ],
+      loading: false,
       selectedBranch: undefined,
-      branches: [
-        { label: "Bangkok", value: "bangkok" },
-        { label: "Central", value: "central" },
-        { label: "North", value: "north" },
-        { label: "South", value: "south" },
-        { label: "North East", value: "north-east" }
-      ]
+      branches: []
     };
+    this.submitBranch = this.submitBranch.bind(this);
   }
+
+  componentDidMount() {
+    const lang = this.props.setting.params.language;
+    const branchesDDL = branches[lang].map(branch => {
+      return { label: branch.name, value: branch.id };
+    });
+    this.setState({ branches: branchesDDL });
+  }
+
+  submitBranch() {
+    if (!this.state.loading) {
+      this.setState({ loading: true });
+      if (this.state.selectedBranch != undefined) {
+        new Promise((resolve, reject) => {
+          this.props.makeConfigAsync(
+            {
+              key: "branch",
+              value: this.state.selectedBranch,
+              oldSetting: this.props.setting.params
+            },
+            resolve,
+            reject
+          );
+        }).then(() => {
+          this.setState({ loading: false });
+          this.props.closeSelectBranchModal();
+        });
+      }
+    }
+  }
+
   render() {
+    const { loading } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.wrapper}>
           <View style={styles.body}>
-            <Text style={styles.title}>Please Choose Branch</Text>
+            <Text style={styles.title}>
+              <FormattedMessage id="selectbranch" />
+            </Text>
             <View style={{ width: "100%", marginTop: 20 }}>
-              <RNPickerSelect
-                style={{ ...pickerStyles }}
-                placeholder={{ label: "Branch", value: null }}
-                items={this.state.branches}
-                onValueChange={value => {
-                  this.setState({ selectedBranch: value });
-                }}
-                value={this.state.selectedBranch}
-                ref={el => {
-                  this.inputRefs.branchPicker = el;
-                }}
-              />
+              <FormattedMessage id="branch">
+                {msg => (
+                  <RNPickerSelect
+                    style={{ ...pickerStyles }}
+                    placeholder={{ label: msg, value: null }}
+                    items={this.state.branches}
+                    onValueChange={value => {
+                      this.setState({ selectedBranch: value });
+                    }}
+                    value={this.state.selectedBranch}
+                    ref={el => {
+                      this.inputRefs.branchPicker = el;
+                    }}
+                  />
+                )}
+              </FormattedMessage>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => this.props.closeSelectBranchModal()}
-          >
-            <Text style={styles.submitButton__text}>Choose Branch</Text>
+          <TouchableOpacity style={styles.submitButton} onPress={this.submitBranch}>
+            <Text style={styles.submitButton__text}>
+              {loading ? (
+                <FormattedMessage id="loading" />
+              ) : (
+                <FormattedMessage id="selectbranch.submit" />
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -127,10 +159,11 @@ const pickerStyles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  modal: state.modalReducer
+  modal: state.modalReducer,
+  setting: state.settingReducer
 });
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ closeSelectBranchModal }, dispatch);
+  bindActionCreators({ closeSelectBranchModal, makeConfigAsync }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

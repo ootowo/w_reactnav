@@ -1,4 +1,7 @@
+import PropTypes from "prop-types";
 import React, { Component } from "react";
+import { _API_ENDPOINT } from "../utils/config";
+
 import {
   View,
   ScrollView,
@@ -10,7 +13,8 @@ import {
   ActivityIndicator,
   Platform
 } from "react-native";
-import PDFReader from "rn-pdf-reader-js";
+// import PDFReader from "rn-pdf-reader-js";
+import { isEmpty } from "../utils/validate";
 
 class BookViewer extends Component {
   constructor(props) {
@@ -28,56 +32,44 @@ class BookViewer extends Component {
 
   render() {
     const { visible } = this.state;
-    return (
-      <View style={styles.container}>
-        {Platform.OS == "ios" ? (
+    const { file_id, type } = this.props;
+
+    if (isEmpty(file_id)) {
+      return (
+        <View>
+          <Text>No Pdf File</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          {visible && (
+            <View
+              style={{
+                flex: 1,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                backgroundColor: "#FFFFFF",
+                width: "100%",
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+            >
+              <ActivityIndicator size="large" />
+            </View>
+          )}
           <WebView
             style={{ flex: 1, width: "100%", height: "100%" }}
             onLoad={() => this.hideSpinner()}
             bounces={false}
             scrollEnabled={false}
-            source={{
-              uri:
-                "https://firebasestorage.googleapis.com/v0/b/smatch-3fe15.appspot.com/o/MakroMail.PDF?alt=media&token=4bc34bf5-b197-4558-8d38-b925ef698a41"
-            }}
+            source={{ uri: `${_API_ENDPOINT}${type}/viewPdf?fileId=${file_id}` }}
           />
-        ) : (
-          <View
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              top: -25
-            }}
-          >
-            <PDFReader
-              source={{
-                uri:
-                  "https://firebasestorage.googleapis.com/v0/b/smatch-3fe15.appspot.com/o/MakroMail.PDF?alt=media&token=4bc34bf5-b197-4558-8d38-b925ef698a41"
-              }}
-            />
-          </View>
-        )}
-
-        {Platform.OS == "ios" && visible ? (
-          <View
-            style={{
-              flex: 1,
-              position: "absolute",
-              top: 0,
-              left: 0,
-              backgroundColor: "#FFFFFF",
-              width: "100%",
-              height: "100%",
-              alignItems: "center",
-              justifyContent: "center"
-            }}
-          >
-            <ActivityIndicator size="large" />
-          </View>
-        ) : null}
-      </View>
-    );
+        </View>
+      );
+    }
   }
 }
 
@@ -90,4 +82,7 @@ const styles = StyleSheet.create({
   }
 });
 
+BookViewer.propTypes = {
+  uri: PropTypes.string
+};
 export default BookViewer;

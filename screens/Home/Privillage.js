@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   Text,
@@ -6,19 +7,25 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet,
+  Alert
 } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Container, Header, Tab, Tabs, ScrollableTab } from "native-base";
 import { Entypo } from "@expo/vector-icons";
+import { FormattedMessage } from "react-intl";
+import moment from "moment";
+import HeaderTitle from "../../components/HeaderTitle";
+import { isEmpty } from "../../utils/validate";
 
 import { openRewardModal } from "../../actions/modalAction";
 import { fetchRewardData } from "../../apis/rewardApi";
+import { setCountingReward } from "../../actions/countingAction";
 
 class PrivillageScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Member Rewards",
+    headerTitle: <HeaderTitle id="reward" />,
     headerTintColor: "#000000",
     headerBackTitle: null
   });
@@ -33,65 +40,71 @@ class PrivillageScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.setCountingReward({
+      ...this.props.counting.internal,
+      reward: this.props.counting.external.reward
+    });
+
     this.setState({ loading: true });
-    fetchRewardData(1)
+    fetchRewardData(this.props.user.user.member_code)
       .then(res => {
-        this.setState({ loading: false });
         if (!isEmpty(res.data)) {
           this.setState({
-            availableReward: res.data.available,
-            usedReward: res.data.used
+            availableReward: isEmpty(res.data.available) ? [] : res.data.available,
+            usedReward: isEmpty(res.data.used) ? [] : res.data.used
           });
         } else {
-          Alert.alert(
-            "Makro",
-            "These rewards are provided for our members only."
-          );
+          // if (this.props.setting.params.language == "en") {
+          //   Alert.alert("Makro", "These rewards are provided for our members only.");
+          // } else {
+          //   Alert.alert("Makro", "ផ្តល់ជូនសំរាប់សមាជិកតែប៉ុណ្ណោះ");
+          // }
         }
+        this.setState({ loading: false });
       })
       .catch(error => {
         this.setState({ loading: false });
-        Alert.alert("Error while loading", JSON.stringify(error));
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
   renderRewardItem = (item, key) => {
+    const { language } = this.props.setting.params;
+    const expireDate = moment(item.expireDate, "DD MMM YYYY");
     return (
       <View
         key={key}
-        style={[
-          styles.rewardItem,
-          item.expired ? styles.rewardItem_expired : null
-        ]}
+        style={[styles.rewardItem, expireDate < Date.now() ? styles.rewardItem_expired : null]}
       >
-        {item.image ? (
+        {item.imagePath ? (
           <View style={styles.rewardItem__thumbnail}>
-            <Image
-              style={styles.rewardItem__thumbnail_image}
-              source={item.image}
-            />
+            <Image style={styles.rewardItem__thumbnail_image} source={{ uri: item.imagePath }} />
           </View>
         ) : null}
         <View style={styles.rewardItem__detail}>
-          {item.isPOS ? (
-            <Text style={styles.rewardItem__detail_offertitle}>
-              <Entypo name="star" size={14} color="#F5A623" /> {item.title}
-            </Text>
-          ) : (
-            <Text style={styles.rewardItem__detail_offertitle}>
-              {item.title}
-            </Text>
-          )}
+          {/* <Text style={styles.rewardItem__detail_offertitle}>
+              <Entypo name="star" size={14} color="#F5A623" /> {item.name}
+            </Text> */}
+          <Text numberOfLines={1} style={styles.rewardItem__detail_offertitle}>
+            {language == "en" ? item.name : item.name_cambodia}
+          </Text>
 
           <Text
             style={[
               styles.rewardItem__detail_offerexpire,
-              item.expired
+              expireDate < Date.now()
                 ? styles.rewardItem__detail_offerexpired
                 : styles.rewardItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : item.expire}
+            {expireDate < Date.now() ? (
+              <FormattedMessage id="reward.expired" />
+            ) : (
+              <Text>
+                <FormattedMessage id="reward.expire" /> {expireDate.format("DD/MM/YYYY")}
+              </Text>
+            )}
           </Text>
         </View>
         <Image
@@ -102,114 +115,100 @@ class PrivillageScreen extends Component {
           style={styles.rewardItem__submit}
           onPress={() => this.props.openRewardModal(item)}
         >
-          <Text style={styles.rewardItem__submit_text}>Use Now</Text>
+          <Text style={styles.rewardItem__submit_text}>
+            <FormattedMessage id="reward.use" />
+          </Text>
         </TouchableOpacity>
       </View>
     );
   };
 
   renderUsedRewardItem = (item, key) => {
+    const { language } = this.props.setting.params;
+    // const expireDate = moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S");
+    const usedDate = item.usedDate ? moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S") : null;
     return (
-      <View
-        key={key}
-        style={[
-          styles.rewardItem,
-          item.expired ? styles.rewardItem_expired : null
-        ]}
-      >
-        {item.image ? (
+      <View key={key} style={[styles.rewardItem, !usedDate ? styles.rewardItem_expired : null]}>
+        {item.imagePath ? (
           <View style={styles.rewardItem__thumbnail}>
-            <Image
-              style={styles.rewardItem__thumbnail_image}
-              source={item.image}
-            />
+            <Image style={styles.rewardItem__thumbnail_image} source={{ uri: item.imagePath }} />
           </View>
         ) : null}
         <View style={styles.rewardItem__detail}>
-          {item.isPOS ? (
-            <Text style={styles.rewardItem__detail_offertitle}>
-              <Entypo name="star" size={14} color="#F5A623" /> {item.title}
-            </Text>
-          ) : (
-            <Text style={styles.rewardItem__detail_offertitle}>
-              {item.title}
-            </Text>
-          )}
+          {/* <Text style={styles.rewardItem__detail_offertitle}>
+              <Entypo name="star" size={14} color="#F5A623" /> {item.name}
+            </Text> */}
+          <Text numberOfLines={1} style={styles.rewardItem__detail_offertitle}>
+            {language == "en" ? item.name : item.name_cambodia}
+          </Text>
 
-          <Text
+          {/* <Text
             style={[
               styles.rewardItem__detail_offerexpire,
-              item.expired
+              expireDate < Date.now()
                 ? styles.rewardItem__detail_offerexpired
                 : styles.rewardItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : item.expire}
-          </Text>
+            {expireDate < Date.now() ? (
+              <FormattedMessage id="reward.expired" />
+            ) : (
+              <Text>
+                <FormattedMessage id="reward.expire" /> {expireDate.format("D MMMM YYYY")}
+              </Text>
+            )}
+          </Text> */}
+          {usedDate ? (
+            <Text style={styles.rewardItem__detail_offeruseat}>
+              <FormattedMessage id="reward.used.at" /> {usedDate.format("DD/MM/YYYY HH:mm:ss")}
+            </Text>
+          ) : (
+            <Text
+              style={[
+                styles.rewardItem__detail_offerexpire,
+                styles.rewardItem__detail_offerexpired
+              ]}
+            >
+              <FormattedMessage id="reward.expired" />
+            </Text>
+          )}
         </View>
+        <Image
+          style={styles.couponItem__sep}
+          source={require("../../assets/coupon_sep/coupon_sep.png")}
+        />
+        <TouchableOpacity
+          style={styles.rewardItem__submit}
+          onPress={() => this.props.openRewardModal(item)}
+        >
+          <Text style={styles.rewardItem__submit_text}>View</Text>
+        </TouchableOpacity>
       </View>
     );
   };
 
   render() {
-    const mockup = [
-      {
-        id: 0,
-        title: "รับเครื่องดื่มฟรีเมื่อเข้าใช้บริการ Lounge",
-        image: {
-          uri:
-            "https://www.aa.com/content/images/travel-info/clubs/lounges-flagship-lounge-filler.jpg"
-        },
-        isPOS: true,
-        expire: "Expire 30 Sep 2018"
-      },
-      {
-        id: 1,
-        title: "รับกาแฟฟรี 1 แก้ว เมื่อซื้อสินค้าครบ 500 บาท",
-        image: {
-          uri:
-            "https://www.pullmanbangkokkingpower.com/wp-content/uploads/sites/53/2016/10/Bangkok-City-Hotel-Executive-Lounge.jpg"
-        },
-        expire: "Expire 30 Sep 2018"
-      }
-    ];
-
-    const mockup_used = [
-      {
-        id: 0,
-        title: "รับเครื่องดื่มฟรีเมื่อเข้าใช้บริการ Lounge",
-        image: {
-          uri:
-            "https://www.aa.com/content/images/travel-info/clubs/lounges-flagship-lounge-filler.jpg"
-        },
-        isPOS: true,
-        expire: "Expire 30 Sep 2018"
-      },
-      {
-        id: 1,
-        title: "รับกาแฟฟรี 1 แก้ว เมื่อซื้อสินค้าครบ 500 บาท",
-        image: {
-          uri:
-            "https://www.pullmanbangkokkingpower.com/wp-content/uploads/sites/53/2016/10/Bangkok-City-Hotel-Executive-Lounge.jpg"
-        },
-        expire: "Expire 30 Sep 2018",
-        expired: true
-      }
-    ];
-    const { loading } = this.state;
+    const { availableReward, usedReward, loading } = this.state;
 
     return (
       <Container>
         <Tabs
           tabBarUnderlineStyle={{ backgroundColor: "#FF0000" }}
           renderTabBar={() => (
-            <ScrollableTab
-              style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }}
-            />
+            <ScrollableTab style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }} />
           )}
         >
           <Tab
-            heading="Available"
+            heading={
+              <Text
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#FF0000"
+                }}
+              >
+                <FormattedMessage id="reward.available" />
+              </Text>
+            }
             tabStyle={{ backgroundColor: "#f2f2f2" }}
             activeTabStyle={{ backgroundColor: "#f2f2f2" }}
             textStyle={{ color: "#FF0000" }}
@@ -234,13 +233,22 @@ class PrivillageScreen extends Component {
                 </View>
               ) : (
                 <ScrollView style={styles.rewardList}>
-                  {mockup.map(this.renderRewardItem)}
+                  {availableReward && availableReward.map(this.renderRewardItem)}
                 </ScrollView>
               )}
             </View>
           </Tab>
           <Tab
-            heading="History"
+            heading={
+              <Text
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#FF0000"
+                }}
+              >
+                <FormattedMessage id="reward.history" />
+              </Text>
+            }
             tabStyle={{ backgroundColor: "#f2f2f2" }}
             activeTabStyle={{ backgroundColor: "#f2f2f2" }}
             textStyle={{ color: "#FF0000" }}
@@ -248,7 +256,7 @@ class PrivillageScreen extends Component {
           >
             <View style={styles.container}>
               <ScrollView style={styles.rewardList}>
-                {mockup_used.map(this.renderUsedRewardItem)}
+                {usedReward && usedReward.map(this.renderUsedRewardItem)}
               </ScrollView>
             </View>
           </Tab>
@@ -327,6 +335,7 @@ const styles = StyleSheet.create({
   rewardItem__detail_offertitle: {
     color: "#000000",
     fontSize: 15,
+    flex: 1,
     marginBottom: 5
   },
   rewardItem__detail_offerdetail: {
@@ -341,6 +350,10 @@ const styles = StyleSheet.create({
   },
   rewardItem__detail_offerexpired: {
     color: "#FF0000"
+  },
+  rewardItem__detail_offeruseat: {
+    fontSize: 10,
+    marginTop: 5
   },
   rewardItem__sep: {
     width: 14,
@@ -363,10 +376,13 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = state => ({
-  modal: state.modalReducer
+  modal: state.modalReducer,
+  user: state.userReducer,
+  setting: state.settingReducer,
+  counting: state.countingReducer
 });
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ openRewardModal }, dispatch);
+  bindActionCreators({ openRewardModal, setCountingReward }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

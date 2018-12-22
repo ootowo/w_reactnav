@@ -16,7 +16,16 @@ import {
   TOGGLE_CARD_PREVIEW_MODAL,
   OPEN_SELECT_BRANCH_MODAL,
   CLOSE_SELECT_BRANCH_MODAL,
-  TOGGLE_SELECT_BRANCH_MODAL
+  TOGGLE_SELECT_BRANCH_MODAL,
+  OPEN_COUPON_REDEEM_MODAL,
+  CLOSE_COUPON_REDEEM_MODAL,
+  TOGGLE_COUPON_REDEEM_MODAL,
+  OPEN_REWARD_EARNED_MODAL,
+  CLOSE_REWARD_EARNED_MODAL,
+  TOGGLE_REWARD_EARNED_MODAL,
+  OPEN_AUTHEN_MODAL,
+  CLOSE_AUTHEN_MODAL,
+  TOGGLE_AUTHEN_MODAL
 } from "../actions/modalAction";
 
 const modalReducer = (
@@ -26,7 +35,15 @@ const modalReducer = (
       visible: false,
       data: {}
     },
+    coupon_redeem: {
+      visible: false,
+      data: {}
+    },
     reward: {
+      visible: false,
+      data: {}
+    },
+    reward_earned: {
       visible: false,
       data: {}
     },
@@ -82,6 +99,30 @@ const modalReducer = (
           data: payload
         }
       };
+    case OPEN_COUPON_REDEEM_MODAL:
+      return {
+        ...state,
+        coupon_redeem: {
+          visible: true,
+          data: payload
+        }
+      };
+    case CLOSE_COUPON_REDEEM_MODAL:
+      return {
+        ...state,
+        coupon_redeem: {
+          visible: false,
+          data: {}
+        }
+      };
+    case TOGGLE_COUPON_REDEEM_MODAL:
+      return {
+        ...state,
+        coupon_redeem: {
+          visible: !state.coupon_redeem.visible,
+          data: payload
+        }
+      };
     case OPEN_REWARD_MODAL:
       return {
         ...state,
@@ -103,6 +144,30 @@ const modalReducer = (
         ...state,
         reward: {
           visible: !state.reward.visible,
+          data: payload
+        }
+      };
+    case OPEN_REWARD_EARNED_MODAL:
+      return {
+        ...state,
+        reward_earned: {
+          visible: true,
+          data: payload
+        }
+      };
+    case CLOSE_REWARD_EARNED_MODAL:
+      return {
+        ...state,
+        reward_earned: {
+          visible: false,
+          data: {}
+        }
+      };
+    case TOGGLE_REWARD_EARNED_MODAL:
+      return {
+        ...state,
+        reward_earned: {
+          visible: !state.reward_earned.visible,
           data: payload
         }
       };

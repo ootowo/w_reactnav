@@ -1,11 +1,17 @@
 import React, { Component } from "react";
-import { View, ActivityIndicator, FlatList, StyleSheet } from "react-native";
+
+import { View, ActivityIndicator, FlatList, StyleSheet, Alert } from "react-native";
+import { connect } from "react-redux";
 import { List, ListItem } from "react-native-elements";
 import moment from "moment";
+import { FormattedMessage } from "react-intl";
+import HeaderTitle from "../../components/HeaderTitle";
+
+import { fetchEntertainmentData } from "../../apis/entertainmentApi";
 
 class EntertainmentScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Entertainment",
+    headerTitle: <HeaderTitle id="entertain" />,
     headerBackTitle: null,
     headerTintColor: "#000000"
   });
@@ -29,63 +35,31 @@ class EntertainmentScreen extends Component {
   }
 
   componentDidMount() {
-    // this.makeRemoteRequest();
-    const mockup = [
-      {
-        id: 0,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.1",
-        image: "",
-        date: "01/01/2018"
-      },
-      {
-        id: 1,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.2",
-        image: "",
-        date: "01/01/2018"
-      },
-      {
-        id: 2,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.3",
-        image: "",
-        date: "01/01/2018"
-      },
-      {
-        id: 3,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.4",
-        image: "",
-        date: "01/01/2018"
-      },
-      {
-        id: 4,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.5",
-        image: "",
-        date: "01/01/2018"
-      },
-      {
-        id: 5,
-        title: "โชห่วย โชว์ซ่า ท้ารวย EP.6",
-        image: "",
-        date: "01/01/2018"
-      }
-    ];
-    this.setState({ data: mockup });
+    this.makeRemoteRequest();
   }
   makeRemoteRequest() {
     const { page, seed } = this.state;
-    const url = `https://jsonplaceholder.typicode.com/albums`;
     this.setState({ loading: true });
-    fetch(url)
-      .then(res => res.json())
+    fetchEntertainmentData(this.props.user.user.member_code)
       .then(res => {
+        // if (res.data.length < 1) {
+        //   if (this.props.setting.params.language == "en") {
+        //     Alert.alert("Makro", "Entertainment not available");
+        //   } else {
+        //     Alert.alert("Makro", "មិនទាន់មានព័ត៌មាន");
+        //   }
+        // }
         this.setState({
-          data: page === 1 ? res.posts : [...this.state.data, ...res.posts],
+          data: res.data,
           error: res.error || null,
           loading: false,
           refreshing: false
         });
       })
       .catch(error => {
-        this.setState({ error, loading: false });
+        this.setState({ error, loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
@@ -138,6 +112,7 @@ class EntertainmentScreen extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
+    const { language } = this.props.setting.params;
     return (
       <View style={styles.container}>
         <List
@@ -153,22 +128,21 @@ class EntertainmentScreen extends Component {
               <ListItem
                 avatarStyle={{ width: 80, height: 80 }}
                 avatarContainerStyle={{ width: 80, height: 80 }}
-                title={`${item.title}`}
+                title={`${language == "en" ? item.name : item.name_cambodia}`}
                 titleNumberOfLines={2}
-                subtitle={`${moment(item.date).fromNow()}`}
+                subtitle={`${moment(item.valid_from_date, "YYYY-MM-DD").fromNow()}`}
                 avatar={{
-                  uri:
-                    "http://thumbnail.instardara.com/tv/MinimartZaTaaRuay.jpg"
+                  uri: "http://thumbnail.instardara.com/tv/MinimartZaTaaRuay.jpg"
                 }}
                 containerStyle={{ borderBottomWidth: 0 }}
-                onPress={() => navigate("EntertainmentView")}
+                onPress={() => navigate("EntertainmentView", { entertain_data: item })}
               />
             )}
-            keyExtractor={item => item.uuid}
+            keyExtractor={item => item.id}
             ListFooterComponent={this.renderFooter}
             ItemSeparatorComponent={this.renderSeparator}
-            // onRefresh={this.handleRefresh}
-            // refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            refreshing={this.state.refreshing}
             // onEndReached={this.handleLoadMore}
             /// onEndReachedThreshold={50}
           />
@@ -185,4 +159,8 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EntertainmentScreen;
+const mapStateToProps = state => ({
+  user: state.userReducer,
+  setting: state.settingReducer
+});
+export default connect(mapStateToProps)(EntertainmentScreen);

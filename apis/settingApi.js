@@ -1,19 +1,20 @@
 import { Permissions, Notifications } from "expo";
-import { _PUSH_ENDPOINT, _DEFAULT_SETTING } from "../utils/config";
 import axios from "axios";
 
+import { _PUSH_ENDPOINT, _DEFAULT_SETTING } from "../utils/config";
 import { setData, getData, removeData } from "../db";
 
 export const fetchConfigFromDB = () => {
   return new Promise((resolve, reject) => {
     getData("settings", (error, res) => {
       if (res) {
-        const { notification, ringtone, shelf, language } = res;
+        const { notification, ringtone, shelf, language, branch } = res;
         const config = {
           notification,
           ringtone,
           shelf,
-          language
+          language,
+          branch
         };
         resolve(config);
       } else {
@@ -59,9 +60,7 @@ export const setNotification = state => {
 };
 
 export const checkNotificationGrant = async () => {
-  const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
+  const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
   let finalStatus = existingStatus;
 
   if (existingStatus !== "granted") {

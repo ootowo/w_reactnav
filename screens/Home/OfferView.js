@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   AppState,
   View,
@@ -11,21 +12,36 @@ import {
   TouchableOpacity
 } from "react-native";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
+import HeaderTitle from "../../components/HeaderTitle";
 import ShareHeader from "../../components/ShareHeader";
 import { mockHtml } from "../../web/html";
 
 class OfferView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Offer View",
+    headerTitle: <HeaderTitle id="home.menu.offer" />,
     headerBackTitle: null,
     headerTintColor: "#000000",
-    headerRight: <ShareHeader />
+    headerRight: <ShareHeader share={false} />
   });
 
   constructor(props) {
     super(props);
   }
   render() {
+    const { language } = this.props.setting.params;
+    const offerDetail = this.props.navigation.getParam("offer_detail");
+
+    let offerTitle = "",
+      offerContent = "";
+    if (language == "en") {
+      offerTitle = offerDetail.name;
+      offerContent = offerDetail.description;
+    } else {
+      offerTitle = offerDetail.name_cambodia;
+      offerContent = offerContent.description_cambodia;
+    }
+
     return (
       <View style={styles.container}>
         <WebView
@@ -36,9 +52,10 @@ class OfferView extends Component {
           }}
           source={{
             html: mockHtml(
-              "https://www.siammakro.co.th/imgadmins/makromail/big/20907_20180720_162743.jpg",
-              "ห้ามพลาด สินค้าสุดพิเศษกับนมยูเอชทีแลคตาซอย",
-              null,
+              offerDetail.file_path,
+              offerTitle,
+              offerContent,
+              offerDetail.url_link,
               this.props.fontSize.size
             )
           }}
@@ -56,6 +73,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  fontSize: state.fontSizeReducer
+  fontSize: state.fontSizeReducer,
+  setting: state.settingReducer
 });
 export default connect(mapStateToProps)(OfferView);

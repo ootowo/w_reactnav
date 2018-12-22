@@ -47,9 +47,9 @@ export const removeData = (id, cb) => {
   db.get(id)
     .then(doc => {
       db.remove(doc);
-      cb(true);
+      cb(true, null);
     })
-    .catch(() => {
-      cb(false);
+    .catch(error => {
+      cb(false, error);
     });
 };

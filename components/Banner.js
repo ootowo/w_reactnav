@@ -1,25 +1,28 @@
 import React, { Component } from "react";
+
 import {
   View,
   TouchableOpacity,
   Text,
   Image,
   Dimensions,
+  WebBrowser,
+  Linking,
   StyleSheet
 } from "react-native";
 import Swiper from "react-native-swiper";
 
 export class Banner extends Component {
-  async onPressOpenWebSite(address) {
+  onPressOpenWebSite(address) {
     if (address) {
-      await WebBrowser.openBrowserAsync(address);
+      Linking.openURL(address);
     }
   }
 
   render() {
     const { style, images, darkmode, mini, urls } = this.props;
     const { width } = Dimensions.get("window");
-    const bannerHeight = width / (mini ? 4.5 : 2.8);
+    const bannerHeight = width / (mini ? 4.5 : 3);
 
     if (images) {
       return (
@@ -40,15 +43,9 @@ export class Banner extends Component {
             autoplayTimeout={5}
             loop
             height={bannerHeight}
-            dotStyle={
-              darkmode
-                ? styles.slideIndicator__dot_dark
-                : styles.slideIndicator__dot
-            }
+            dotStyle={darkmode ? styles.slideIndicator__dot_dark : styles.slideIndicator__dot}
             activeDotStyle={
-              darkmode
-                ? styles.slideIndicator__dot_dark_active
-                : styles.slideIndicator__dot_active
+              darkmode ? styles.slideIndicator__dot_dark_active : styles.slideIndicator__dot_active
             }
             paginationStyle={{
               bottom: 0
@@ -60,10 +57,7 @@ export class Banner extends Component {
                 style={[styles.banner, { height: bannerHeight }]}
                 onPress={() => this.onPressOpenWebSite(urls[key])}
               >
-                <Image
-                  style={[styles.banner__image, { height: bannerHeight }]}
-                  source={image}
-                />
+                <Image style={[styles.banner__image, { height: bannerHeight }]} source={image} />
               </TouchableOpacity>
             ))}
           </Swiper>

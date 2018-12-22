@@ -20,6 +20,20 @@ export const toggleCouponModal = payload => ({
   payload
 });
 
+export const OPEN_COUPON_REDEEM_MODAL = "OPEN_COUPON_REDEEM_MODAL";
+export const CLOSE_COUPON_REDEEM_MODAL = "CLOSE_COUPON_REDEEM_MODAL";
+export const TOGGLE_COUPON_REDEEM_MODAL = "TOGGLE_COUPON_REDEEM_MODAL";
+
+export const openCouponRedeemModal = payload => ({
+  type: OPEN_COUPON_REDEEM_MODAL,
+  payload
+});
+export const closeCouponRedeemModal = () => ({ type: CLOSE_COUPON_REDEEM_MODAL });
+export const toggleCouponRedeemModal = payload => ({
+  type: TOGGLE_COUPON_REDEEM_MODAL,
+  payload
+});
+
 export const OPEN_REWARD_MODAL = "OPEN_REWARD_MODAL";
 export const CLOSE_REWARD_MODAL = "CLOSE_REWARD_MODAL";
 export const TOGGLE_REWARD_MODAL = "TOGGLE_REWARD_MODAL";
@@ -31,6 +45,20 @@ export const openRewardModal = payload => ({
 export const closeRewardModal = () => ({ type: CLOSE_REWARD_MODAL });
 export const toggleRewardModal = payload => ({
   type: TOGGLE_REWARD_MODAL,
+  payload
+});
+
+export const OPEN_REWARD_EARNED_MODAL = "OPEN_REWARD_EARNED_MODAL";
+export const CLOSE_REWARD_EARNED_MODAL = "CLOSE_REWARD_EARNED_MODAL";
+export const TOGGLE_REWARD_EARNED_MODAL = "TOGGLE_REWARD_EARNED_MODAL";
+
+export const openRewardEarnedModal = payload => ({
+  type: OPEN_REWARD_EARNED_MODAL,
+  payload
+});
+export const closeRewardEarnedModal = () => ({ type: CLOSE_REWARD_EARNED_MODAL });
+export const toggleRewardEarnedModal = payload => ({
+  type: TOGGLE_REWARD_EARNED_MODAL,
   payload
 });
 

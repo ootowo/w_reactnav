@@ -1,13 +1,15 @@
-import React, { Component } from "react";
 import { connect } from "react-redux";
 import { View, Modal } from "react-native";
+import React, { Component } from "react";
 
-import SocialLinkModal from "./SocialLink";
-import CouponUsageModal from "./CouponUsage";
-import RewardUsageModal from "./RewardUsage";
 import AnnouceModal from "./Annouce";
 import CardPreviewModal from "./CardPreview";
+import CouponUsageModal from "./CouponUsage";
+import RewardUsageModal from "./RewardUsage";
+import RewardEarnedModal from "./RewardEarned";
 import SelectBranch from "./SelectBranch";
+import SocialLinkModal from "./SocialLink";
+import CouponRedeemModal from "./CouponRedeem";
 
 class CoreModal extends Component {
   render() {
@@ -38,6 +40,14 @@ class CoreModal extends Component {
           <RewardUsageModal />
         </Modal>
         <Modal
+          visible={this.props.modal.reward_earned.visible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => {}}
+        >
+          <RewardEarnedModal />
+        </Modal>
+        <Modal
           visible={this.props.modal.annouce.visible}
           animationType="fade"
           transparent={true}
@@ -60,6 +70,14 @@ class CoreModal extends Component {
           onRequestClose={() => {}}
         >
           <SelectBranch />
+        </Modal>
+        <Modal
+          visible={this.props.modal.coupon_redeem.visible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => {}}
+        >
+          <CouponRedeemModal />
         </Modal>
       </View>
     );

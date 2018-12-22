@@ -1,16 +1,12 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import { Root, ActionSheet } from "native-base";
+import { connect } from "react-redux";
 import { Octicons, Entypo } from "@expo/vector-icons";
+import { Root, ActionSheet } from "native-base";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
 
-import {
-  changeToSmall,
-  changeToMedium,
-  changeToLarge
-} from "../actions/fontSizeReducer";
+import { changeToSmall, changeToMedium, changeToLarge } from "../actions/fontSizeReducer";
 
 class ShareHeader extends Component {
   constructor(props) {
@@ -27,12 +23,7 @@ class ShareHeader extends Component {
 
   render() {
     const { fontSize, share } = this.props;
-    const {
-      FONT_BUTTONS,
-      FONT_CANCEL_INDEX,
-      SHARE_BUTTONS,
-      SHARE_CANCEL_INDEX
-    } = this.state;
+    const { FONT_BUTTONS, FONT_CANCEL_INDEX, SHARE_BUTTONS, SHARE_CANCEL_INDEX } = this.state;
     return (
       <Root>
         <View style={{ flexDirection: "row" }}>
@@ -63,10 +54,7 @@ class ShareHeader extends Component {
                 )
               }
             >
-              <Octicons
-                name="text-size"
-                style={{ color: "#000000", fontSize: 18 }}
-              />
+              <Octicons name="text-size" style={{ color: "#000000", fontSize: 18 }} />
             </TouchableOpacity>
           )}
           {share && (
@@ -116,10 +104,7 @@ ShareHeader.propTypes = {
 };
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    { changeToLarge, changeToMedium, changeToSmall },
-    dispatch
-  );
+  bindActionCreators({ changeToLarge, changeToMedium, changeToSmall }, dispatch);
 export default connect(
   null,
   mapDispatchToProps

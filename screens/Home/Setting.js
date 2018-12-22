@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { View, Text, StyleSheet, Switch, Alert } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { View, Text, StyleSheet, Switch, Alert } from "react-native";
+import React, { Component } from "react";
+
 import {
   Root,
   Container,
@@ -15,13 +16,16 @@ import {
   ActionSheet
 } from "native-base";
 import call from "react-native-phone-call";
+import { FormattedMessage } from "react-intl";
+import Expo from "expo";
 
 import { checkNotificationGrant } from "../../apis/settingApi";
 import { makeConfig, makeConfigAsync } from "../../actions/settingAction";
+import HeaderTitle from "../../components/HeaderTitle";
 
 class SettingScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Settings",
+    headerTitle: <HeaderTitle id="setting" />,
     headerBackTitle: null,
     headerTintColor: "#000000"
   });
@@ -62,7 +66,9 @@ class SettingScreen extends Component {
               <List>
                 <ListItem>
                   <Body>
-                    <Text>Version</Text>
+                    <Text>
+                      <FormattedMessage id="setting.version" />
+                    </Text>
                     <Text note numberOfLines={1}>
                       3.4 (17)
                     </Text>
@@ -70,7 +76,9 @@ class SettingScreen extends Component {
                 </ListItem>
                 <ListItem>
                   <Body>
-                    <Text>Ringtones</Text>
+                    <Text>
+                      <FormattedMessage id="setting.ringtones" />
+                    </Text>
                   </Body>
                   <Right>
                     <Switch
@@ -84,9 +92,11 @@ class SettingScreen extends Component {
                 </ListItem>
                 <ListItem>
                   <Body>
-                    <Text>Notifications</Text>
+                    <Text>
+                      <FormattedMessage id="setting.notification" />
+                    </Text>
                     <Text note numberOfLines={1}>
-                      Turn On/Off Notifications
+                      <FormattedMessage id="setting.notification.subtitle" />
                     </Text>
                   </Body>
                   <Right>
@@ -141,7 +151,9 @@ class SettingScreen extends Component {
                   }
                 >
                   <Body>
-                    <Text>Language</Text>
+                    <Text>
+                      <FormattedMessage id="setting.language" />
+                    </Text>
                     <Text note numberOfLines={1}>
                       {this.state.LANG_BUTTON_VALUES.map((lang, key) => {
                         if (this.props.setting.params.language == lang) {
@@ -156,26 +168,21 @@ class SettingScreen extends Component {
                 </ListItem>
                 <ListItem onPress={() => navigate("ShelfSelector")}>
                   <Body>
-                    <Text>Shelf Style</Text>
+                    <Text>
+                      <FormattedMessage id="setting.shelf" />
+                    </Text>
                     <Text note numberOfLines={1}>
-                      Style {this.props.setting.params.shelf}
+                      <FormattedMessage id="style" /> {this.props.setting.params.shelf}
                     </Text>
                   </Body>
                   <Right>
                     <Icon name="arrow-forward" />
                   </Right>
                 </ListItem>
-                <ListItem
-                  onPress={() =>
-                    call({ number: "023355300", prompt: true }).catch(
-                      console.error
-                    )
-                  }
-                >
+                <ListItem onPress={() => navigate("Branch")}>
                   <Body>
-                    <Text>Contact Us</Text>
-                    <Text note numberOfLines={1}>
-                      02-335-5300
+                    <Text>
+                      <FormattedMessage id="setting.contact" />
                     </Text>
                   </Body>
                   <Right>

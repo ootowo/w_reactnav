@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   ScrollView,
@@ -50,8 +51,7 @@ class CatelogScreen extends Component {
       },
       {
         image_src: {
-          uri:
-            "https://media-cdn.tripadvisor.com/media/photo-s/11/45/43/2c/restaurant-by-night.jpg"
+          uri: "https://media-cdn.tripadvisor.com/media/photo-s/11/45/43/2c/restaurant-by-night.jpg"
         },
         title: "Restaurant"
       },
@@ -75,14 +75,8 @@ class CatelogScreen extends Component {
       <Container>
         <View style={css.search.searchBar}>
           <View style={css.search.searchBar__container}>
-            <Icon
-              name="ios-search"
-              style={{ fontSize: 20, color: "#363636" }}
-            />
-            <TextInput
-              placeholder="Search..."
-              style={css.search.searchBar__text}
-            />
+            <Icon name="ios-search" style={{ fontSize: 20, color: "#363636" }} />
+            <TextInput placeholder="Search..." style={css.search.searchBar__text} />
           </View>
         </View>
         <ScrollView>
@@ -91,9 +85,7 @@ class CatelogScreen extends Component {
               <TouchableOpacity
                 style={[
                   styles.category__item,
-                  this.checkIndexIsEven(index + 1)
-                    ? styles.category__item___n2child
-                    : null
+                  this.checkIndexIsEven(index + 1) ? styles.category__item___n2child : null
                 ]}
                 onPress={() => navigate("ProductList")}
               >
@@ -111,9 +103,7 @@ class CatelogScreen extends Component {
                     end={[1, 0.5]}
                     style={styles.category__item_title}
                   >
-                    <Text style={styles.category__item_title_text}>
-                      {item.title}
-                    </Text>
+                    <Text style={styles.category__item_title_text}>{item.title}</Text>
                   </LinearGradient>
                 </View>
               </TouchableOpacity>

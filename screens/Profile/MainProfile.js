@@ -1,22 +1,70 @@
+import { View, Text, Image, StatusBar, StyleSheet, Linking, Alert } from "react-native";
 import React, { Component } from "react";
-import { View, Text, Image, StatusBar, StyleSheet } from "react-native";
-import {
-  Root,
-  Container,
-  Content,
-  List,
-  ListItem,
-  Body,
-  Left
-} from "native-base";
+
+import { Root, Container, Content, List, ListItem, Body, Left } from "native-base";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { FormattedMessage } from "react-intl";
+
+import { isEmpty } from "../../utils/validate";
+import { authenClear } from "../../actions/userAction";
+import { makeConfigAsync } from "../../actions/settingAction";
+import { removeUserFromDB } from "../../apis/authenApi";
 
 class MainProfileScreen extends Component {
   static navigationOptions = ({ natigation }) => ({
     header: null
   });
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false
+    };
+
+    this.handleLogout = this.handleLogout.bind(this);
+    this.renderProfile = this.renderProfile.bind(this);
+    this.clearBranchSelected = this.clearBranchSelected.bind(this);
+  }
+
+  handleLogout() {
+    if (!this.state.loading) {
+      this.setState({ loading: true });
+      this.clearBranchSelected(() => {
+        removeUserFromDB()
+          .then(() => {
+            this.props.authenClear();
+            this.setState({ loading: false });
+            this.props.navigation.navigate("Authen");
+          })
+          .catch(() => {
+            this.props.authenClear();
+            this.setState({ loading: false });
+            this.props.navigation.navigate("Authen");
+          });
+      });
+    }
+  }
+
+  clearBranchSelected(cb) {
+    new Promise((resolve, reject) => {
+      this.props.makeConfigAsync(
+        {
+          key: "branch",
+          value: null,
+          oldSetting: this.props.setting.params
+        },
+        resolve,
+        reject
+      );
+    }).then(() => {
+      cb();
+    });
+  }
+
   renderProfile() {
+    const { user } = this.props.user;
     return (
       <View style={styles.profileHeader}>
         <View
@@ -34,14 +82,18 @@ class MainProfileScreen extends Component {
             <Image
               style={styles.profileImage__photo}
               source={{
-                uri:
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBapT6eBUt5RFRTxWPwztndojMWqgwoLLxD1lCwhUJ834nLXSk"
+                uri: user.picture_path
+                  ? Base64.decode(user.picture_path)
+                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBapT6eBUt5RFRTxWPwztndojMWqgwoLLxD1lCwhUJ834nLXSk"
               }}
             />
           </View>
           <View style={styles.profileName}>
-            <Text style={styles.profileName__text}>Bryan Cool</Text>
-            <Text style={styles.profileName__number}>0123456789</Text>
+            <Text style={styles.profileName__text}>
+              {!isEmpty(user.first_name) && user.first_name}{" "}
+              {!isEmpty(user.last_name) && user.last_name}
+            </Text>
+            <Text style={styles.profileName__number}>{user.member_code}</Text>
           </View>
         </View>
         <View
@@ -63,6 +115,8 @@ class MainProfileScreen extends Component {
     );
   }
   render() {
+    const { navigate } = this.props.navigation;
+    const { loading } = this.state;
     return (
       <View style={styles.container}>
         {this.renderProfile()}
@@ -79,24 +133,33 @@ class MainProfileScreen extends Component {
                     </Body>
                   </ListItem>
                   <ListItem itemDivider /> */}
-                <ListItem icon>
+                <ListItem
+                  icon
+                  onPress={() => {
+                    Linking.openURL("https://www.facebook.com/makrocambodia/");
+                  }}
+                >
                   <Left>
-                    <FontAwesome
-                      name="facebook-official"
-                      size={20}
-                      color="#3b5998"
-                    />
+                    <FontAwesome name="facebook-official" size={20} color="#3b5998" />
                   </Left>
                   <Body>
-                    <Text>Follow me on Facebook</Text>
+                    <Text>
+                      <FormattedMessage id="profile.facebook" />
+                    </Text>
                   </Body>
                 </ListItem>
-                <ListItem icon>
+                <ListItem icon onPress={this.handleLogout}>
                   <Left>
                     <FontAwesome name="sign-out" size={20} color="#FF0000" />
                   </Left>
                   <Body>
-                    <Text>Logout</Text>
+                    <Text>
+                      {loading ? (
+                        <FormattedMessage id="loading" />
+                      ) : (
+                        <FormattedMessage id="profile.logout" />
+                      )}
+                    </Text>
                   </Body>
                 </ListItem>
                 <ListItem itemDivider>
@@ -107,7 +170,7 @@ class MainProfileScreen extends Component {
                       color: "#635F62"
                     }}
                   >
-                    Version 3.4 (2018)
+                    <FormattedMessage id="profile.version" /> 3.4 (2018)
                   </Text>
                 </ListItem>
               </List>
@@ -162,4 +225,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default MainProfileScreen;
+const mapStateToProps = state => ({
+  user: state.userReducer,
+  setting: state.settingReducer
+});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ authenClear, makeConfigAsync }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MainProfileScreen);

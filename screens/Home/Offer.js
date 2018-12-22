@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { View, ActivityIndicator, FlatList, StyleSheet } from "react-native";
+
+import { View, ActivityIndicator, FlatList, StyleSheet, Alert } from "react-native";
 import { List, ListItem } from "react-native-elements";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import moment from "moment";
+import { FormattedMessage } from "react-intl";
+import HeaderTitle from "../../components/HeaderTitle";
+
+import { fetchTodayOfferApi } from "../../apis/todayOfferApi";
+import { setCountingOffer } from "../../actions/countingAction";
 
 class OfferScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Today Offer",
+    headerTitle: <HeaderTitle id="home.menu.offer" />,
     headerBackTitle: null,
     headerTintColor: "#000000"
   });
@@ -29,73 +37,36 @@ class OfferScreen extends Component {
   }
 
   componentDidMount() {
-    // this.makeRemoteRequest();
-    const mockup = [
-      {
-        id: 0,
-        title: "ห้ามพลาด สินค้าสุดพิเศษกับนมยูเอชทีแลคตาซอย",
-        date: "29/08/2018"
-      },
-      {
-        id: 1,
-        title: "ว๊าววว!!สุดพิเศษกับสะโพกหมูลดเหลือกิโลกรัมละ 89 บาท",
-        date: "28/08/2018"
-      },
-      {
-        id: 2,
-        title: "ลดถูกมาก!! องุ่นแดงนอกจีน เหลือแค่กิโลกรัมละ 39 บาท เท่านั้น",
-        date: "26/08/2018"
-      },
-      {
-        id: 3,
-        title: "ลดแล้วลดอีกกับกะทิ 100% ชาวเกาะ ขนาด 500 มิลลิลิตร",
-        date: "25/08/2018"
-      },
-      {
-        id: 4,
-        title:
-          "อย่าช้ารีบมาแม็คโครกัน กับราคาสุดพิเศษ นำ้มันปาล์มเกสร ขนาด 100 มล",
-        date: "24/08/2018"
-      },
-      {
-        id: 5,
-        title: "ห้ามพลาด! สำหรับผู้ประกอบการ กับน้ำหวานเฮลซ์บลูบอย",
-        date: "23/08/2018"
-      },
-      {
-        id: 6,
-        title: "ห้ามพลาด!กับ aro สตรอเบอร์รี่แช่แข็งจำนวน 1 กก",
-        date: "22/08/2018"
-      },
-      {
-        id: 7,
-        title: "หมดแล้วหมดเลยนะกับขนมฟัน-โอ รสช็อคโกแลต",
-        date: "21/08/2018"
-      },
-      {
-        id: 8,
-        title: "ด่วน! วันเดียวเท่านั้นกับนมไมโล ขนาด 180 มล.",
-        date: "20/08/2018"
-      }
-    ];
-    this.setState({ data: mockup });
+    this.props.setCountingOffer({
+      ...this.props.counting.internal,
+      offer: this.props.counting.external.offer
+    });
+
+    this.makeRemoteRequest();
   }
   makeRemoteRequest() {
     const { page, seed } = this.state;
-    const url = `https://jsonplaceholder.typicode.com/albums`;
     this.setState({ loading: true });
-    fetch(url)
-      .then(res => res.json())
+    fetchTodayOfferApi(this.props.user.user.member_code)
       .then(res => {
+        // if (res.data.length < 1) {
+        //   if (this.props.setting.params.language == "en") {
+        //     Alert.alert("Makro", "Today's Offer not available");
+        //   } else {
+        //     Alert.alert("Makro", "មិនទាន់មានព័ត៌មាន");
+        //   }
+        // }
         this.setState({
-          data: page === 1 ? res.posts : [...this.state.data, ...res.posts],
+          data: res.data,
           error: res.error || null,
           loading: false,
           refreshing: false
         });
       })
       .catch(error => {
-        this.setState({ error, loading: false });
+        this.setState({ error, loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
@@ -147,6 +118,7 @@ class OfferScreen extends Component {
   }
 
   render() {
+    const { language } = this.props.setting.params;
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
@@ -163,24 +135,19 @@ class OfferScreen extends Component {
               <ListItem
                 avatarStyle={{ width: 80, height: 80 }}
                 avatarContainerStyle={{ width: 80, height: 80 }}
-                title={`${item.title}`}
+                title={`${language == "en" ? item.name : item.name_cambodia}`}
                 titleNumberOfLines={1}
-                subtitle={`${moment(item.date, "DD/MM/YYYY").format(
-                  "DD MMM YYYY"
-                )}`}
-                avatar={{
-                  uri:
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPTv0mzZ9lqXoIaxb3aRM4XQwxXwk-7jbBSo_ENSXTKhxyPEj5"
-                }}
+                subtitle={`${moment(item.valid_from_date, "YYYY-MM-DD").format("DD MMM YYYY")}`}
+                avatar={{ uri: item.file_path ? item.file_path : null }}
                 containerStyle={{ borderBottomWidth: 0 }}
-                onPress={() => navigate("OfferView")}
+                onPress={() => navigate("OfferView", { offer_detail: item })}
               />
             )}
-            keyExtractor={item => item.uuid}
+            keyExtractor={item => item.id}
             ListFooterComponent={this.renderFooter}
             ItemSeparatorComponent={this.renderSeparator}
-            // onRefresh={this.handleRefresh}
-            // refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            refreshing={this.state.refreshing}
             // onEndReached={this.handleLoadMore}
             /// onEndReachedThreshold={50}
           />
@@ -197,4 +164,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default OfferScreen;
+const mapStateToProps = state => ({
+  user: state.userReducer,
+  setting: state.settingReducer,
+  counting: state.countingReducer
+});
+const mapDispatchToProps = dispatch => bindActionCreators({ setCountingOffer }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(OfferScreen);

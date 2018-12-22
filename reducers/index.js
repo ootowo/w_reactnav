@@ -1,11 +1,12 @@
 import { combineReducers } from "redux";
 
+import bannerReducer from "./bannerReducer";
+import fontSizeReducer from "./fontSizeReducer";
 import modalReducer from "./modalReducer";
 import settingReducer from "./settingReducer";
 import sysvarReducer from "./sysvarReducer";
 import userReducer from "./userReducer";
-import bannerReducer from "./bannerReducer";
-import fontSizeReducer from "./fontSizeReducer";
+import countingReducer from "./countingReducer";
 
 export default combineReducers({
   modalReducer,
@@ -13,5 +14,6 @@ export default combineReducers({
   sysvarReducer,
   userReducer,
   bannerReducer,
-  fontSizeReducer
+  fontSizeReducer,
+  countingReducer
 });

@@ -1,8 +1,4 @@
-import {
-  CHANGE_TO_LARGE,
-  CHANGE_TO_MEDIUM,
-  CHANGE_TO_SMALL
-} from "../actions/fontSizeReducer";
+import { CHANGE_TO_LARGE, CHANGE_TO_MEDIUM, CHANGE_TO_SMALL } from "../actions/fontSizeReducer";
 import { _DEFAULT_FONT_SIZE } from "../utils/config";
 
 const initialState = {

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   AppState,
   View,
@@ -10,14 +11,19 @@ import {
   Share,
   TouchableHighlight
 } from "react-native";
+import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
+import moment from "moment";
+import HeaderTitle from "../../components/HeaderTitle";
+
 import ShareHeader from "../../components/ShareHeader";
 
 class EntertainmentView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Entertainment",
+    headerTitle: <HeaderTitle id="entertain" />,
     headerBackTitle: null,
     headerTintColor: "#000000",
-    headerRight: <ShareHeader fontSize={false} />
+    headerRight: <ShareHeader fontSize={false} share={false} />
   });
 
   constructor(props) {
@@ -27,6 +33,7 @@ class EntertainmentView extends Component {
     };
 
     this._handleAppStateChange = this._handleAppStateChange.bind(this);
+    this.youtubeParser = this.youtubeParser.bind(this);
   }
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
@@ -39,14 +46,37 @@ class EntertainmentView extends Component {
   _handleAppStateChange(nextAppState) {
     this.setState({ appState: nextAppState });
   }
+
+  youtubeParser(url) {
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+    var match = url.match(regExp);
+    return match && match[7].length == 11 ? match[7] : false;
+  }
+
   render() {
+    const { language } = this.props.setting.params;
+    const entertainData = this.props.navigation.getParam("entertain_data");
+
+    let entertainTitle = "",
+      entertainDescription = "";
+
+    if (language == "en") {
+      entertainTitle = entertainData.name;
+      entertainDescription = entertainData.description;
+    } else {
+      entertainTitle = entertainData.name_cambodia;
+      entertainDescription = entertainData.description_cambodia;
+    }
+
     const htmlEmbed = `
             <html>
                 <head>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 </head>
                 <body style="margin: 0; padding: 0;">
-                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/IQKbhNIZMO0?autoplay=1" frameborder="0" allowfullscreen></iframe>
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/${this.youtubeParser(
+                      entertainData.url
+                    )}?autoplay=1" frameborder="0" allowfullscreen></iframe>
                 </body>
             </html>
         `;
@@ -65,14 +95,14 @@ class EntertainmentView extends Component {
         </View>
         <View style={styles.wrapper}>
           <View style={styles.head}>
-            <Text style={styles.head__title}>โชห่วย โชว์ซ่า ท้ารวย EP.1</Text>
-            <Text style={styles.head__date}>Published on Dec 06, 2560</Text>
+            <Text style={styles.head__title}>{entertainTitle}</Text>
+            <Text style={styles.head__date}>
+              <FormattedMessage id="entertain.publish" />{" "}
+              {moment(entertainData.valid_from_date, "YYYY-MM-DD").format("MMM YYYY, DD")}
+            </Text>
           </View>
           <ScrollView style={styles.description}>
-            <Text style={styles.description__text}>
-              "โชห่วย โชว์ซ่า ท้ารวย" เฟ้นหาคนรุ่นใหม่ ที่อยากเป็นเจ้าของร้าน
-              เพื่อชิงรางวัลเงินสดมูลค่ารวมกว่า 400,000
-            </Text>
+            <Text style={styles.description__text}>{entertainDescription}</Text>
           </ScrollView>
         </View>
       </View>
@@ -121,4 +151,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EntertainmentView;
+const mapStateToProps = state => ({
+  setting: state.settingReducer
+});
+export default connect(mapStateToProps)(EntertainmentView);

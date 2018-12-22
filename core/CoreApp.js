@@ -1,34 +1,37 @@
-import React, { Component } from "react";
-import { View, Text } from "react-native";
-import { IntlProvider } from "react-intl";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import { IntlProvider } from "react-intl";
+import { View, Text, ActivityIndicator, Alert } from "react-native";
+import React, { Component } from "react";
 
-import { GuestStack, LoggedInStack } from "../navigations";
 import CoreModal from "../modals";
+import MainStack from "../navigations";
 
-import {
-  makeConfig,
-  makeConfigAsync,
-  syncConfig
-} from "../actions/settingAction";
+import { makeConfig, makeConfigAsync, syncConfig } from "../actions/settingAction";
+import { syncAuthen } from "../actions/userAction";
 import { setData, getData } from "../db";
 import { checkNotificationGrant, fetchConfigFromDB } from "../apis/settingApi";
 import { fetchBanner } from "../actions/bannerAction";
 
+import lang from "../locales";
+
 class CoreApp extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      loading: false
+    };
     this.firstTimeRunning = this.firstTimeRunning.bind(this);
   }
 
   componentDidMount() {
+    this.setState({ loading: true });
     fetchConfigFromDB().then(res => {
-      // Sync from LocalDB to redux
       this.props.syncConfig(res);
       this.props.fetchBanner();
 
       this.firstTimeRunning();
+      this.setState({ loading: false });
     });
   }
 
@@ -76,32 +79,50 @@ class CoreApp extends Component {
   }
 
   render() {
-    const { user } = this.props.user;
-    return (
-      <IntlProvider
-        locale={this.props.setting.params.language}
-        textComponent={Text}
-      >
-        <View style={{ width: "100%", height: "100%" }}>
-          {user === {} ? <LoggedInStack /> : <GuestStack />}
-          <CoreModal />
+    const { loading } = this.state;
+    if (loading) {
+      return (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#FFFFFF",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <ActivityIndicator size="large" />
         </View>
-      </IntlProvider>
-    );
+      );
+    } else {
+      return (
+        <IntlProvider
+          locale={this.props.setting.params.language}
+          messages={lang[this.props.setting.params.language]}
+          textComponent={Text}
+          key={this.props.setting.params.language}
+        >
+          <View style={{ width: "100%", height: "100%" }}>
+            <MainStack />
+            <CoreModal />
+          </View>
+        </IntlProvider>
+      );
+    }
   }
 }
 
 const mapStateToProps = state => ({
   setting: state.settingReducer,
-  user: state.userReducer
+  user: state.userReducer,
+  banner: state.bannerReducer
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      makeConfig,
       makeConfigAsync,
       syncConfig,
-      fetchBanner
+      fetchBanner,
+      syncAuthen
     },
     dispatch
   );

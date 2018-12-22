@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   Text,
@@ -26,18 +27,11 @@ class RegisterDoneScreen extends Component {
         <SafeAreaView style={styles.container}>
           <View style={styles.wrapper}>
             <View style={styles.logo}>
-              <Image
-                source={require("../assets/makro_cam_logo.png")}
-                style={styles.logo__image}
-              />
+              <Image source={require("../assets/makro_cam_logo.png")} style={styles.logo__image} />
             </View>
             <View style={styles.regis__form}>
               <View style={styles.regis__icon}>
-                <Ionicons
-                  name="ios-checkmark-circle"
-                  size={52}
-                  color="#4ca64c"
-                />
+                <Ionicons name="ios-checkmark-circle" size={52} color="#4ca64c" />
               </View>
               <Text style={styles.regis__message}>Thanks for Registration</Text>
               <Text style={styles.regis__sub_message}>

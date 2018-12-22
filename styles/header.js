@@ -2,6 +2,7 @@ import { StyleSheet, Platform } from "react-native";
 
 export default StyleSheet.create({
   headerProfile: {
+    alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
     paddingLeft: 15,
@@ -22,8 +23,12 @@ export default StyleSheet.create({
   },
   headerProfile__profileName: {
     height: 40,
-    lineHeight: 40,
-    marginLeft: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 15
+  },
+  headerProfile__profileName_text: {
     fontWeight: "bold"
   }
 });

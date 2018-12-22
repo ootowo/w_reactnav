@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   Text,
@@ -7,15 +8,26 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
   StyleSheet
 } from "react-native";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { FormattedMessage } from "react-intl";
+import moment from "moment";
+
 import { Banner } from "../../components/Banner";
+import HeaderTitle from "../../components/HeaderTitle";
 import { getFile } from "../../utils/shelfFilePath";
+import { _HOST } from "../../utils/config";
+import { isEmpty } from "../../utils/validate";
+
+import { fetchMakroMailData } from "../../apis/makroMailApi";
+import { setCountingMail } from "../../actions/countingAction";
 
 class MailScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Makro Mail",
+    headerTitle: <HeaderTitle id="home.menu.mail" />,
     headerTintColor: "#000000",
     headerBackTitle: null
   });
@@ -42,41 +54,11 @@ class MailScreen extends Component {
   }
 
   componentDidMount() {
-    // this.makeRemoteRequest();
-    const mockup = [
-      {
-        id: 0,
-        title: "29 ส.ค 2561 - 11 ก.ย. 2561",
-        image: require("../../assets/mockup/mails/01.jpg")
-      },
-      {
-        id: 1,
-        title: "29 ส.ค 2561 - 11 ก.ย. 2561",
-        image: require("../../assets/mockup/mails/02.jpg")
-      },
-      {
-        id: 2,
-        title: "29 ส.ค 2561 - 11 ก.ย. 2561",
-        image: require("../../assets/mockup/mails/03.jpg")
-      },
-      {
-        id: 3,
-        title: "23 พ.ค. 2561 - 30 พ.ย. 2561",
-        image: require("../../assets/mockup/mails/04.jpg")
-      },
-      {
-        id: 4,
-        title: "29 ส.ค 2561 - 11 ก.ย. 2561",
-        image: require("../../assets/mockup/mails/01.jpg")
-      },
-      {
-        id: 5,
-        title: "29 ส.ค 2561 - 11 ก.ย. 2561",
-        image: require("../../assets/mockup/mails/02.jpg")
-      }
-    ];
-
-    this.setState({ data: mockup });
+    this.props.setCountingMail({
+      ...this.props.counting.internal,
+      mail: this.props.counting.external.mail
+    });
+    this.makeRemoteRequest();
   }
 
   makeCalculateStackHeight() {
@@ -87,20 +69,30 @@ class MailScreen extends Component {
 
   makeRemoteRequest() {
     const { page, seed } = this.state;
-    const url = `https://jsonplaceholder.typicode.com/albums`;
     this.setState({ loading: true });
-    fetch(url)
-      .then(res => res.json())
+    fetchMakroMailData(this.props.user.user.member_code)
       .then(res => {
+        // if (res.data.length < 1) {
+        //   if (this.props.setting.params.language == "en") {
+        //     Alert.alert("Makro", "Makro Mail not Available");
+        //   } else {
+        //     Alert.alert("Makro", "ម៉ាក្រូអ៊ីម៉ែលមិនមានទេ");
+        //   }
+        // }
+        if (res.data.length % 2 != 0) {
+          res.data.push({});
+        }
         this.setState({
-          data: page === 1 ? res : [...this.state.data, ...res],
+          data: res.data,
           error: res.error || null,
           loading: false,
           refreshing: false
         });
       })
       .catch(error => {
-        this.setState({ error, loading: false });
+        this.setState({ error, loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
@@ -142,12 +134,17 @@ class MailScreen extends Component {
     );
   }
 
-  renderBookItem = ({ item }) => {
+  renderBookItem = ({ item, index }) => {
     const { navigate } = this.props.navigation;
+    const { language } = this.props.setting.params;
+
+    const validFrom = moment(item["valid_from_date"], "YYYY-MM-DD");
+    const validTo = moment(item["valid_to_date"], "YYYY-MM-DD");
+
     return (
       <TouchableOpacity
         style={[styles.bookItem, { height: this.makeCalculateStackHeight() }]}
-        onPress={() => navigate("MailView")}
+        onPress={() => navigate("MailView", item)}
       >
         <View
           style={{
@@ -156,31 +153,35 @@ class MailScreen extends Component {
             paddingBottom: 38
           }}
         >
-          <View style={styles.bookItem__thumbnail}>
-            <Image
-              style={{
-                width: this.state.bookCoverWidth,
-                height: "100%",
-                backgroundColor: "#FFFFFF"
-              }}
-              resizeMode="cover"
-              source={item.image}
-              onLayout={e =>
-                this.setState({
-                  bookCoverWidth: e.nativeEvent.layout.height / 1.2
-                })
-              }
-            />
-          </View>
-          <View style={styles.bookItem__title}>
-            <Text style={styles.bookItem__title_text} numberOfLines={2}>
-              {item.title}
-            </Text>
-          </View>
+          {!isEmpty(item.file_path) && (
+            <View style={styles.bookItem__thumbnail}>
+              <Image
+                style={{
+                  width: this.state.bookCoverWidth,
+                  height: "100%",
+                  backgroundColor: "#FFFFFF"
+                }}
+                resizeMode="cover"
+                source={{ uri: item.file_path }}
+                onLayout={e =>
+                  this.setState({
+                    bookCoverWidth: e.nativeEvent.layout.height / 1.4
+                  })
+                }
+              />
+            </View>
+          )}
+          {!isEmpty(item.name) && (
+            <View style={styles.bookItem__title}>
+              <Text style={styles.bookItem__title_text} numberOfLines={1}>
+                {validFrom.format("DD/MM/YYYY")} - {validTo.format("DD/MM/YYYY")}
+              </Text>
+            </View>
+          )}
           <Image
             style={styles.bookItem__bg}
             source={
-              this.checkIndexIsEven(item.id)
+              this.checkIndexIsEven(index)
                 ? getFile(this.props.setting.params.shelf, "left")
                 : getFile(this.props.setting.params.shelf, "right")
             }
@@ -194,22 +195,22 @@ class MailScreen extends Component {
     const { mail } = this.props.banner;
     const mailBannerImages = mail.map(banner => {
       return {
-        uri: banner.filePath
+        uri: _HOST + banner.file_path
       };
     });
     const mailBannerURLs = mail.map(banner => {
-      return banner.url;
+      return banner.file_url;
     });
     return (
       <View style={styles.container}>
         <FlatList
-          style={{ flex: 1, paddingTop: 10 }}
+          style={{ flex: 1, marginTop: 20 }}
           data={this.state.data}
           numColumns={2}
           renderItem={this.renderBookItem}
           keyExtractor={item => item.id}
           ListFooterComponent={this.renderFooter}
-          // onRefresh={this.handleRefresh}
+          onRefresh={this.handleRefresh}
           refreshing={this.state.refreshing}
           // onEndReached={this.handleLoadMore}
           // onEndReachedThreshold={50}
@@ -219,7 +220,7 @@ class MailScreen extends Component {
             this.setState({ bannerHeight: event.nativeEvent.layout.height });
           }}
           darkmode
-          mini={true}
+          mini
           images={mailBannerImages}
           urls={mailBannerURLs}
         />
@@ -262,14 +263,15 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   bookItem__title: {
-    width: "100%" - 14,
-    padding: 8,
+    width: "100%" - 24,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
     borderRadius: 15,
     backgroundColor: "rgba(136, 136, 136, 0.8)",
     position: "absolute",
-    bottom: 40,
-    left: 7,
-    right: 7,
+    bottom: 43,
+    left: 12,
+    right: 12,
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 15,
@@ -286,6 +288,12 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   setting: state.settingReducer,
-  banner: state.bannerReducer
+  banner: state.bannerReducer,
+  user: state.userReducer,
+  counting: state.countingReducer
 });
-export default connect(mapStateToProps)(MailScreen);
+const mapDispatchToProps = dispatch => bindActionCreators({ setCountingMail }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MailScreen);

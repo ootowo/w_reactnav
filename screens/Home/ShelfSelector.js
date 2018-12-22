@@ -1,21 +1,16 @@
 import React, { Component } from "react";
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Alert,
-  StyleSheet
-} from "react-native";
+
+import { View, ScrollView, TouchableOpacity, Image, Alert, StyleSheet } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
+import { FormattedMessage } from "react-intl";
 
 import { makeConfigAsync } from "../../actions/settingAction";
 
 class ShelfSelectorScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Shelf Style",
+    headerTitle: <FormattedMessage id="setting.shelf" />,
     headerBackTitle: null,
     headerTintColor: "#000000"
   });
@@ -35,18 +30,18 @@ class ShelfSelectorScreen extends Component {
         //   file: require("../../assets/shelfs/shelf_style_2/preview/shelf.png")
         // },
         {
+          id: 1,
+          style_id: 2,
+          file: require("../../assets/shelfs/shelf_style_3/preview/shelf.png")
+        },
+        {
           id: 2,
           style_id: 3,
-          file: require("../../assets/shelfs/shelf_style_3/preview/shelf.png")
+          file: require("../../assets/shelfs/shelf_style_4/preview/shelf.png")
         },
         {
           id: 3,
           style_id: 4,
-          file: require("../../assets/shelfs/shelf_style_4/preview/shelf.png")
-        },
-        {
-          id: 4,
-          style_id: 5,
           file: require("../../assets/shelfs/shelf_style_5/preview/shelf.png")
         }
       ]
@@ -60,11 +55,7 @@ class ShelfSelectorScreen extends Component {
     this.setState({ selectedShelf: id });
     const oldSetting = this.props.setting.params;
     new Promise((resolve, reject) => {
-      this.props.makeConfigAsync(
-        { key: "shelf", value: id, oldSetting },
-        resolve,
-        reject
-      );
+      this.props.makeConfigAsync({ key: "shelf", value: id, oldSetting }, resolve, reject);
     })
       .then(success => {})
       .catch(error => {
@@ -89,9 +80,7 @@ class ShelfSelectorScreen extends Component {
         <View
           style={[
             styles.shelfItem__overlay,
-            item.style_id == setting.params.shelf
-              ? styles.shelfItem__overlay_selected
-              : null
+            item.style_id == setting.params.shelf ? styles.shelfItem__overlay_selected : null
           ]}
         >
           <Image style={styles.shelfItem__image} source={item.file} />
@@ -157,8 +146,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   setting: state.settingReducer
 });
-const mapDispatchToProps = dispatch =>
-  bindActionCreators({ makeConfigAsync }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ makeConfigAsync }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

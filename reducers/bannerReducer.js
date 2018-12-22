@@ -1,8 +1,4 @@
-import {
-  FETCH_BANNER,
-  FETCH_BANNER_DONE,
-  FETCH_BANNER_REJECT
-} from "../actions/bannerAction";
+import { FETCH_BANNER, FETCH_BANNER_DONE, FETCH_BANNER_REJECT } from "../actions/bannerAction";
 
 const initialState = {
   loading: false,

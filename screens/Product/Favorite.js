@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { View, ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { List, ListItem } from "react-native-elements";
+import { View, ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import moment from "moment";
+import React, { Component } from "react";
 
 class FavoriteScreen extends Component {
   static navigationOptions = ({ navigation }) => ({

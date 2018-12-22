@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   Text,
@@ -148,9 +149,7 @@ class ProductListScreen extends Component {
                 {item.title}
               </Text>
               {item.special_price ? (
-                <Text style={styles.productItem__title_price}>
-                  {item.special_price} ฿
-                </Text>
+                <Text style={styles.productItem__title_price}>{item.special_price} ฿</Text>
               ) : null}
               <Text
                 style={
@@ -163,9 +162,7 @@ class ProductListScreen extends Component {
               </Text>
               {item.offer ? (
                 <View style={styles.productItem__title_offer}>
-                  <Text style={styles.productItem__title_offer_text}>
-                    Promotion: {item.offer}
-                  </Text>
+                  <Text style={styles.productItem__title_offer_text}>Promotion: {item.offer}</Text>
                 </View>
               ) : null}
             </View>

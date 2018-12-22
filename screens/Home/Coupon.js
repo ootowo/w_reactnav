@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   ScrollView,
@@ -12,18 +13,37 @@ import {
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Container, Header, Tab, Tabs, ScrollableTab } from "native-base";
-import { Banner } from "../../components/Banner";
+import { FormattedMessage } from "react-intl";
 import moment from "moment";
-import { isEmpty } from "../../utils/validate";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { openCouponModal } from "../../actions/modalAction";
+import { Banner } from "../../components/Banner";
+import HeaderTitle from "../../components/HeaderTitle";
+import { isEmpty } from "../../utils/validate";
+import { _HOST } from "../../utils/config";
+
+import { openCouponModal, openCouponRedeemModal } from "../../actions/modalAction";
+import { setCountingCoupon } from "../../actions/countingAction";
 import { fetchCouponData } from "../../apis/couponApi";
 
 class CouponScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Coupon",
+    headerTitle: <HeaderTitle id="coupon" />,
     headerTintColor: "#000000",
     headerBackTitle: null
+    // headerRight: (
+    //   <View style={{ flexDirection: "row" }}>
+    //     <TouchableOpacity
+    //       style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
+    //       onPress={() => navigation.navigate("RedemptionCoupon")}
+    //     >
+    //       <MaterialCommunityIcons
+    //         name="ticket-confirmation"
+    //         style={{ color: "#000000", fontSize: 25 }}
+    //       />
+    //     </TouchableOpacity>
+    //   </View>
+    // )
   });
 
   constructor(props) {
@@ -36,55 +56,57 @@ class CouponScreen extends Component {
   }
 
   componentDidMount() {
+    this.props.setCountingCoupon({
+      ...this.props.counting.internal,
+      coupon: this.props.counting.external.coupon
+    });
+
+    // Fetch Data
     this.setState({ loading: true });
-    fetchCouponData(1)
+    fetchCouponData(this.props.user.user.member_code)
       .then(res => {
-        this.setState({ loading: false });
         if (!isEmpty(res.data)) {
           this.setState({
-            availableCoupon: res.data.available,
-            usedCoupon: res.data.used
+            availableCoupon: isEmpty(res.data.available) ? [] : res.data.available,
+            usedCoupon: isEmpty(res.data.used) ? [] : res.data.used
           });
         } else {
-          Alert.alert(
-            "Makro",
-            "These coupons are provided for our members only."
-          );
+          // if (this.props.setting.params.language == "en") {
+          //   Alert.alert("Makro", "These coupons are provided for members only.");
+          // } else {
+          //   Alert.alert("Makro", "ផ្តល់ជូនសំរាប់សមាជិកតែប៉ុណ្ណោះ");
+          // }
         }
+        this.setState({ loading: false });
       })
       .catch(error => {
         this.setState({ loading: false });
-        Alert.alert("Error while loading", JSON.stringify(error));
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
   renderCouponItem = (item, key) => {
-    const expireDate = moment(item.expireDate, "DD/MM/YYYY");
-    console.log(item);
+    const { language } = this.props.setting.params;
+    const expireDate = moment(item.expireDate, "DD MMM YYYY");
     return (
       <View
         key={key}
-        style={[
-          styles.couponItem,
-          expireDate < Date.now() ? styles.couponItem_expired : null
-        ]}
+        style={[styles.couponItem, expireDate < Date.now() ? styles.couponItem_expired : null]}
       >
         {item.imagePath ? (
           <View style={styles.couponItem__thumbnail}>
-            <Image
-              style={styles.couponItem__thumbnail_image}
-              source={{ uri: item.imagePath }}
-            />
+            <Image style={styles.couponItem__thumbnail_image} source={{ uri: item.imagePath }} />
           </View>
         ) : null}
         <View style={styles.couponItem__detail}>
           {!isEmpty(item.name.trim()) ? (
-            <Text style={styles.couponItem__detail_offertitle}>
-              {item.name}
+            <Text numberOfLines={1} style={styles.couponItem__detail_offertitle}>
+              {language == "en" ? item.name : item.name_cambodia}
             </Text>
           ) : null}
-          <Text style={styles.couponItem__detail_offerdetail}>
-            {item.description}
+          <Text numberOfLines={1} style={styles.couponItem__detail_offerdetail}>
+            {language == "en" ? item.description : item.description_cambodia}
           </Text>
           <Text
             style={[
@@ -94,9 +116,13 @@ class CouponScreen extends Component {
                 : styles.couponItem__detail_offernotexpire
             ]}
           >
-            {expireDate < Date.now()
-              ? "Expired"
-              : "Expire on " + expireDate.format("D MMMM YYYY")}
+            {expireDate < Date.now() ? (
+              <FormattedMessage id="coupon.expired" />
+            ) : (
+              <Text>
+                <FormattedMessage id="coupon.expire" /> {expireDate.format("DD/MM/YYYY")}
+              </Text>
+            )}
           </Text>
         </View>
         <Image
@@ -107,39 +133,36 @@ class CouponScreen extends Component {
           style={styles.couponItem__submit}
           onPress={() => this.props.openCouponModal(item)}
         >
-          <Text style={styles.couponItem__submit_text}>Use Now</Text>
+          <Text style={styles.couponItem__submit_text}>
+            {/* Redeem */}
+            <FormattedMessage id="coupon.use" />
+          </Text>
         </TouchableOpacity>
       </View>
     );
   };
 
   renderUsedCoupon = (item, key) => {
+    const { language } = this.props.setting.params;
+    // const expireDate = moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S");
+    const usedDate = item.usedDate ? moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S") : null;
     return (
-      <View
-        key={key}
-        style={[
-          styles.couponItem,
-          item.expired ? styles.couponItem_expired : null
-        ]}
-      >
+      <View key={key} style={[styles.couponItem, !usedDate ? styles.couponItem_expired : null]}>
         {item.imagePath ? (
           <View style={styles.couponItem__thumbnail}>
-            <Image
-              style={styles.couponItem__thumbnail_image}
-              source={{ uri: item.imagePath }}
-            />
+            <Image style={styles.couponItem__thumbnail_image} source={{ uri: item.imagePath }} />
           </View>
         ) : null}
         <View style={styles.couponItem__detail}>
           {!isEmpty(item.name.trim()) ? (
-            <Text style={styles.couponItem__detail_offertitle}>
-              {item.name}
+            <Text numberOfLines={1} style={styles.couponItem__detail_offertitle}>
+              {language == "en" ? item.name : item.name_cambodia}
             </Text>
           ) : null}
-          <Text style={styles.couponItem__detail_offerdetail}>
-            {item.detail}
+          <Text numberOfLines={1} style={styles.couponItem__detail_offerdetail}>
+            {language == "en" ? item.detail : item.detail_cambodia}
           </Text>
-          <Text
+          {/* <Text
             style={[
               styles.couponItem__detail_offerexpire,
               item.expired
@@ -147,12 +170,37 @@ class CouponScreen extends Component {
                 : styles.couponItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : "Expire on " + item.expire}
-          </Text>
-          <Text style={styles.couponItem__detail_offeruseat}>
-            Used at {item.used_at}
-          </Text>
+            {expireDate < Date.now() ? (
+              <FormattedMessage id="coupon.expired" />
+            ) : (
+              <FormattedMessage id="coupon.expire" /> + expireDate.format("D MMMM YYYY")
+            )}
+          </Text> */}
+          {usedDate ? (
+            <Text style={styles.couponItem__detail_offeruseat}>
+              <FormattedMessage id="coupon.used.at" /> {usedDate.format("DD/MM/YYYY HH:mm:ss")}
+            </Text>
+          ) : (
+            <Text
+              style={[
+                styles.couponItem__detail_offerexpire,
+                styles.couponItem__detail_offerexpired
+              ]}
+            >
+              <FormattedMessage id="coupon.expired" />
+            </Text>
+          )}
         </View>
+        <Image
+          style={styles.couponItem__sep}
+          source={require("../../assets/coupon_sep/coupon_sep.png")}
+        />
+        <TouchableOpacity
+          style={styles.couponItem__submit}
+          onPress={() => this.props.openCouponModal(item)}
+        >
+          <Text style={styles.couponItem__submit_text}>View</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -162,12 +210,41 @@ class CouponScreen extends Component {
     const { coupon } = this.props.banner;
     const couponBannerImages = coupon.map(banner => {
       return {
-        uri: banner.filePath
+        uri: _HOST + banner.file_path
       };
     });
     const couponBannerURLs = coupon.map(banner => {
-      return banner.url;
+      return banner.file_url;
     });
+
+    // return (
+    //   <View style={{ flex: 1 }}>
+    //     <View style={styles.container}>
+    //       {loading ? (
+    //         <View
+    //           style={{
+    //             flex: 1,
+    //             position: "absolute",
+    //             top: 0,
+    //             left: 0,
+    //             backgroundColor: "#FFFFFF",
+    //             width: "100%",
+    //             height: "100%",
+    //             alignItems: "center",
+    //             justifyContent: "center"
+    //           }}
+    //         >
+    //           <ActivityIndicator size="large" />
+    //         </View>
+    //       ) : (
+    //         <ScrollView style={styles.couponList}>
+    //           {availableCoupon && availableCoupon.map(this.renderCouponItem)}
+    //         </ScrollView>
+    //       )}
+    //     </View>
+    //     <Banner darkmode mini images={couponBannerImages} urls={couponBannerURLs} />
+    //   </View>
+    // );
 
     return (
       <View style={{ flex: 1 }}>
@@ -175,16 +252,23 @@ class CouponScreen extends Component {
           <Tabs
             tabBarUnderlineStyle={{ backgroundColor: "#FF0000" }}
             renderTabBar={() => (
-              <ScrollableTab
-                style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }}
-              />
+              <ScrollableTab style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }} />
             )}
           >
             <Tab
-              heading="Available"
+              heading={
+                <Text
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "#FF0000"
+                  }}
+                >
+                  <FormattedMessage id="coupon.available" />
+                </Text>
+              }
               tabStyle={{ backgroundColor: "#f2f2f2" }}
               activeTabStyle={{ backgroundColor: "#f2f2f2" }}
-              textStyle={{ color: "#FF0000" }}
+              textStyle={{ color: "#000000" }}
               activeTextStyle={{ color: "#FF0000" }}
             >
               <View style={styles.container}>
@@ -206,32 +290,36 @@ class CouponScreen extends Component {
                   </View>
                 ) : (
                   <ScrollView style={styles.couponList}>
-                    {availableCoupon.map(this.renderCouponItem)}
+                    {availableCoupon && availableCoupon.map(this.renderCouponItem)}
                   </ScrollView>
                 )}
               </View>
             </Tab>
             <Tab
-              heading="History"
+              heading={
+                <Text
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "#FF0000"
+                  }}
+                >
+                  <FormattedMessage id="coupon.history" />
+                </Text>
+              }
               tabStyle={{ backgroundColor: "#f2f2f2" }}
               activeTabStyle={{ backgroundColor: "#f2f2f2" }}
-              textStyle={{ color: "#FF0000" }}
+              textStyle={{ color: "#000000" }}
               activeTextStyle={{ color: "#FF0000" }}
             >
               <View style={styles.container}>
                 <ScrollView style={styles.couponList}>
-                  {/* {usedCoupon.map(this.renderUsedCoupon)} */}
+                  {usedCoupon && usedCoupon.map(this.renderUsedCoupon)}
                 </ScrollView>
               </View>
             </Tab>
           </Tabs>
         </Container>
-        <Banner
-          darkmode
-          mini
-          images={couponBannerImages}
-          urls={couponBannerURLs}
-        />
+        <Banner darkmode mini images={couponBannerImages} urls={couponBannerURLs} />
       </View>
     );
   }
@@ -276,11 +364,12 @@ const styles = StyleSheet.create({
   },
   couponItem__detail_offertitle: {
     color: "#FF0000",
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 5
   },
   couponItem__detail_offerdetail: {
     fontSize: 13,
+    flex: 1,
     color: "#635F62"
   },
   couponItem__detail_offerexpire: {
@@ -320,10 +409,13 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   model: state.modalReducer,
-  banner: state.bannerReducer
+  banner: state.bannerReducer,
+  user: state.userReducer,
+  setting: state.settingReducer,
+  counting: state.countingReducer
 });
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ openCouponModal }, dispatch);
+  bindActionCreators({ openCouponModal, openCouponRedeemModal, setCountingCoupon }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

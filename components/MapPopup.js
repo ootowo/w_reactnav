@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
 import { Octicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet } from "react-native";
+import React, { Component } from "react";
 
 class MapPopup extends Component {
   render() {
@@ -8,6 +8,7 @@ class MapPopup extends Component {
       <View style={styles.popout}>
         <View style={styles.popout__detail}>
           <Text style={styles.popout__detail_name}>{this.props.title}</Text>
+          <Text style={styles.popout__detail_address}>{this.props.address}</Text>
           <Text style={styles.popout__detail_tel}>{this.props.tel}</Text>
         </View>
         <View style={styles.popout__arrow}>
@@ -38,6 +39,10 @@ const styles = StyleSheet.create({
   popout__detail_name: {
     fontWeight: "bold",
     marginBottom: 5
+  },
+  popout__detail_address: {
+    fontSize: 13,
+    marginBottom: 10
   },
   popout__detail_tel: {
     fontSize: 13

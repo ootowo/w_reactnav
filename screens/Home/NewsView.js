@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   ScrollView,
@@ -10,28 +11,39 @@ import {
   Text
 } from "react-native";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
+
+import HeaderTitle from "../../components/HeaderTitle";
 import ShareHeader from "../../components/ShareHeader";
 import { mockHtml } from "../../web/html";
 
 class NewsView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "News View",
+    headerTitle: <HeaderTitle id="news" />,
     headerBackTitle: null,
     headerTintColor: "#000000",
-    headerRight: <ShareHeader />
+    headerRight: <ShareHeader share={false} />
   });
   constructor(props) {
     super(props);
   }
   render() {
     const { navigate } = this.props.navigation;
-    const newsContent = `
-      แม็คโครพารวย แจก 22 ล้าน ลุ้นทุกสัปดาห์ ทั่วไทย<br /><br /><br />
-      สมาชิกแม็คโครซื้อสินค้าในแผนกใดก็ได้ (ยกเว้น สินค้าประเภทบุหรี่ สุรา เครื่องดื่มแอลกอฮอล์ น้ำตาลทราย นมผงเด็กแรกเกิด,
-      นมผงเด็กสูตรต่อเนื่อง กลุ่มยาและเวชภัณฑ์) ที่แม็คโครในวันที่ 20 มิ.ย. - 28 ส.ค.2561 นำใบเสร็จรับเงินหรือใบกำกับภาษีภายใน
-      วันเดียวกันครบทุก 2,500 บาท (รวมภาษีมูลค่าเพิ่ม) นำไปแลกรับคูปองชิงโชค 1 ใบ (สูงสุดจำนวน 10 ใบ/ ใบเสร็จรับเงิน) ที่จุดแลกคูปอง
-      อ่านรายละเอียดเพิ่มเติม คลิ๊ก <a href="https://bit.ly/2MEbiYo">https://bit.ly/2MEbiYo</a>
-    `;
+    const { language } = this.props.setting.params;
+    const newsDetail = this.props.navigation.getParam("news_data");
+
+    console.log(newsDetail);
+
+    let newsTitle = "",
+      newsContent = "";
+    if (language == "en") {
+      newsTitle = newsDetail.name;
+      newsContent = newsDetail.description;
+    } else {
+      newsTitle = newsTitle.name_cambodia;
+      newsContent = newsDetail.description_cambodia;
+    }
+
     return (
       <View style={styles.container}>
         <ScrollView style={styles.wrapper}>
@@ -43,9 +55,10 @@ class NewsView extends Component {
             }}
             source={{
               html: mockHtml(
-                "https://www.jobbkk.com/upload/variety/makro/03.jpg",
-                "แม็คโครพารวย แจก 22 ล้าน ลุ้นทุกสัปดาห์ ทั่วไทย",
+                newsDetail.file_path,
+                newsTitle,
                 newsContent,
+                newsDetail.url_link,
                 this.props.fontSize.size
               )
             }}
@@ -64,6 +77,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  fontSize: state.fontSizeReducer
+  fontSize: state.fontSizeReducer,
+  setting: state.settingReducer
 });
 export default connect(mapStateToProps)(NewsView);

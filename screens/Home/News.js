@@ -1,11 +1,17 @@
 import React, { Component } from "react";
-import { View, ActivityIndicator, FlatList, StyleSheet } from "react-native";
+
+import { View, ActivityIndicator, FlatList, StyleSheet, Alert } from "react-native";
+import { connect } from "react-redux";
 import { List, ListItem } from "react-native-elements";
 import moment from "moment";
+import { FormattedMessage } from "react-intl";
+import HeaderTitle from "../../components/HeaderTitle";
+
+import { fetchNewsData } from "../../apis/newsApi";
 
 class NewsScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "News and Activity",
+    headerTitle: <HeaderTitle id="news" />,
     headerBackTitle: null,
     headerTintColor: "#000000"
   });
@@ -29,57 +35,31 @@ class NewsScreen extends Component {
   }
 
   componentDidMount() {
-    // this.makeRemoteRequest();
-    const mockup = [
-      {
-        id: 0,
-        title: "แม็คโครพารวย แจก 22 ล้าน ลุ้นทุกสัปดาห์ ทั่วไทย",
-        image: "",
-        date: "20/06/2018"
-      },
-      {
-        id: 1,
-        title: "แม็คโคร มหกรรมครบเครื่องเรื่องอาหาร และอุปกรณ์ กลับมาอีกครั้ง",
-        image: "",
-        date: "09/03/2018"
-      },
-      {
-        id: 2,
-        title: "เปิดเลย ตรวจสอบสิทธิชิงโชค",
-        image: "",
-        date: "30/12/2017"
-      },
-      {
-        id: 3,
-        title: "แม็คโคร ร่วมมือกับกทม. สนับสนุนโครงการจัดและจำหน่ายมอบกระเช้า",
-        image: "",
-        date: "28/12/2017"
-      },
-      {
-        id: 4,
-        title: "แจกโชค 5,000 บาท 100 รางวัล รับปีจอ",
-        image: "",
-        date: "28/12/2017"
-      }
-    ];
-    this.setState({ data: mockup });
+    this.makeRemoteRequest();
   }
   makeRemoteRequest() {
     const { page, seed } = this.state;
-    const url = `https://jsonplaceholder.typicode.com/albums`;
     this.setState({ loading: true });
-    fetch(url)
-      .then(res => res.json())
+    fetchNewsData(this.props.user.user.member_code)
       .then(res => {
+        // if (res.data.length < 1) {
+        //   if (this.props.setting.params.language == "en") {
+        //     Alert.alert("Makro", "News and Activities not available");
+        //   } else {
+        //     Alert.alert("Makro", "មិនទាន់មានព័ត៌មាន");
+        //   }
+        // }
         this.setState({
-          data: page === 1 ? res.posts : [...this.state.data, ...res.posts],
+          data: res.data,
           error: res.error || null,
           loading: false,
           refreshing: false
         });
       })
       .catch(error => {
-        this.setState({ error, loading: false });
+        this.setState({ error, loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
@@ -132,6 +112,7 @@ class NewsScreen extends Component {
 
   render() {
     const { navigate } = this.props.navigation;
+    const { language } = this.props.setting.params;
     return (
       <View style={styles.container}>
         <List
@@ -147,24 +128,19 @@ class NewsScreen extends Component {
               <ListItem
                 avatarStyle={{ width: 80, height: 80 }}
                 avatarContainerStyle={{ width: 80, height: 80 }}
-                title={`${item.title}`}
+                title={`${language == "en" ? item.name : item.name_cambodia}`}
                 titleNumberOfLines={2}
-                subtitle={`${moment(item.date, "DD/MM/YYYY").format(
-                  "DD MMM YYYY"
-                )}`}
-                avatar={{
-                  uri:
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPTv0mzZ9lqXoIaxb3aRM4XQwxXwk-7jbBSo_ENSXTKhxyPEj5"
-                }}
+                subtitle={`${moment(item.valid_from_date, "YYYY-MM-DD").format("DD MMM YYYY")}`}
+                avatar={{ uri: item.file_path }}
                 containerStyle={{ borderBottomWidth: 0 }}
-                onPress={() => navigate("NewsView")}
+                onPress={() => navigate("NewsView", { news_data: item })}
               />
             )}
             keyExtractor={item => item.id}
             ListFooterComponent={this.renderFooter}
             ItemSeparatorComponent={this.renderSeparator}
-            // onRefresh={this.handleRefresh}
-            // refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            refreshing={this.state.refreshing}
             // onEndReached={this.handleLoadMore}
             /// onEndReachedThreshold={50}
           />
@@ -181,4 +157,8 @@ const styles = StyleSheet.create({
   }
 });
 
-export default NewsScreen;
+const mapStateToProps = state => ({
+  user: state.userReducer,
+  setting: state.settingReducer
+});
+export default connect(mapStateToProps)(NewsScreen);

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+
 import {
   View,
   ScrollView,
@@ -28,10 +29,7 @@ class RegisterScreen extends Component {
         <SafeAreaView style={styles.container}>
           <View style={styles.wrapper}>
             <View style={styles.logo}>
-              <Image
-                source={require("../assets/makro_cam_logo.png")}
-                style={styles.logo__image}
-              />
+              <Image source={require("../assets/makro_cam_logo.png")} style={styles.logo__image} />
             </View>
             <ScrollView style={styles.regis__form}>
               <Text style={styles.regis__message}>Register</Text>
@@ -41,19 +39,13 @@ class RegisterScreen extends Component {
                 <Text style={styles.regis__label}>
                   Branch to Apply <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Please Select Branch"
-                />
+                <TextInput style={styles.regis__field} placeholder="Please Select Branch" />
               </View>
               <View style={styles.regis__form_control}>
                 <Text style={styles.regis__label}>
                   Type of Member <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Please Select Type of Member"
-                />
+                <TextInput style={styles.regis__field} placeholder="Please Select Type of Member" />
               </View>
 
               <Text style={[styles.regis__sub_message, { marginTop: 20 }]}>
@@ -67,16 +59,8 @@ class RegisterScreen extends Component {
                   <View style={[styles.regis__form_control, { width: "48%" }]}>
                     <TextInput style={styles.regis__field} placeholder="Name" />
                   </View>
-                  <View
-                    style={[
-                      styles.regis__form_control,
-                      { marginLeft: 5, width: "50%" }
-                    ]}
-                  >
-                    <TextInput
-                      style={styles.regis__field}
-                      placeholder="Surname"
-                    />
+                  <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
+                    <TextInput style={styles.regis__field} placeholder="Surname" />
                   </View>
                 </View>
               </View>
@@ -88,16 +72,8 @@ class RegisterScreen extends Component {
                   <View style={[styles.regis__form_control, { width: "48%" }]}>
                     <TextInput style={styles.regis__field} placeholder="Name" />
                   </View>
-                  <View
-                    style={[
-                      styles.regis__form_control,
-                      { marginLeft: 5, width: "50%" }
-                    ]}
-                  >
-                    <TextInput
-                      style={styles.regis__field}
-                      placeholder="Surname"
-                    />
+                  <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
+                    <TextInput style={styles.regis__field} placeholder="Surname" />
                   </View>
                 </View>
               </View>
@@ -105,31 +81,18 @@ class RegisterScreen extends Component {
                 <Text style={styles.regis__label}>
                   Passport No <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Passport No"
-                />
+                <TextInput style={styles.regis__field} placeholder="Passport No" />
               </View>
 
-              <Text style={[styles.regis__sub_message, { marginTop: 20 }]}>
-                Registered address
-              </Text>
+              <Text style={[styles.regis__sub_message, { marginTop: 20 }]}>Registered address</Text>
               <View style={{ width: "100%", flex: 1, flexDirection: "row" }}>
                 <View style={[styles.regis__form_control, { width: "48%" }]}>
                   <Text style={styles.regis__label}>
                     Sangkat <Text style={styles.red}>*</Text>
                   </Text>
-                  <TextInput
-                    style={styles.regis__field}
-                    placeholder="Sangkat"
-                  />
+                  <TextInput style={styles.regis__field} placeholder="Sangkat" />
                 </View>
-                <View
-                  style={[
-                    styles.regis__form_control,
-                    { marginLeft: 5, width: "50%" }
-                  ]}
-                >
+                <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
                   <Text style={styles.regis__label}>Khan</Text>
                   <TextInput style={styles.regis__field} placeholder="Khan" />
                 </View>
@@ -139,18 +102,10 @@ class RegisterScreen extends Component {
                 <View style={{ width: "100%", flex: 1, flexDirection: "row" }}>
                   <View style={[styles.regis__form_control, { width: "48%" }]}>
                     <Text style={styles.regis__label}>Phoum</Text>
-                    <TextInput
-                      style={styles.regis__field}
-                      placeholder="Phoum"
-                    />
+                    <TextInput style={styles.regis__field} placeholder="Phoum" />
                   </View>
 
-                  <View
-                    style={[
-                      styles.regis__form_control,
-                      { marginLeft: 5, width: "50%" }
-                    ]}
-                  >
+                  <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
                     <Text style={styles.regis__label}>Khum</Text>
                     <TextInput style={styles.regis__field} placeholder="Khum" />
                   </View>
@@ -182,30 +137,21 @@ class RegisterScreen extends Component {
                 <Text style={styles.regis__label}>
                   Telephone <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Telephone"
-                />
+                <TextInput style={styles.regis__field} placeholder="Telephone" />
               </View>
 
               <View style={styles.regis__form_control}>
                 <Text style={styles.regis__label}>
                   Mobile Phone <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Mobile Phone"
-                />
+                <TextInput style={styles.regis__field} placeholder="Mobile Phone" />
               </View>
 
               <View style={styles.regis__form_control}>
                 <Text style={styles.regis__label}>
                   E-Mail address <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="E-Mail address"
-                />
+                <TextInput style={styles.regis__field} placeholder="E-Mail address" />
               </View>
 
               <Text style={[styles.regis__sub_message, { marginTop: 20 }]}>
@@ -219,16 +165,8 @@ class RegisterScreen extends Component {
                   <View style={[styles.regis__form_control, { width: "48%" }]}>
                     <TextInput style={styles.regis__field} placeholder="Name" />
                   </View>
-                  <View
-                    style={[
-                      styles.regis__form_control,
-                      { marginLeft: 5, width: "50%" }
-                    ]}
-                  >
-                    <TextInput
-                      style={styles.regis__field}
-                      placeholder="Surname"
-                    />
+                  <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
+                    <TextInput style={styles.regis__field} placeholder="Surname" />
                   </View>
                 </View>
               </View>
@@ -240,16 +178,8 @@ class RegisterScreen extends Component {
                   <View style={[styles.regis__form_control, { width: "48%" }]}>
                     <TextInput style={styles.regis__field} placeholder="Name" />
                   </View>
-                  <View
-                    style={[
-                      styles.regis__form_control,
-                      { marginLeft: 5, width: "50%" }
-                    ]}
-                  >
-                    <TextInput
-                      style={styles.regis__field}
-                      placeholder="Surname"
-                    />
+                  <View style={[styles.regis__form_control, { marginLeft: 5, width: "50%" }]}>
+                    <TextInput style={styles.regis__field} placeholder="Surname" />
                   </View>
                 </View>
               </View>
@@ -257,10 +187,7 @@ class RegisterScreen extends Component {
                 <Text style={styles.regis__label}>
                   Passport No <Text style={styles.red}>*</Text>
                 </Text>
-                <TextInput
-                  style={styles.regis__field}
-                  placeholder="Passport No"
-                />
+                <TextInput style={styles.regis__field} placeholder="Passport No" />
               </View>
 
               <TouchableOpacity

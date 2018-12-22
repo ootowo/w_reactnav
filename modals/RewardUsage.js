@@ -1,15 +1,12 @@
 import React, { Component } from "react";
-import {
-  View,
-  Image,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  StyleSheet
-} from "react-native";
+
+import { View, Image, Text, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { EvilIcons } from "@expo/vector-icons";
+import { EvilIcons, Feather } from "@expo/vector-icons";
+import Barcode from "react-native-barcode-builder";
+import { FormattedMessage } from "react-intl";
+import moment from "moment";
 
 import { closeRewardModal } from "../actions/modalAction";
 
@@ -18,43 +15,52 @@ class RewardUsageModal extends Component {
     super(props);
   }
   renderCoupon() {
+    const { language } = this.props.setting.params;
     const item = this.props.modal.reward.data;
+    const expireDate = item.usedDate
+      ? moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S")
+      : moment(item.expireDate, "DD MMM YYYY");
+    const expired = expireDate < Date.now();
+
     return (
-      <View
-        style={[
-          styles.couponItem,
-          item.expired ? styles.couponItem_expired : null
-        ]}
-      >
-        {item.image ? (
+      <View style={[styles.couponItem, expired ? styles.couponItem_expired : null]}>
+        {/* {item.imagePath ? (
           <View style={styles.couponItem__thumbnail}>
-            <Image
-              style={styles.couponItem__thumbnail_image}
-              source={item.image}
-            />
+            <Image style={styles.couponItem__thumbnail_image} source={{ uri: item.imagePath }} />
           </View>
-        ) : null}
+        ) : null} */}
 
         <View style={styles.couponItem__detail}>
           <Text style={styles.couponItem__detail_offerdetail}>
-            {item.title}
+            {language == "en" ? item.name : item.name_cambodia}
           </Text>
           <Text
             style={[
               styles.couponItem__detail_offerexpire,
-              item.expired
+              expired
                 ? styles.couponItem__detail_offerexpired
                 : styles.couponItem__detail_offernotexpire
             ]}
           >
-            {item.expired ? "Expired" : item.expire}
+            {item.usedDate && expired ? (
+              <FormattedMessage id="reward.expired" />
+            ) : (
+              <Text>
+                <FormattedMessage id="reward.expire" />
+                {expireDate.format("D MMMM YYYY")}
+              </Text>
+            )}
           </Text>
         </View>
       </View>
     );
   }
   render() {
-    const { data } = this.props.modal.coupon;
+    const { data } = this.props.modal.reward;
+    const expireDate = data.usedDate
+      ? moment(data.usedDate.date, "YYYY-MM-DD HH:mm:ss.S")
+      : moment(data.expireDate, "DD MMM YYYY");
+
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.detail}>
@@ -64,34 +70,66 @@ class RewardUsageModal extends Component {
           >
             <EvilIcons name="close" size={25} color="#000000" />
           </TouchableOpacity>
-          <View style={styles.usedAlert}>
+
+          {/* <View style={styles.usedAlert}>
             <Text style={styles.usedAlert__text}>
-              You're already used this reward on 31 September 2018 at Bangbon
-              Branch
+              <FormattedMessage id="reward.used.message" />
+              {expireDate.format("DD/MM/YYYY HH:mm")}
             </Text>
-          </View>
+          </View> */}
+
           <View style={styles.couponPreview}>{this.renderCoupon()}</View>
-          <View style={styles.barcodeViewer}>
+          {/* <View style={styles.couponImage}>
             <Image
-              style={styles.barcodeViewer__image}
+              style={styles.couponImage__image}
               source={{
-                uri:
-                  "https://worldbarcodes.com/wp-content/assets/sites/20/EAN13-barcode-example.jpg"
+                uri: data.imagePath
               }}
             />
-            <Text style={styles.barcodeViewer__note}>
-              Please show this barcode with sale for usage this reward
-            </Text>
-          </View>
+          </View> */}
+          {data.code && (
+            <View style={styles.barcodeViewer}>
+              <View>
+                {/* <View style={styles.barcode__used}>
+                  <Text style={styles.barcode__used_text}>USED</Text>
+                </View> */}
+                <Barcode
+                  value={data.code}
+                  format="EAN13"
+                  text={data.code}
+                  flat
+                  onError={() => {}}
+                />
+              </View>
+
+              <Text style={styles.barcodeViewer__note}>
+                <FormattedMessage id="reward.usage" />
+              </Text>
+              <View style={styles.userDetailList}>
+                <View style={styles.userDetailItem}>
+                  <View style={styles.userDetailItem__icon}>
+                    <Feather name="user" style={{ color: "#999999", fontSize: 20 }} />
+                  </View>
+                  <Text style={styles.userDetailItem__text}>Jongkol Rojanasitthisak</Text>
+                </View>
+                <View style={styles.userDetailItem}>
+                  <View style={styles.userDetailItem__icon}>
+                    <EvilIcons name="credit-card" style={{ color: "#999999", fontSize: 20 }} />
+                  </View>
+                  <Text style={styles.userDetailItem__text}>006000935900</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
-        {/* <View style={styles.footer}>
+        <View style={styles.footer}>
           <TouchableOpacity
             style={styles.submitButton}
             onPress={() => this.props.closeCouponModal()}
           >
-            <Text style={styles.submitButton__text}>Change to Used</Text>
+            <Text style={styles.submitButton__text}>ปิด</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </SafeAreaView>
     );
   }
@@ -124,7 +162,7 @@ const styles = StyleSheet.create({
   },
   couponImage: {
     width: "100%",
-    marginTop: 20,
+
     backgroundColor: "#FFFFFF"
   },
   couponImage__image: {
@@ -145,7 +183,6 @@ const styles = StyleSheet.create({
   },
   barcodeViewer: {
     width: "100%",
-    height: 180,
     backgroundColor: "#FFFFFF",
     padding: 10,
     marginTop: 20,
@@ -156,17 +193,24 @@ const styles = StyleSheet.create({
     width: "100%",
     resizeMode: "contain"
   },
+  barcodeViewer__title: {
+    flex: 0,
+    fontSize: 16,
+    color: "#000000",
+    marginBottom: 10,
+    textAlign: "center",
+    fontWeight: "bold"
+  },
   barcodeViewer__note: {
     flex: 0,
-    fontSize: 10,
-    color: "#a4a4a4",
+    fontSize: 14,
+    color: "#000000",
     marginTop: 10,
     textAlign: "center"
   },
   couponPreview: {},
   couponItem: {
     width: "100%",
-    height: 100,
     borderRadius: 5,
     flexDirection: "row"
   },
@@ -233,6 +277,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFFFF"
   },
+  userDetailList: {
+    marginHorizontal: 20,
+    marginVertical: 20
+  },
+  userDetailItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderBottomColor: "#F8F8F8",
+    borderBottomWidth: 1
+  },
+  userDetailItem__icon: { marginRight: 10 },
+  userDetailItem__text: { fontSize: 14 },
+  barcode__used: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    top: 26,
+    paddingVertical: 10,
+    left: 0,
+    backgroundColor: "#FF0000",
+    zIndex: 99
+  },
+  barcode__used_text: {
+    fontSize: 40,
+    color: "#FFFFFF"
+  },
   submitButton: {
     width: "100%",
     height: 50,
@@ -247,10 +320,10 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = state => ({
-  modal: state.modalReducer
+  modal: state.modalReducer,
+  setting: state.settingReducer
 });
-const mapDispatchToProps = dispatch =>
-  bindActionCreators({ closeRewardModal }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ closeRewardModal }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps

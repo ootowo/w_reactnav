@@ -37,17 +37,17 @@ export default StyleSheet.create({
     alignSelf: "center"
   },
   bookItem__title: {
-    width: "100%" - 14,
-    padding: 8,
+    width: "100%" - 20,
+    padding: 3,
     borderRadius: 15,
     backgroundColor: "rgba(136, 136, 136, 0.8)",
     position: "absolute",
     bottom: 80,
-    left: 7,
-    right: 7,
+    left: 10,
+    right: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 15,
+    // marginHorizontal: 20,
     zIndex: 99
   },
   bookItem__title_text: {

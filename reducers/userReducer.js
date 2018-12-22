@@ -3,12 +3,13 @@ import {
   AUTHEN_LOGIN_DONE,
   AUTHEN_LOGIN_REJECT,
   AUTHEN_FACEBOOK_LOGIN,
-  AUTHEN_LOGOUT,
-  AUTHEN_LOGOUT_DONE,
-  AUTHEN_LOGOUT_REJECT,
+  // AUTHEN_LOGOUT,
+  // AUTHEN_LOGOUT_DONE,
+  // AUTHEN_LOGOUT_REJECT,
   SYNC_AUTHEN,
   SYNC_AUTHEN_DONE,
-  SYNC_AUTHEN_REJECT
+  SYNC_AUTHEN_REJECT,
+  AUTHEN_CLEAR
 } from "../actions/userAction";
 
 const initialState = {
@@ -31,32 +32,34 @@ const userReducer = (state = initialState, { type, payload }) => {
       };
     case AUTHEN_LOGIN_REJECT:
       return {
-        ...state,
         loading: false,
-        error: payload
+        error: payload,
+        user: {}
       };
     case AUTHEN_FACEBOOK_LOGIN:
       return {
         ...state,
         loading: true
       };
-    case AUTHEN_LOGOUT:
-      return {
-        ...state,
-        loading: true
-      };
-    case AUTHEN_LOGOUT_DONE:
-      return {
-        ...state,
-        loading: false,
-        user: {}
-      };
-    case AUTHEN_LOGOUT_REJECT:
-      return {
-        ...state,
-        loading: false,
-        error: payload
-      };
+    // case AUTHEN_LOGOUT:
+    //   return {
+    //     ...state,
+    //     loading: true
+    //   };
+    // case AUTHEN_LOGOUT_DONE:
+    //   return {
+    //     ...state,
+    //     loading: false,
+    //     user: {}
+    //   };
+    // case AUTHEN_LOGOUT_REJECT:
+    //   return {
+    //     ...state,
+    //     loading: false,
+    //     error: payload
+    //   };
+    case AUTHEN_CLEAR:
+      return initialState;
     case SYNC_AUTHEN:
       return {
         ...state,

@@ -1,12 +1,7 @@
-import React, { Component } from "react";
 import { connect } from "react-redux";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity
-} from "react-native";
+import React, { Component } from "react";
+
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
 import { Text } from "native-base";
 import { WebBrowser } from "expo";
 import { bindActionCreators } from "redux";
@@ -17,15 +12,25 @@ import {
   Entypo,
   FontAwesome
 } from "@expo/vector-icons";
+import { FormattedMessage } from "react-intl";
 
 import {
   openSocialModal,
-  openSelectBranchModal
+  openSelectBranchModal,
+  openAuthenModal,
+  openRewardEarnedModal
 } from "../../actions/modalAction";
+import { setCountingInternal, setCountingExternal } from "../../actions/countingAction";
+import { makeConfigAsync } from "../../actions/settingAction";
+import { authenClear, syncAuthen } from "../../actions/userAction";
+import { _HOST } from "../../utils/config";
 
 import ProfileHeader from "../../components/ProfileHeader";
 import CardHeader from "../../components/CardHeader";
 import { Banner } from "../../components/Banner";
+import { isEmpty } from "../../utils/validate";
+import { removeUserFromDB } from "../../apis/authenApi";
+import { fetchAllDataLength, fetchCountingFromDB } from "../../apis/countingApi";
 
 class MainMenuScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -35,8 +40,10 @@ class MainMenuScreen extends Component {
 
   constructor(props) {
     super(props);
-
     this.onPressOpenWebSite = this.onPressOpenWebSite.bind(this);
+    this.reCalculateCounter = this.reCalculateCounter.bind(this);
+    this.navigateGrantCheck = this.navigateGrantCheck.bind(this);
+    this.clearBranchSelected = this.clearBranchSelected.bind(this);
   }
 
   async onPressOpenWebSite(address) {
@@ -44,27 +51,119 @@ class MainMenuScreen extends Component {
   }
 
   componentDidMount() {
-    this.props.openSelectBranchModal();
+    setTimeout(() => {
+      new Promise((resolve, reject) => {
+        this.props.syncAuthen(resolve, reject);
+      }).then(res => {
+        if (isEmpty(res)) {
+          this.props.navigation.navigate("Authen");
+        }
+      });
+    }, 1000);
+
+    this.reCalculateCounter();
+    const isFacebook = this.props.user.user.facebook_access_token !== null;
+    if (this.props.setting.params.branch == null && !isEmpty(this.props.user.user) && !isFacebook) {
+      this.props.openSelectBranchModal();
+    }
+
+    // this.props.openRewardEarnedModal();
+  }
+
+  reCalculateCounter() {
+    // Fetch Old Counter from DB
+    fetchCountingFromDB().then(res => {
+      this.props.setCountingInternal(res);
+      // Fetch Latest Counter from API
+      fetchAllDataLength(this.props.user.user.member_code, res => {
+        this.props.setCountingExternal(res);
+      });
+    });
+  }
+
+  navigateGrantCheck(facebookCheck, page) {
+    const isFacebook = this.props.user.user.facebook_access_token !== null;
+    const { language } = this.props.setting.params;
+
+    if (facebookCheck && !isFacebook) {
+      this.props.navigation.navigate(page);
+    } else if (!facebookCheck) {
+      this.props.navigation.navigate(page);
+    } else {
+      var title = "Makro";
+      var message =
+        "These rewards are provided for members only. Please log in your Makro member ID.";
+      if (language == "ka") {
+        title = "ម៉ាក្រូ";
+        message = "ផ្តល់ជូនសំរាប់សមាជិកតែប៉ុណ្ណោះ សូមបញ្ចូលលេខកូដសមាជិករបស់អ្នក";
+      }
+
+      Alert.alert(
+        title,
+        message,
+        [
+          // { text: "Cancel", onPress: () => {}, style: "cancel" },
+          {
+            text: "OK",
+            onPress: () => {
+              // removeUserFromDB().then(res => {
+              //   this.clearBranchSelected(() => {
+              //     this.props.authenClear();
+              //     this.props.navigation.navigate("Authen");
+              //   });
+              // });
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    }
+  }
+
+  clearBranchSelected(cb) {
+    new Promise((resolve, reject) => {
+      this.props.makeConfigAsync(
+        {
+          key: "branch",
+          value: null,
+          oldSetting: this.props.setting.params
+        },
+        resolve,
+        reject
+      );
+    }).then(() => {
+      cb();
+    });
   }
 
   render() {
     const { navigate } = this.props.navigation;
     const { home } = this.props.banner;
+
+    const counter = {
+      internal: this.props.counting.internal,
+      external: this.props.counting.external
+    };
     const homeBannerImages = home.map(banner => {
       return {
-        uri: banner.filePath
+        uri: _HOST + banner.file_path
       };
     });
     const homeBannerURLs = home.map(banner => {
-      return banner.url;
+      return banner.file_url;
     });
+
+    const unread = {
+      coupon: counter.external.coupon - counter.internal.coupon,
+      mail: counter.external.mail - counter.internal.mail,
+      catalog: counter.external.catalog - counter.internal.catalog,
+      offer: counter.external.offer - counter.internal.offer,
+      reward: counter.external.reward - counter.internal.reward
+    };
 
     return (
       <View style={styles.container}>
-        <Image
-          style={styles.redBg}
-          source={require("../../assets/home_bg.png")}
-        />
+        <Image style={styles.redBg} source={require("../../assets/home_bg.png")} />
 
         <ScrollView style={styles.wrapper}>
           <Banner images={homeBannerImages} urls={homeBannerURLs} />
@@ -72,107 +171,122 @@ class MainMenuScreen extends Component {
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("Coupon")}
+                onPress={() => this.navigateGrantCheck(true, "Coupon")}
               >
                 <View>
-                  <View style={styles.menuButton__badge}>
-                    <Text style={styles.menuButton__badge_text}>2</Text>
-                  </View>
+                  {unread.coupon > 0 && (
+                    <View style={styles.menuButton__badge}>
+                      <Text style={styles.menuButton__badge_text}>{unread.coupon}</Text>
+                    </View>
+                  )}
                   <View style={styles.menuButton__icon}>
                     <Ionicons name="md-barcode" color="#FF0000" size={38} />
                   </View>
                 </View>
-                <Text style={styles.menuButton__text}>Member Coupon</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.coupon" />
+                </Text>
               </TouchableOpacity>
             </View>
+
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("Mail")}
+                onPress={() => this.navigateGrantCheck(false, "Mail")}
               >
                 <View>
-                  <View style={styles.menuButton__badge}>
-                    <Text style={styles.menuButton__badge_text}>2</Text>
-                  </View>
+                  {unread.mail > 0 && (
+                    <View style={styles.menuButton__badge}>
+                      <Text style={styles.menuButton__badge_text}>{unread.mail}</Text>
+                    </View>
+                  )}
                   <View style={styles.menuButton__icon}>
-                    <SimpleLineIcons
-                      name="notebook"
-                      color="#FF0000"
-                      size={38}
-                    />
+                    <SimpleLineIcons name="notebook" color="#FF0000" size={38} />
+                  </View>
+                </View>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.mail" />
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.menuGridCell}>
+              <TouchableOpacity
+                style={styles.menuButton}
+                onPress={() => this.navigateGrantCheck(false, "ProductCatalog")}
+              >
+                <View>
+                  {unread.catalog > 0 && (
+                    <View style={styles.menuButton__badge}>
+                      <Text style={styles.menuButton__badge_text}>
+                        <FormattedMessage id="new" />
+                      </Text>
+                    </View>
+                  )}
+                  <View style={styles.menuButton__icon}>
+                    <SimpleLineIcons name="book-open" color="#FF0000" size={38} />
+                  </View>
+                </View>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.catelog" />
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.menuGridCell}>
+              <TouchableOpacity
+                style={styles.menuButton}
+                onPress={() => this.navigateGrantCheck(true, "MainReward")}
+              >
+                <View>
+                  {unread.reward > 0 && (
+                    <View style={styles.menuButton__badge}>
+                      <Text style={styles.menuButton__badge_text}>{unread.reward}</Text>
+                    </View>
+                  )}
+                  <View style={styles.menuButton__icon}>
+                    <MaterialCommunityIcons name="gift" color="#FF0000" size={38} />
                   </View>
                 </View>
 
-                <Text style={styles.menuButton__text}>Makro Mail</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.reward" />
+                </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.menuGridCell}>
-              <TouchableOpacity
-                style={styles.menuButton}
-                onPress={() => navigate("ProductCatalog")}
-              >
-                <View>
-                  <View style={styles.menuButton__badge}>
-                    <Text style={styles.menuButton__badge_text}>New</Text>
-                  </View>
-                  <View style={styles.menuButton__icon}>
-                    <SimpleLineIcons
-                      name="book-open"
-                      color="#FF0000"
-                      size={38}
-                    />
-                  </View>
-                </View>
-                <Text style={styles.menuButton__text}>Catalog</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.menuGridCell}>
-              <TouchableOpacity
-                style={styles.menuButton}
-                onPress={() => navigate("Privillage")}
-              >
-                <View>
-                  {/* <View style={styles.menuButton__badge}>
-                  <Text style={styles.menuButton__badge_text}>4</Text>
-                </View> */}
-                  <View style={styles.menuButton__icon}>
-                    <MaterialCommunityIcons
-                      name="gift"
-                      color="#FF0000"
-                      size={38}
-                    />
-                  </View>
-                </View>
 
-                <Text style={styles.menuButton__text}>Member Rewards</Text>
-              </TouchableOpacity>
-            </View>
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("News")}
+                onPress={() => this.navigateGrantCheck(false, "News")}
               >
                 <View>
                   <View style={styles.menuButton__icon}>
                     <Entypo name="megaphone" color="#FF0000" size={38} />
                   </View>
                 </View>
-                <Text style={styles.menuButton__text}>News and Activities</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.news" />
+                </Text>
               </TouchableOpacity>
             </View>
+
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("Entertainment")}
+                onPress={() => this.navigateGrantCheck(false, "Entertainment")}
               >
                 <View>
                   <View style={styles.menuButton__icon}>
                     <Entypo name="clapperboard" color="#FF0000" size={38} />
                   </View>
                 </View>
-                <Text style={styles.menuButton__text}>Entertainment</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.entertain" />
+                </Text>
               </TouchableOpacity>
             </View>
+
             {/* <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
@@ -195,33 +309,41 @@ class MainMenuScreen extends Component {
                 <Text style={styles.menuButton__text}>Makro Click!</Text>
               </TouchableOpacity>
             </View> */}
+
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("Offer")}
+                onPress={() => this.navigateGrantCheck(false, "Offer")}
               >
                 <View>
-                  <View style={styles.menuButton__badge}>
-                    <Text style={styles.menuButton__badge_text}>3</Text>
-                  </View>
+                  {unread.offer > 0 && (
+                    <View style={styles.menuButton__badge}>
+                      <Text style={styles.menuButton__badge_text}>{unread.offer}</Text>
+                    </View>
+                  )}
                   <View style={styles.menuButton__icon}>
                     <FontAwesome name="bell-o" color="#FF0000" size={38} />
                   </View>
                 </View>
-                <Text style={styles.menuButton__text}>Today's Offer</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.offer" />
+                </Text>
               </TouchableOpacity>
             </View>
+
             <View style={styles.menuGridCell}>
               <TouchableOpacity
                 style={styles.menuButton}
-                onPress={() => navigate("Setting")}
+                onPress={() => this.navigateGrantCheck(false, "Setting")}
               >
                 <View>
                   <View style={styles.menuButton__icon}>
                     <FontAwesome name="cog" color="#FF0000" size={38} />
                   </View>
                 </View>
-                <Text style={styles.menuButton__text}>Settings</Text>
+                <Text style={styles.menuButton__text}>
+                  <FormattedMessage id="home.menu.setting" />
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -302,13 +424,23 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
   modal: state.modalReducer,
-  banner: state.bannerReducer
+  banner: state.bannerReducer,
+  user: state.userReducer,
+  setting: state.settingReducer,
+  counting: state.countingReducer
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       openSocialModal,
-      openSelectBranchModal
+      openSelectBranchModal,
+      openAuthenModal,
+      openRewardEarnedModal,
+      setCountingInternal,
+      setCountingExternal,
+      makeConfigAsync,
+      authenClear,
+      syncAuthen
     },
     dispatch
   );

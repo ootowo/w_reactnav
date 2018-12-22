@@ -1,14 +1,15 @@
 import "intl";
 import "intl/locale-data/jsonp/en";
-import "intl/locale-data/jsonp/th";
 import "intl/locale-data/jsonp/ka";
-
-import React from "react";
-import { View, StatusBar, Platform } from "react-native";
-import { Provider } from "react-redux";
-import { AppLoading, Asset, Font } from "expo";
+import "intl/locale-data/jsonp/th";
 import { addLocaleData } from "react-intl";
+import { AppLoading, Asset, Font } from "expo";
+import { Provider } from "react-redux";
 import { useScreens } from "react-native-screens";
+import { View, StatusBar, Platform } from "react-native";
+// import firebase from "react-native-firebase";
+import React from "react";
+
 import {
   Entypo,
   FontAwesome,
@@ -19,7 +20,7 @@ import {
 } from "@expo/vector-icons";
 
 import CoreApp from "./core/CoreApp";
-import store from "./store";
+import configureStore from "./store";
 
 const enLocale = require("react-intl/locale-data/en");
 const thLocale = require("react-intl/locale-data/th");
@@ -42,6 +43,14 @@ const cacheImages = images => {
 const cacheFonts = fonts => {
   return fonts.map(font => Font.loadAsync(font));
 };
+
+// Firebase Auth
+// firebase
+//   .auth()
+//   .signInAnonymously()
+//   .then(credential => {
+//     console.log("Firebase Authen Credential: " + credential);
+//   });
 
 class App extends React.Component {
   state = {
@@ -74,7 +83,10 @@ class App extends React.Component {
 
       require("./assets/home_bg.png"),
       require("./assets/makro_cam_logo.png"),
-      require("./assets/makro_card.png")
+      require("./assets/makro_card.png"),
+
+      require("./assets/card_preview/card.png"),
+      require("./assets/card_thumbnail/card.png")
     ]);
     const fontAssets = cacheFonts([
       {
@@ -93,6 +105,7 @@ class App extends React.Component {
   }
 
   render() {
+    const store = configureStore();
     if (this.state.isReady) {
       return (
         <AppLoading

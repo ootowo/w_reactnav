@@ -1,8 +1,4 @@
-import {
-  FETCH_BANNER,
-  fetchBannerDone,
-  fetchBannerReject
-} from "../actions/bannerAction";
+import { FETCH_BANNER, fetchBannerDone, fetchBannerReject } from "../actions/bannerAction";
 import { call, put, takeLatest } from "redux-saga/effects";
 import moment from "moment";
 
@@ -20,17 +16,17 @@ export function* getFetchBanner() {
         catalog: []
       };
       data.map(result => {
-        const validFrom = moment(result.validFromDate, "YYYY-MM-DD"),
-          validTo = moment(result.validToDate, "YYYY-MM-DD"),
+        const validFrom = moment(result["valid_from_date"], "YYYY-MM-DD HH:mm:ss"),
+          validTo = moment(result["valid_to_date"], "YYYY-MM-DD HH:mm:ss"),
           now = Date.now();
         if (validFrom <= now && validTo >= now) {
-          if (result.destination.toLowerCase() == "home") {
+          if (result.destination.trim().toLowerCase() == "home") {
             donePayload.home.push(result);
-          } else if (result.destination.toLowerCase() == "coupon") {
+          } else if (result.destination.trim().toLowerCase() == "coupon") {
             donePayload.coupon.push(result);
-          } else if (result.destination.toLowerCase() == "makro mail") {
+          } else if (result.destination.trim().toLowerCase() == "makro mail") {
             donePayload.mail.push(result);
-          } else if (result.destination.toLowerCase() == "catalog") {
+          } else if (result.destination.trim().toLowerCase() == "catalog") {
             donePayload.catalog.push(result);
           }
         }

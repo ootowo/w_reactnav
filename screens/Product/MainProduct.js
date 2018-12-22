@@ -1,12 +1,11 @@
-import React, { Component } from "react";
-import { Dimensions } from "react-native";
 import { Container, Header, Tab, Tabs, ScrollableTab } from "native-base";
+import { Dimensions } from "react-native";
+import React, { Component } from "react";
 
+import CardHeader from "../../components/CardHeader";
 import CatelogScreen from "./Catelog";
 import FavoriteScreen from "./Favorite";
-
 import ProfileHeader from "../../components/ProfileHeader";
-import CardHeader from "../../components/CardHeader";
 
 class MainProductScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -17,11 +16,7 @@ class MainProductScreen extends Component {
   render() {
     return (
       <Container>
-        <Tabs
-          renderTabBar={() => (
-            <ScrollableTab style={{ borderBottomWidth: 0 }} />
-          )}
-        >
+        <Tabs renderTabBar={() => <ScrollableTab style={{ borderBottomWidth: 0 }} />}>
           <Tab heading="Professional Products">
             <CatelogScreen navigation={this.props.navigation} />
           </Tab>

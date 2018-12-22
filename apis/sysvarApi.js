@@ -1,5 +1,5 @@
-import { getData, setData, removeData } from "../db";
 import { _DEFAULT_SYS_VAR } from "../utils/config";
+import { getData, setData, removeData } from "../db";
 
 export const fetchSystemVarFromDB = () => {
   return new Promise((resolve, reject) => {

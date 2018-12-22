@@ -1,6 +1,15 @@
 import { normalize } from "./styles";
 
-export const mockHtml = (image, title, content, size = 17) => `
+const translate = {
+  en: {
+    publish_on: ""
+  },
+  ka: {
+    publish_on: ""
+  }
+};
+
+export const mockHtml = (image, title, content, url, size = 17) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -30,7 +39,10 @@ export const mockHtml = (image, title, content, size = 17) => `
         <div class="container">
             ${image != null ? `<img class="thumbnail" src="${image}" />` : ""}
             ${title != null ? `<h1>${title}</h1><br />` : ""}
-            ${content != null ? `<div class="content">${content}</div>` : ""}
+            <div class="content">
+                ${content != null ? content : ""}
+                ${url != null ? url : ""}
+            </div>
         </div>
     </body>
     </html>
