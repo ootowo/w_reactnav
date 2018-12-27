@@ -1,12 +1,12 @@
 export const _PUSH_ENDPOINT = "";
 
 // Developement Site
-// export const _API_ENDPOINT = "https://developers.awesys.asia/Makro/";
-// export const _HOST = "https://developers.awesys.asia/";
+export const _API_ENDPOINT = "https://developers.awesys.asia/Makro/";
+export const _HOST = "https://developers.awesys.asia/";
 
 // Production Site
-export const _API_ENDPOINT = "https://makrocambodia.ada-soft.com/";
-export const _HOST = "https://makrocambodia.ada-soft.com/";
+// export const _API_ENDPOINT = "https://makrocambodia.ada-soft.com/";
+// export const _HOST = "https://makrocambodia.ada-soft.com/";
 
 export const _VERSION = "1.0.2";
 export const _DEFAULT_SETTING = {

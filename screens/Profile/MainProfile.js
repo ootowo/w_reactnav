@@ -148,6 +148,14 @@ class MainProfileScreen extends Component {
                     </Text>
                   </Body>
                 </ListItem>
+                <ListItem icon onPress={() => navigate("MyOrder")}>
+                  <Left>
+                    <FontAwesome name="shopping-bag" size={20} color="#808080" />
+                  </Left>
+                  <Body>
+                    <Text>My Order</Text>
+                  </Body>
+                </ListItem>
                 <ListItem icon onPress={this.handleLogout}>
                   <Left>
                     <FontAwesome name="sign-out" size={20} color="#FF0000" />

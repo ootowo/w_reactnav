@@ -1,20 +1,33 @@
 import React, { Component } from "react";
-
 import {
   View,
   Text,
   Image,
-  ImageBackground,
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet
 } from "react-native";
+import { EvilIcons } from "@expo/vector-icons";
 
 class ProductListScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: "Products",
-    headerTintColor: "#000000"
+    headerTintColor: "#000000",
+    headerBackTitle: null,
+    headerRight: (
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
+          onPress={() => navigation.navigate("Cart")}
+        >
+          <View style={styles.cartIcon__badge}>
+            <Text style={styles.cartIcon__badge_text}>1</Text>
+          </View>
+          <EvilIcons name="cart" style={{ color: "#000000", fontSize: 28 }} />
+        </TouchableOpacity>
+      </View>
+    )
   });
 
   constructor(props) {
@@ -249,7 +262,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#FFFFFF",
     fontWeight: "bold"
-  }
+  },
+  cartIcon__badge: {
+    position: "absolute",
+    top: -5,
+    right: 5,
+    backgroundColor: "#FF0000",
+    minWidth: 18,
+    paddingHorizontal: 5,
+    height: 18,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 99
+  },
+  cartIcon__badge_text: { fontSize: 12, fontWeight: "bold", color: "#FFFFFF" }
 });
 
 export default ProductListScreen;

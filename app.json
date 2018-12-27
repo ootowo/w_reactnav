@@ -8,12 +8,15 @@
     "platforms": ["ios", "android"],
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/app_icon/icon.png",
+    "icon": "./assets/app_icon/icon_white.png",
     "splash": {
       "image": "./assets/splash_screen.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
+    "facebookAppId": "2221072034804982",
+    "facebookDisplayName": "Makro Cambodia",
+    "facebookScheme": "fb2221072034804982",
     "updates": {
       "fallbackToCacheTimeout": 0
     },

@@ -21,14 +21,16 @@ class RewardRedeemScreen extends Component {
       availableData: [
         {
           name: "Makro Jad Hai every month buy more get more",
-          use_date: "Redeem on 14 March 2561 11:59:32"
+          use_date: "Redeem on 14 March 2561 11:59:32",
+          thumbnail: require("../../assets/banner.jpg")
         }
       ],
       historyData: [
         {
           name:
             "Frech Food : Special!! Promotion collect more get more Fresh Cashback hurry collect from now",
-          use_date: "Redeem on 13 March 2561 12:05:18"
+          use_date: "Redeem on 13 March 2561 12:05:18",
+          thumbnail: require("../../assets/banner.jpg")
         }
       ],
       mockReward: {
@@ -36,7 +38,8 @@ class RewardRedeemScreen extends Component {
           "Frech Food : Special!! Promotion collect more get more Fresh Cashback hurry collect from now",
         name_cambodia:
           "Frech Food : Special!! Promotion collect more get more Fresh Cashback hurry collect from now",
-        code: "0123456789012"
+        code: "0123456789012",
+        imagePath: require("../../assets/banner.jpg")
       }
     };
 
@@ -59,9 +62,12 @@ class RewardRedeemScreen extends Component {
           data={availableData}
           renderItem={({ item }) => (
             <ListItem
+              avatarStyle={{ width: 80, height: 80 }}
+              avatarContainerStyle={{ width: 80, height: 80 }}
               title={item.name}
               titleNumberOfLines={2}
               subtitle={item.use_date}
+              avatar={item.thumbnail}
               containerStyle={{ borderBottomWidth: 0 }}
               onPress={() => this.props.openRewardModal(this.state.mockReward)}
             />
@@ -86,9 +92,12 @@ class RewardRedeemScreen extends Component {
           data={historyData}
           renderItem={({ item }) => (
             <ListItem
+              avatarStyle={{ width: 80, height: 80 }}
+              avatarContainerStyle={{ width: 80, height: 80 }}
               title={item.name}
               titleNumberOfLines={2}
               subtitle={item.use_date}
+              avatar={item.thumbnail}
               containerStyle={{ borderBottomWidth: 0 }}
               onPress={() => this.props.openRewardModal(this.state.mockReward)}
             />

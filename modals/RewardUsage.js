@@ -79,14 +79,9 @@ class RewardUsageModal extends Component {
           </View> */}
 
           <View style={styles.couponPreview}>{this.renderCoupon()}</View>
-          {/* <View style={styles.couponImage}>
-            <Image
-              style={styles.couponImage__image}
-              source={{
-                uri: data.imagePath
-              }}
-            />
-          </View> */}
+          <View style={styles.couponImage}>
+            <Image style={styles.couponImage__image} source={data.imagePath} />
+          </View>
           {data.code && (
             <View style={styles.barcodeViewer}>
               <View>
@@ -162,7 +157,7 @@ const styles = StyleSheet.create({
   },
   couponImage: {
     width: "100%",
-
+    marginTop: 20,
     backgroundColor: "#FFFFFF"
   },
   couponImage__image: {
@@ -185,7 +180,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#FFFFFF",
     padding: 10,
-    marginTop: 20,
     flexDirection: "column"
   },
   barcodeViewer__image: {
