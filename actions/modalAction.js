@@ -101,3 +101,16 @@ export const closeSelectBranchModal = () => ({
 export const toggleSelectBranchModal = () => ({
   type: TOGGLE_SELECT_BRANCH_MODAL
 });
+
+export const OPEN_SHIPPING_CHECK_MODAL = "OPEN_SHIPPING_CHECK_MODAL";
+export const CLOSE_SHIPPING_CHECK_MODAL = "CLOSE_SHIPPING_CHECK_MODAL";
+export const TOGGLE_SHIPPING_CHECK_MODAL = "TOGGLE_SHIPPING_CHECK_MODAL";
+export const openShippingCheckModal = () => ({
+  type: OPEN_SHIPPING_CHECK_MODAL
+});
+export const closeShippingCheckModal = () => ({
+  type: CLOSE_SHIPPING_CHECK_MODAL
+});
+export const toggleShippingCheckModal = () => ({
+  type: TOGGLE_SHIPPING_CHECK_MODAL
+});

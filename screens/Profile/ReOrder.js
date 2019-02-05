@@ -13,9 +13,9 @@ import DialogInput from "react-native-dialog-input";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import moment from "moment";
 
-class CheckoutScreen extends Component {
+class ReOrderScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Payment",
+    title: "Re-Order",
     headerTintColor: "#000000",
     headerBackTitle: null
   });
@@ -69,10 +69,15 @@ class CheckoutScreen extends Component {
       </View>
       <View style={{ justifyContent: "center" }}>
         <View style={styles.productItem__udQty}>
+          <TouchableOpacity style={styles.productItem__udQty_ctrl}>
+            <Text>-</Text>
+          </TouchableOpacity>
           <View style={styles.productItem__udQty_text}>
-            <Text style={{ color: "#404040", fontSize: 12, marginRight: 5 }}>Quantity</Text>
             <Text>{`${item.qty}`}</Text>
           </View>
+          <TouchableOpacity style={styles.productItem__udQty_ctrl}>
+            <Text>+</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -94,22 +99,22 @@ class CheckoutScreen extends Component {
           <View style={styles.checkout__channel}>
             <Text style={styles.checkout__channel_header}>Delivery Channel</Text>
             <View style={styles.checkout__channel_selector}>
+              <TouchableOpacity style={styles.checkout__channel_selector_button}>
+                <MaterialCommunityIcons name="truck-delivery" size={40} />
+                <Text style={styles.checkout__channel_selector_button_text}>Pick up at store</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.checkout__channel_selector_button,
                   styles.checkout__channel_selector_button__selected
                 ]}
               >
-                <MaterialCommunityIcons name="truck-delivery" size={40} />
-                <Text style={styles.checkout__channel_selector_button_text}>Pick up at store</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.checkout__channel_selector_button}>
                 <FontAwesome name="shopping-cart" size={40} />
                 <Text style={styles.checkout__channel_selector_button_text}>Delivery</Text>
               </TouchableOpacity>
             </View>
           </View>
-          {/* <View style={styles.checkout__detail}>
+          <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Pickup Date</Text>
               <Text style={styles.checkout__detail_header_right} onPress={this.showDateTimePicker}>
@@ -121,8 +126,8 @@ class CheckoutScreen extends Component {
                 {moment(pickedDate).format("DD MMM YYYY HH:mm")}
               </Text>
             </View>
-          </View> */}
-          {/* <View style={styles.checkout__detail}>
+          </View>
+          <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Shipping Address</Text>
               <Text
@@ -138,8 +143,8 @@ class CheckoutScreen extends Component {
                 174 Oom Noi, Samut Sakorn, Thailand 74130
               </Text>
             </View>
-          </View> */}
-          {/* <View style={styles.checkout__detail}>
+          </View>
+          <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Tax Invoice Address</Text>
               <Text
@@ -155,7 +160,7 @@ class CheckoutScreen extends Component {
                 174 Oom Noi, Samut Sakorn, Thailand 74130
               </Text>
             </View>
-          </View> */}
+          </View>
           <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Email address</Text>
@@ -186,7 +191,7 @@ class CheckoutScreen extends Component {
             style={styles.footer__checkoutButton}
             onPress={() => navigate("PaymentPending")}
           >
-            <Text style={styles.footer__checkoutButton_text}>Order Now!</Text>
+            <Text style={styles.footer__checkoutButton_text}>Re-Order</Text>
           </TouchableOpacity>
         </View>
 
@@ -289,14 +294,23 @@ const styles = StyleSheet.create({
     color: "#CCCCCC"
   },
   productItem__udQty: {
+    borderWidth: 1,
+    borderColor: "#CCCCCC",
     flexDirection: "row",
     height: 24
   },
-
+  productItem__udQty_ctrl: {
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center"
+  },
   productItem__udQty_text: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: "#CCCCCC",
     height: 24,
     paddingHorizontal: 12,
-    flexDirection: "row",
     justifyContent: "center"
   },
   footer: { backgroundColor: "#FFFFFF", flexDirection: "row" },
@@ -311,4 +325,4 @@ const styles = StyleSheet.create({
   footer__checkoutButton_text: { color: "#FFFFFF", fontWeight: "bold" }
 });
 
-export default CheckoutScreen;
+export default ReOrderScreen;

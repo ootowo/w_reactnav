@@ -57,6 +57,8 @@ class MainBranchScreen extends Component {
     this.onBranchChange = this.onBranchChange.bind(this);
     this.getDirection = this.getDirection.bind(this);
     this.handleNavigation = this.handleNavigation.bind(this);
+    this.grantLocationAccess = this.grantLocationAccess.bind(this);
+    this.findCurrentCoord = this.findCurrentCoord.bind(this);
   }
 
   componentDidMount() {
@@ -115,6 +117,32 @@ class MainBranchScreen extends Component {
   };
 
   getCurrentLocation = async () => {
+    const { status } = await Permissions.getAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      Alert.alert(
+        "Makro Cambodia",
+        "Please grant access your location for finding nearby makro branch",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {},
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              this.grantLocationAccess();
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    } else {
+      this.findCurrentCoord();
+    }
+  };
+
+  grantLocationAccess = async () => {
     if (Platform.OS === "android" && !Constants.isDevice) {
       Alert.alert(
         "Error",
@@ -125,27 +153,31 @@ class MainBranchScreen extends Component {
       if (status !== "granted") {
         Alert.alert("Error", "Permission to access location was denied");
       } else {
-        let { coords } = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = coords;
-        this.setState(
-          {
-            mapRegion: {
-              ...this.state.mapRegion,
-              latitude,
-              longitude
-            },
-            initialRegion: {
-              ...this.state.initialRegion,
-              latitude,
-              longitude
-            }
-          },
-          () => {
-            this.mapRef.animateToRegion(this.state.mapRegion, 500);
-          }
-        );
+        this.findCurrentCoord();
       }
     }
+  };
+
+  findCurrentCoord = async () => {
+    let { coords } = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude } = coords;
+    this.setState(
+      {
+        mapRegion: {
+          ...this.state.mapRegion,
+          latitude,
+          longitude
+        },
+        initialRegion: {
+          ...this.state.initialRegion,
+          latitude,
+          longitude
+        }
+      },
+      () => {
+        this.mapRef.animateToRegion(this.state.mapRegion, 500);
+      }
+    );
   };
 
   handleNavigation() {

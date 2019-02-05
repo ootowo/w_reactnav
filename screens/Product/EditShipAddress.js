@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 
 
 class EditShipAddressScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Shipping Address",
+    title: "Add Address",
     headerTintColor: "#000000",
     headerBackTitle: null
   });

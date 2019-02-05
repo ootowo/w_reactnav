@@ -54,6 +54,8 @@ class LoginScreen extends Component {
     this._keyboardDidShow = this._keyboardDidShow.bind(this);
     this._keyboardDidHide = this._keyboardDidHide.bind(this);
 
+    this.grantCameraAccess = this.grantCameraAccess.bind(this);
+
     this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", this._keyboardDidShow);
     this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
   }
@@ -70,6 +72,38 @@ class LoginScreen extends Component {
   }
 
   _requestCameraPermission = async () => {
+    const { status } = await Permissions.getAsync(Permissions.CAMERA);
+    if (status !== "granted") {
+      Alert.alert(
+        "Makro Cambodia",
+        "Please grant access your camera for scan your barcode",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {
+              this.setState({ showScannerModal: false });
+            },
+            style: "cancel"
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              this.setState({ showScannerModal: true }, () => {
+                this.grantCameraAccess();
+              });
+            }
+          }
+        ],
+        { cancelable: false }
+      );
+    } else {
+      this.setState({ showScannerModal: true }, () => {
+        this.grantCameraAccess();
+      });
+    }
+  };
+
+  grantCameraAccess = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({
       hasCameraPermission: status === "granted"
@@ -213,7 +247,6 @@ class LoginScreen extends Component {
                     style={styles.coupon__scanner_button}
                     onPress={() => {
                       this._requestCameraPermission();
-                      this.setState({ showScannerModal: true });
                     }}
                   >
                     <MaterialCommunityIcons

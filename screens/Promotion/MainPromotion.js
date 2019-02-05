@@ -140,7 +140,7 @@ class MainPromotionScreen extends Component {
                 {item.title}
               </Text>
               {item.special_price ? (
-                <Text style={styles.productItem__title_price}>{item.special_price} ฿</Text>
+                <Text style={styles.productItem__title_price}>{item.special_price} USD</Text>
               ) : null}
               <Text
                 style={
@@ -149,7 +149,7 @@ class MainPromotionScreen extends Component {
                     : styles.productItem__title_price
                 }
               >
-                {item.price} ฿
+                {item.price} USD
               </Text>
               {item.offer ? (
                 <View style={styles.productItem__title_offer}>

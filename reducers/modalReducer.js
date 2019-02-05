@@ -25,7 +25,10 @@ import {
   TOGGLE_REWARD_EARNED_MODAL,
   OPEN_AUTHEN_MODAL,
   CLOSE_AUTHEN_MODAL,
-  TOGGLE_AUTHEN_MODAL
+  TOGGLE_AUTHEN_MODAL,
+  OPEN_SHIPPING_CHECK_MODAL,
+  CLOSE_SHIPPING_CHECK_MODAL,
+  TOGGLE_SHIPPING_CHECK_MODAL
 } from "../actions/modalAction";
 
 const modalReducer = (
@@ -55,7 +58,8 @@ const modalReducer = (
       visible: false,
       data: {}
     },
-    selectBranch: false
+    selectBranch: false,
+    shipping_check: false
   },
   { type, payload }
 ) => {
@@ -233,6 +237,21 @@ const modalReducer = (
       return {
         ...state,
         selectBranch: !state.selectBranch
+      };
+    case OPEN_SHIPPING_CHECK_MODAL:
+      return {
+        ...state,
+        shipping_check: true
+      };
+    case CLOSE_SHIPPING_CHECK_MODAL:
+      return {
+        ...state,
+        shipping_check: false
+      };
+    case TOGGLE_SHIPPING_CHECK_MODAL:
+      return {
+        ...state,
+        shipping_check: !state.shipping_check
       };
     default:
       return state;

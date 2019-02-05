@@ -10,6 +10,8 @@ import { View, StatusBar, Platform } from "react-native";
 // import firebase from "react-native-firebase";
 import React from "react";
 
+// import firebase from 'expo-firebase-app';
+
 import {
   Entypo,
   FontAwesome,
@@ -21,6 +23,8 @@ import {
 
 import CoreApp from "./core/CoreApp";
 import configureStore from "./store";
+
+// firebase.initializeApp()
 
 const enLocale = require("react-intl/locale-data/en");
 const thLocale = require("react-intl/locale-data/th");

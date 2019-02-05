@@ -6,7 +6,8 @@ import {
   ScrollView,
   Image,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -32,73 +33,65 @@ class RedemptionCouponScreen extends Component {
     super(props);
     this.state = {
       loading: false,
+      refreshing: false,
       redmpCoupon: [],
       history: []
     };
 
     this.renderCouponItem = this.renderCouponItem.bind(this);
-    this.makeMockupData = this.makeMockupData.bind(this);
+    this.renderUsedCoupon = this.renderUsedCoupon.bind(this);
+    this.handleRefresh = this.handleRefresh.bind(this);
+    this.dataLoader = this.dataLoader.bind(this);
   }
 
   componentDidMount() {
-    this.makeMockupData();
     // Fetch Data
-    // this.setState({ loading: true });
-    // fetchCouponData(this.props.user.user.member_code)
-    //   .then(res => {
-    //     if (!isEmpty(res.data)) {
-    //       this.setState({
-    //         redmpCoupon: isEmpty(res.data.available) ? [] : res.data.available,
-    //         usedCoupon: isEmpty(res.data.used) ? [] : res.data.used
-    //       });
-    //     }
-    //     this.setState({ loading: false });
-    //   })
-    //   .catch(error => {
-    //     this.setState({ loading: false });
-    //     console.log(error.message);
-    //     Alert.alert("Makro", "Error while loading, please try again");
-    //   });
+    this.dataLoader();
   }
 
-  makeMockupData() {
-    this.setState({
-      redmpCoupon: [
-        {
-          name: "Redeemed Coupon",
-          name_cambodia: "Redeemed Coupon",
-          description: "Test Description",
-          description_cambodia: "Test Description",
-          expireDate: new Date(2018, 12, 12, 12, 0, 0),
-          imagePath: "https://www.siammakro.co.th/images/foodservice.jpg",
-          code: "0123456789012",
-          redeemed: true,
-          used: false
-        }
-      ],
-      historyCoupon: [
-        {
-          name: "Used Coupon",
-          name_cambodia: "Redeemed Coupon",
-          description: "Test Description",
-          description_cambodia: "Test Description",
-          expireDate: new Date(2018, 12, 12, 12, 0, 0),
-          imagePath: "https://www.siammakro.co.th/images/foodservice.jpg",
-          code: "0123456789012",
-          redeemed: true,
-          used: true
-        }
-      ]
-    });
+  handleRefresh() {
+    this.setState(
+      {
+        refreshing: true
+      },
+      () => {
+        this.dataLoader();
+      }
+    );
   }
 
-  renderCouponItem = (item, key) => {
+  dataLoader() {
+    this.setState({ loading: true });
+    fetchCouponData(this.props.user.user.member_code)
+      .then(res => {
+        if (!isEmpty(res.data)) {
+          this.setState({
+            redmpCoupon: isEmpty(res.data.available)
+              ? []
+              : this.filteredRedeemedData(res.data.available),
+            usedCoupon: isEmpty(res.data.used) ? [] : res.data.used
+          });
+        }
+        this.setState({ loading: false, refreshing: false });
+      })
+      .catch(error => {
+        this.setState({ loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
+      });
+  }
+
+  filteredRedeemedData = data => {
+    return data.filter(item => item.isRedeemed !== "0");
+  };
+
+  renderCouponItem = ({ item, index }) => {
     const { language } = this.props.setting.params;
     const expireDate = moment(item.expireDate, "DD MMM YYYY");
 
     return (
       <View
-        key={key}
+        key={index}
         style={[styles.couponItem, expireDate < Date.now() ? styles.couponItem_expired : null]}
       >
         {item.imagePath ? (
@@ -132,81 +125,110 @@ class RedemptionCouponScreen extends Component {
             )}
           </Text>
         </View>
-        {!item.used && (
-          <>
-            <Image
-              style={styles.couponItem__sep}
-              source={require("../../assets/coupon_sep/coupon_sep.png")}
-            />
-            <TouchableOpacity
-              style={styles.couponItem__submit}
-              onPress={() => this.props.openCouponModal(item)}
+        <Image
+          style={styles.couponItem__sep}
+          source={require("../../assets/coupon_sep/coupon_sep.png")}
+        />
+        <TouchableOpacity
+          style={styles.couponItem__submit}
+          onPress={() => this.props.openCouponModal(item)}
+        >
+          <Text style={styles.couponItem__submit_text}>
+            <FormattedMessage id="coupon.use" />
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  renderUsedCoupon = ({ item, index }) => {
+    const { language } = this.props.setting.params;
+    // const expireDate = moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S");
+    const usedDate = item.usedDate ? moment(item.usedDate.date, "YYYY-MM-DD HH:mm:ss.S") : null;
+    return (
+      <View key={index} style={[styles.couponItem, !usedDate ? styles.couponItem_expired : null]}>
+        {item.imagePath ? (
+          <View style={styles.couponItem__thumbnail}>
+            <Image style={styles.couponItem__thumbnail_image} source={{ uri: item.imagePath }} />
+          </View>
+        ) : null}
+        <View style={styles.couponItem__detail}>
+          {!isEmpty(item.name.trim()) ? (
+            <Text numberOfLines={1} style={styles.couponItem__detail_offertitle}>
+              {language == "en" ? item.name : item.name_cambodia}
+            </Text>
+          ) : null}
+          <Text numberOfLines={1} style={styles.couponItem__detail_offerdetail}>
+            {language == "en" ? item.detail : item.detail_cambodia}
+          </Text>
+          {/* <Text
+            style={[
+              styles.couponItem__detail_offerexpire,
+              item.expired
+                ? styles.couponItem__detail_offerexpired
+                : styles.couponItem__detail_offernotexpire
+            ]}
+          >
+            {expireDate < Date.now() ? (
+              <FormattedMessage id="coupon.expired" />
+            ) : (
+              <FormattedMessage id="coupon.expire" /> + expireDate.format("D MMMM YYYY")
+            )}
+          </Text> */}
+          {usedDate ? (
+            <Text style={styles.couponItem__detail_offeruseat}>
+              <FormattedMessage id="coupon.used.at" /> {usedDate.format("DD/MM/YYYY HH:mm:ss")}
+            </Text>
+          ) : (
+            <Text
+              style={[
+                styles.couponItem__detail_offerexpire,
+                styles.couponItem__detail_offerexpired
+              ]}
             >
-              <Text style={styles.couponItem__submit_text}>
-                <FormattedMessage id="coupon.use" />
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
+              <FormattedMessage id="coupon.expired" />
+            </Text>
+          )}
+        </View>
+        <Image
+          style={styles.couponItem__sep}
+          source={require("../../assets/coupon_sep/coupon_sep.png")}
+        />
+        <TouchableOpacity
+          style={styles.couponItem__submit}
+          onPress={() => this.props.openCouponModal(item)}
+        >
+          <Text style={styles.couponItem__submit_text}>View</Text>
+        </TouchableOpacity>
       </View>
     );
   };
 
   renderAvailableTab() {
-    const { loading, redmpCoupon } = this.state;
-    if (loading) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            backgroundColor: "#FFFFFF",
-            width: "100%",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <ActivityIndicator size="large" />
-        </View>
-      );
-    }
-
+    const { loading, refreshing, redmpCoupon } = this.state;
     return (
-      <ScrollView style={styles.couponList}>
-        {redmpCoupon && redmpCoupon.map(this.renderCouponItem)}
-      </ScrollView>
+      <FlatList
+        style={{ padding: 10 }}
+        data={redmpCoupon}
+        renderItem={this.renderCouponItem}
+        keyExtractor={item => item.code}
+        onRefresh={this.handleRefresh}
+        refreshing={refreshing}
+      />
     );
   }
 
   renderHistoryTab() {
-    const { loading, historyCoupon } = this.state;
-    if (loading) {
-      return (
-        <View
-          style={{
-            flex: 1,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            backgroundColor: "#FFFFFF",
-            width: "100%",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <ActivityIndicator size="large" />
-        </View>
-      );
-    }
-
+    const { loading, refreshing, historyCoupon } = this.state;
     return (
-      <ScrollView style={styles.couponList}>
-        {historyCoupon && historyCoupon.map(this.renderCouponItem)}
-      </ScrollView>
+      <FlatList
+        style={{ padding: 10 }}
+        data={historyCoupon}
+        renderItem={this.renderUsedCoupon}
+        keyExtractor={item => item.code}
+        onRefresh={this.handleRefresh}
+        refreshing={refreshing}
+      />
     );
   }
 

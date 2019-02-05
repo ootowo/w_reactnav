@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Alert,
   Image
 } from "react-native";
 import { connect } from "react-redux";
@@ -13,11 +14,31 @@ import { bindActionCreators } from "redux";
 import { EvilIcons } from "@expo/vector-icons";
 import { closeCouponRedeemModal } from "../actions/modalAction";
 
+import { isEmpty } from "../utils/validate";
+import { setRedeemCoupon } from "../apis/couponApi";
+
 class CouponRedeemModal extends Component {
   constructor(props) {
     super(props);
+    this.redeemCoupon = this.redeemCoupon.bind(this);
   }
+
+  redeemCoupon() {
+    const { code } = this.props.modal.coupon_redeem.data;
+    setRedeemCoupon(code, this.props.user.user.member_code).then(res => {
+      // console.log(res);
+      if (!isEmpty(res.data)) {
+        if (res.data.code !== 400) {
+          this.props.closeCouponRedeemModal();
+        } else {
+          Alert.alert("Makro", "Error while redeem coupon, please try again");
+        }
+      }
+    });
+  }
+
   render() {
+    const { imagePath } = this.props.modal.coupon_redeem.data;
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.detail}>
@@ -29,10 +50,7 @@ class CouponRedeemModal extends Component {
           </TouchableOpacity>
 
           <View style={styles.couponImage}>
-            <Image
-              style={styles.couponImage__image}
-              source={{ uri: "https://www.siammakro.co.th/images/foodservice.jpg" }}
-            />
+            <Image style={styles.couponImage__image} source={{ uri: imagePath }} />
           </View>
           <View style={styles.barcodeViewer}>
             <Text style={styles.barcodeViewer__title}>เงื่อนไขการใช้คูปอง</Text>
@@ -49,10 +67,7 @@ class CouponRedeemModal extends Component {
         </ScrollView>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={() => this.props.closeCouponRedeemModal()}
-          >
+          <TouchableOpacity style={styles.submitButton} onPress={this.redeemCoupon}>
             <Text style={styles.submitButton__text}>Redeem this coupon</Text>
           </TouchableOpacity>
         </View>
@@ -93,7 +108,7 @@ const styles = StyleSheet.create({
   },
   couponImage__image: {
     width: "100%",
-    height: 200,
+    height: 300,
     resizeMode: "cover"
   },
   usedAlert: {
@@ -215,7 +230,8 @@ const styles = StyleSheet.create({
 });
 const mapStateToProps = state => ({
   modal: state.modalReducer,
-  setting: state.settingReducer
+  setting: state.settingReducer,
+  user: state.userReducer
 });
 const mapDispatchToProps = dispatch => bindActionCreators({ closeCouponRedeemModal }, dispatch);
 export default connect(

@@ -136,7 +136,7 @@ class FavoriteScreen extends Component {
                 }}
                 title={`${item.title}`}
                 titleNumberOfLines={2}
-                subtitle={`1029.00 ฿`}
+                subtitle={`1029.00 USD`}
                 avatar={item.image}
                 containerStyle={{ borderBottomWidth: 0 }}
                 onPress={() => navigate("ProductDetail")}

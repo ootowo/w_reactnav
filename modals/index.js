@@ -10,6 +10,7 @@ import RewardEarnedModal from "./RewardEarned";
 import SelectBranch from "./SelectBranch";
 import SocialLinkModal from "./SocialLink";
 import CouponRedeemModal from "./CouponRedeem";
+import ShippingCheckModal from "./ShippingCheck";
 
 class CoreModal extends Component {
   render() {
@@ -78,6 +79,14 @@ class CoreModal extends Component {
           onRequestClose={() => {}}
         >
           <CouponRedeemModal />
+        </Modal>
+        <Modal
+          visible={this.props.modal.shipping_check}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => {}}
+        >
+          <ShippingCheckModal />
         </Modal>
       </View>
     );

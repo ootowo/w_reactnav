@@ -8,7 +8,8 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
-  StyleSheet
+  StyleSheet,
+  FlatList
 } from "react-native";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -24,35 +25,40 @@ import { _HOST } from "../../utils/config";
 
 import { openCouponModal, openCouponRedeemModal } from "../../actions/modalAction";
 import { setCountingCoupon } from "../../actions/countingAction";
-import { fetchCouponData } from "../../apis/couponApi";
+import { fetchCouponData, setRedeemCoupon } from "../../apis/couponApi";
 
 class CouponScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: <HeaderTitle id="coupon" />,
     headerTintColor: "#000000",
-    headerBackTitle: null
-    // headerRight: (
-    //   <View style={{ flexDirection: "row" }}>
-    //     <TouchableOpacity
-    //       style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
-    //       onPress={() => navigation.navigate("RedemptionCoupon")}
-    //     >
-    //       <MaterialCommunityIcons
-    //         name="ticket-confirmation"
-    //         style={{ color: "#000000", fontSize: 25 }}
-    //       />
-    //     </TouchableOpacity>
-    //   </View>
-    // )
+    headerBackTitle: null,
+    headerRight: (
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
+          onPress={() => navigation.navigate("RedemptionCoupon")}
+        >
+          <MaterialCommunityIcons
+            name="ticket-confirmation"
+            style={{ color: "#000000", fontSize: 25 }}
+          />
+        </TouchableOpacity>
+      </View>
+    )
   });
 
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
+      refreshing: false,
       usedCoupon: [],
       availableCoupon: []
     };
+
+    this.handleRefresh = this.handleRefresh.bind(this);
+    this.dataLoader = this.dataLoader.bind(this);
+    this.filteredNonRedeemedData = this.filteredNonRedeemedData.bind(this);
   }
 
   componentDidMount() {
@@ -62,12 +68,29 @@ class CouponScreen extends Component {
     });
 
     // Fetch Data
-    this.setState({ loading: true });
+    this.dataLoader();
+  }
+
+  handleRefresh() {
+    this.setState(
+      {
+        refreshing: true
+      },
+      () => {
+        this.dataLoader();
+      }
+    );
+  }
+
+  dataLoader() {
+    // this.setState({ loading: true, refreshing: true });
     fetchCouponData(this.props.user.user.member_code)
       .then(res => {
         if (!isEmpty(res.data)) {
           this.setState({
-            availableCoupon: isEmpty(res.data.available) ? [] : res.data.available,
+            availableCoupon: isEmpty(res.data.available)
+              ? []
+              : this.filteredNonRedeemedData(res.data.available),
             usedCoupon: isEmpty(res.data.used) ? [] : res.data.used
           });
         } else {
@@ -77,21 +100,25 @@ class CouponScreen extends Component {
           //   Alert.alert("Makro", "ផ្តល់ជូនសំរាប់សមាជិកតែប៉ុណ្ណោះ");
           // }
         }
-        this.setState({ loading: false });
+        this.setState({ loading: false, refreshing: false });
       })
       .catch(error => {
-        this.setState({ loading: false });
+        this.setState({ loading: false, refreshing: false });
         console.log(error.message);
         Alert.alert("Makro", "Error while loading, please try again");
       });
   }
 
-  renderCouponItem = (item, key) => {
+  filteredNonRedeemedData = data => {
+    return data.filter(item => item.isRedeemed === "0");
+  };
+
+  renderCouponItem = ({ item, index }) => {
     const { language } = this.props.setting.params;
     const expireDate = moment(item.expireDate, "DD MMM YYYY");
     return (
       <View
-        key={key}
+        key={index}
         style={[styles.couponItem, expireDate < Date.now() ? styles.couponItem_expired : null]}
       >
         {item.imagePath ? (
@@ -129,15 +156,26 @@ class CouponScreen extends Component {
           style={styles.couponItem__sep}
           source={require("../../assets/coupon_sep/coupon_sep.png")}
         />
-        <TouchableOpacity
-          style={styles.couponItem__submit}
-          onPress={() => this.props.openCouponModal(item)}
-        >
-          <Text style={styles.couponItem__submit_text}>
-            {/* Redeem */}
-            <FormattedMessage id="coupon.use" />
-          </Text>
-        </TouchableOpacity>
+        {item.isRedeemed !== "0" ? (
+          <TouchableOpacity
+            style={styles.couponItem__submit}
+            onPress={() => this.props.openCouponModal(item)}
+          >
+            <Text style={styles.couponItem__submit_text}>
+              <FormattedMessage id="coupon.use" />
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.couponItem__submit}
+            onPress={() => this.props.openCouponRedeemModal(item)}
+          >
+            <Text style={styles.couponItem__submit_text}>
+              Redeem
+              {/* <FormattedMessage id="coupon.use" /> */}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -206,7 +244,7 @@ class CouponScreen extends Component {
   };
 
   render() {
-    const { availableCoupon, usedCoupon, loading } = this.state;
+    const { availableCoupon, usedCoupon, loading, refreshing } = this.state;
     const { coupon } = this.props.banner;
     const couponBannerImages = coupon.map(banner => {
       return {
@@ -217,111 +255,98 @@ class CouponScreen extends Component {
       return banner.file_url;
     });
 
-    // return (
-    //   <View style={{ flex: 1 }}>
-    //     <View style={styles.container}>
-    //       {loading ? (
-    //         <View
-    //           style={{
-    //             flex: 1,
-    //             position: "absolute",
-    //             top: 0,
-    //             left: 0,
-    //             backgroundColor: "#FFFFFF",
-    //             width: "100%",
-    //             height: "100%",
-    //             alignItems: "center",
-    //             justifyContent: "center"
-    //           }}
-    //         >
-    //           <ActivityIndicator size="large" />
-    //         </View>
-    //       ) : (
-    //         <ScrollView style={styles.couponList}>
-    //           {availableCoupon && availableCoupon.map(this.renderCouponItem)}
-    //         </ScrollView>
-    //       )}
-    //     </View>
-    //     <Banner darkmode mini images={couponBannerImages} urls={couponBannerURLs} />
-    //   </View>
-    // );
-
     return (
       <View style={{ flex: 1 }}>
-        <Container style={{ flex: 1 }}>
-          <Tabs
-            tabBarUnderlineStyle={{ backgroundColor: "#FF0000" }}
-            renderTabBar={() => (
-              <ScrollableTab style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }} />
-            )}
-          >
-            <Tab
-              heading={
-                <Text
-                  style={{
-                    backgroundColor: "transparent",
-                    color: "#FF0000"
-                  }}
-                >
-                  <FormattedMessage id="coupon.available" />
-                </Text>
-              }
-              tabStyle={{ backgroundColor: "#f2f2f2" }}
-              activeTabStyle={{ backgroundColor: "#f2f2f2" }}
-              textStyle={{ color: "#000000" }}
-              activeTextStyle={{ color: "#FF0000" }}
-            >
-              <View style={styles.container}>
-                {loading ? (
-                  <View
-                    style={{
-                      flex: 1,
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      backgroundColor: "#FFFFFF",
-                      width: "100%",
-                      height: "100%",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <ActivityIndicator size="large" />
-                  </View>
-                ) : (
-                  <ScrollView style={styles.couponList}>
-                    {availableCoupon && availableCoupon.map(this.renderCouponItem)}
-                  </ScrollView>
-                )}
-              </View>
-            </Tab>
-            <Tab
-              heading={
-                <Text
-                  style={{
-                    backgroundColor: "transparent",
-                    color: "#FF0000"
-                  }}
-                >
-                  <FormattedMessage id="coupon.history" />
-                </Text>
-              }
-              tabStyle={{ backgroundColor: "#f2f2f2" }}
-              activeTabStyle={{ backgroundColor: "#f2f2f2" }}
-              textStyle={{ color: "#000000" }}
-              activeTextStyle={{ color: "#FF0000" }}
-            >
-              <View style={styles.container}>
-                <ScrollView style={styles.couponList}>
-                  {usedCoupon && usedCoupon.map(this.renderUsedCoupon)}
-                </ScrollView>
-              </View>
-            </Tab>
-          </Tabs>
-        </Container>
+        <View style={styles.container}>
+          <FlatList
+            style={{ padding: 10 }}
+            data={availableCoupon}
+            keyExtractor={item => item.code}
+            onRefresh={this.handleRefresh}
+            refreshing={refreshing}
+            renderItem={this.renderCouponItem}
+          />
+        </View>
         <Banner darkmode mini images={couponBannerImages} urls={couponBannerURLs} />
       </View>
     );
+
+    // return (
+    //   <View style={{ flex: 1 }}>
+    //     <Container style={{ flex: 1 }}>
+    //       <Tabs
+    //         tabBarUnderlineStyle={{ backgroundColor: "#FF0000" }}
+    //         renderTabBar={() => (
+    //           <ScrollableTab style={{ borderBottomWidth: 0, backgroundColor: "#f2f2f2" }} />
+    //         )}
+    //       >
+    //         <Tab
+    //           heading={
+    //             <Text
+    //               style={{
+    //                 backgroundColor: "transparent",
+    //                 color: "#FF0000"
+    //               }}
+    //             >
+    //               <FormattedMessage id="coupon.available" />
+    //             </Text>
+    //           }
+    //           tabStyle={{ backgroundColor: "#f2f2f2" }}
+    //           activeTabStyle={{ backgroundColor: "#f2f2f2" }}
+    //           textStyle={{ color: "#000000" }}
+    //           activeTextStyle={{ color: "#FF0000" }}
+    //         >
+    //           <View style={styles.container}>
+    //             {loading ? (
+    //               <View
+    //                 style={{
+    //                   flex: 1,
+    //                   position: "absolute",
+    //                   top: 0,
+    //                   left: 0,
+    //                   backgroundColor: "#FFFFFF",
+    //                   width: "100%",
+    //                   height: "100%",
+    //                   alignItems: "center",
+    //                   justifyContent: "center"
+    //                 }}
+    //               >
+    //                 <ActivityIndicator size="large" />
+    //               </View>
+    //             ) : (
+    //               <ScrollView style={styles.couponList}>
+    //                 {availableCoupon && availableCoupon.map(this.renderCouponItem)}
+    //               </ScrollView>
+    //             )}
+    //           </View>
+    //         </Tab>
+    //         <Tab
+    //           heading={
+    //             <Text
+    //               style={{
+    //                 backgroundColor: "transparent",
+    //                 color: "#FF0000"
+    //               }}
+    //             >
+    //               <FormattedMessage id="coupon.history" />
+    //             </Text>
+    //           }
+    //           tabStyle={{ backgroundColor: "#f2f2f2" }}
+    //           activeTabStyle={{ backgroundColor: "#f2f2f2" }}
+    //           textStyle={{ color: "#000000" }}
+    //           activeTextStyle={{ color: "#FF0000" }}
+    //         >
+    //           <View style={styles.container}>
+    //             <ScrollView style={styles.couponList}>
+    //               {usedCoupon && usedCoupon.map(this.renderUsedCoupon)}
+    //             </ScrollView>
+    //           </View>
+    //         </Tab>
+    //       </Tabs>
+    //     </Container>
+    //     <Banner darkmode mini images={couponBannerImages} urls={couponBannerURLs} />
+    //   </View>
+    // );
   }
 }
 

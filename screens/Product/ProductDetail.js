@@ -39,8 +39,8 @@ class ProductDetailScreen extends Component {
                 )}
               </TouchableOpacity>
             </View>
-            <Text style={styles.productDetail__title_oldprice}>Price 2590.00 Baht</Text>
-            <Text style={styles.productDetail__title_newprice}>Special Price 1000.00 Baht</Text>
+            <Text style={styles.productDetail__title_oldprice}>Price 2590.00 USD</Text>
+            <Text style={styles.productDetail__title_newprice}>Special Price 1000.00 USD</Text>
             <View style={styles.productDetail__promo}>
               <Text style={styles.productDetail__promo_text}>Promotion: Earn more 2 pcs</Text>
             </View>

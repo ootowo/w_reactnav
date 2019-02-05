@@ -36,8 +36,8 @@ class CartScreen extends Component {
         <Text style={styles.productItem__detail_name} numberOfLines={2}>
           {item.name}
         </Text>
-        <Text style={styles.productItem__detail_price}>฿{item.special_price.toFixed(2)}</Text>
-        <Text style={styles.productItem__detail_oldprice}>฿{item.price.toFixed(2)}</Text>
+        <Text style={styles.productItem__detail_price}>{item.special_price.toFixed(2)} USD</Text>
+        <Text style={styles.productItem__detail_oldprice}>{item.price.toFixed(2)} USD</Text>
       </View>
       <View style={{ justifyContent: "center" }}>
         <View style={styles.productItem__udQty}>
@@ -77,6 +77,18 @@ class CartScreen extends Component {
     );
   }
 
+  renderFooter() {
+    return (
+      <View style={{ padding: 10 }}>
+        <Text style={{ fontSize: 12, color: "#333333" }}>
+          For purchase amout 0-1000 USD Shipping fee 10 USD{"\n"}
+          For purchase amout 1001-5000 USD Shipping fee 20 USD{"\n"}
+          For purchase amout more than 5001 USD Shipping fee 30 USD
+        </Text>
+      </View>
+    );
+  }
+
   render() {
     const { cartData } = this.state;
     const { navigate } = this.props.navigation;
@@ -85,7 +97,10 @@ class CartScreen extends Component {
       <View style={styles.container}>
         {cartData.length > 0 ? (
           <View style={{ flex: 1 }}>
-            <FlatList data={cartData} renderItem={this.renderProductItem} />
+            <FlatList
+              data={cartData}
+              renderItem={this.renderProductItem}
+            />
             <Text style={{ color: "#FF0000", textAlign: "center", paddingVertical: 10 }}>
               + Add More Product
             </Text>
@@ -93,7 +108,7 @@ class CartScreen extends Component {
               <View style={styles.footer__detail}>
                 <Text>
                   Total Price:{" "}
-                  <Text style={{ color: "#FF0000", fontWeight: "bold" }}>฿1000.00</Text>
+                  <Text style={{ color: "#FF0000", fontWeight: "bold" }}>1000.00 USD</Text>
                 </Text>
               </View>
               <TouchableOpacity

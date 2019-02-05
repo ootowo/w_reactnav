@@ -13,12 +13,25 @@ import {
 import { Container, Header, Item, Input, Icon, Button } from "native-base";
 import { LinearGradient } from "expo";
 
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+
+import { openShippingCheckModal } from "../../actions/modalAction";
+
 import css from "../../styles";
 
 class CatelogScreen extends Component {
   constructor(props) {
     super(props);
     this.checkIndexIsEven = this.checkIndexIsEven.bind(this);
+  }
+
+  componentDidMount() {
+    this.checkShippingAddress();
+  }
+
+  checkShippingAddress() {
+    this.props.openShippingCheckModal();
   }
 
   checkIndexIsEven(n) {
@@ -157,4 +170,11 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CatelogScreen;
+const mapStateToProps = state => ({
+  modal: state.modalReducer
+});
+const mapDispatchToProps = dispatch => bindActionCreators({ openShippingCheckModal }, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CatelogScreen);

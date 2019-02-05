@@ -18,20 +18,20 @@ class MainRewardScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerTitle: <HeaderTitle id="reward" />,
     headerTintColor: "#000000",
-    headerBackTitle: null,
-    headerRight: (
-      <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity
-          style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
-          onPress={() => navigation.navigate("RewardRedeem")}
-        >
-          <MaterialCommunityIcons
-            name="ticket-percent"
-            style={{ color: "#000000", fontSize: 28 }}
-          />
-        </TouchableOpacity>
-      </View>
-    )
+    headerBackTitle: null
+    // headerRight: (
+    //   <View style={{ flexDirection: "row" }}>
+    //     <TouchableOpacity
+    //       style={{ marginRight: 5, height: "100%", paddingHorizontal: 10 }}
+    //       onPress={() => navigation.navigate("RewardRedeem")}
+    //     >
+    //       <MaterialCommunityIcons
+    //         name="ticket-percent"
+    //         style={{ color: "#000000", fontSize: 28 }}
+    //       />
+    //     </TouchableOpacity>
+    //   </View>
+    // )
   });
 
   constructor(props) {

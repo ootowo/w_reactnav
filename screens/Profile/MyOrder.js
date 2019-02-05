@@ -32,6 +32,10 @@ class MyOrderScreen extends Component {
           <Text style={{ fontSize: 16 }}>Order No. 12345678</Text>
           <Text style={{ fontSize: 12, color: "#808080" }}>Order from 1 July 2018 10:20:20</Text>
           <Text style={{ fontSize: 12, color: "#808080" }}>Paid on 3 July 2018 11:30:53</Text>
+          <Text style={{ fontSize: 12, color: "#808080" }}>Payment Method: Credit Card</Text>
+          <Text style={{ fontSize: 12, color: "#808080" }}>
+            Shipping to Mr.Goodday 174 Oom Noi, Samut Sakorn, Thailand 74130
+          </Text>
         </View>
         <View style={{ justifyContent: "center", alignItems: "flex-end" }}>
           <Text style={{ fontSize: 12, color: "#808080" }}>Already Paid</Text>
@@ -43,7 +47,7 @@ class MyOrderScreen extends Component {
           <Text style={styles.productItem__detail_name} numberOfLines={2}>
             {item.name}
           </Text>
-          <Text style={styles.productItem__detail_price}>฿{item.special_price.toFixed(2)}</Text>
+          <Text style={styles.productItem__detail_price}>{item.special_price.toFixed(2)} USD</Text>
           <Text style={styles.productItem__detail_oldprice}>x{item.qty}</Text>
         </View>
         <View style={{ justifyContent: "center" }}>
@@ -56,7 +60,15 @@ class MyOrderScreen extends Component {
       </View>
       <View style={styles.orderItem__footer}>
         <Text style={{ fontSize: 12 }}>1 Piece, Total Price:</Text>
-        <Text style={{ fontSize: 16, color: "#FF0000", marginLeft: 10 }}>฿1000.00</Text>
+        <Text style={{ fontSize: 16, color: "#FF0000", marginLeft: 10 }}>1000.00 USD</Text>
+      </View>
+      <View style={styles.reorder}>
+        <TouchableOpacity
+          style={styles.reorder__button}
+          onPress={() => this.props.navigation.navigate("ReOrder")}
+        >
+          <Text style={styles.reorder__button_text}>Re-order</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -128,6 +140,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: "row",
     justifyContent: "center"
+  },
+  reorder: {
+    flex: 1,
+    alignItems: "flex-end",
+    padding: 10
+  },
+  reorder__button: {
+    flex: 0,
+    borderRadius: 5,
+    backgroundColor: "#FF0000",
+    padding: 10
+  },
+  reorder__button_text: {
+    color: "#FFFFFF"
   }
 });
 
