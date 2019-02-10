@@ -33,7 +33,7 @@ const generateNavLabel = (id, tintColor) => {
   );
 };
 let navigationConfig = {
-  navigationOptions: ({ navigation }) => {
+  defaultNavigationOptions: ({ navigation }) => {
     const { routeName } = navigation.state;
     let tabBarLabel, tabBarIconName, tabBarIconType;
     switch (routeName) {

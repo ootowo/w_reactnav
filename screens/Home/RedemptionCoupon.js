@@ -208,7 +208,7 @@ class RedemptionCouponScreen extends Component {
     const { loading, refreshing, redmpCoupon } = this.state;
     return (
       <FlatList
-        style={{ padding: 10 }}
+        style={{ margin: 10, flex: 1 }}
         data={redmpCoupon}
         renderItem={this.renderCouponItem}
         keyExtractor={item => item.code}
@@ -219,11 +219,11 @@ class RedemptionCouponScreen extends Component {
   }
 
   renderHistoryTab() {
-    const { loading, refreshing, historyCoupon } = this.state;
+    const { loading, refreshing, usedCoupon } = this.state;
     return (
       <FlatList
-        style={{ padding: 10 }}
-        data={historyCoupon}
+        style={{ margin: 10, flex: 1 }}
+        data={usedCoupon}
         renderItem={this.renderUsedCoupon}
         keyExtractor={item => item.code}
         onRefresh={this.handleRefresh}

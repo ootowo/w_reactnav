@@ -26,8 +26,7 @@ class ProfileHeader extends Component {
         </View>
         <View style={styles.header.headerProfile__profileName}>
           <Text style={styles.header.headerProfile__profileName_text}>
-            <FormattedMessage id="welcome" /> {!isEmpty(user.first_name) && user.first_name}{" "}
-            {!isEmpty(user.last_name) && user.last_name}
+            <FormattedMessage id="welcome" /> {!isEmpty(user.name) && user.name}
           </Text>
         </View>
       </TouchableOpacity>

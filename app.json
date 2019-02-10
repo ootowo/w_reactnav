@@ -4,12 +4,12 @@
     "description": "Official Makro Cambodia Department Store Application",
     "slug": "makro-app",
     "privacy": "public",
-    "sdkVersion": "31.0.0",
+    "sdkVersion": "32.0.0",
     "platforms": [
       "ios",
       "android"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/app_icon/icon_white.png",
     "splash": {
@@ -27,13 +27,13 @@
       "**/*"
     ],
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "1",
       "supportsTablet": false,
       "bundleIdentifier": "com.makro.makro"
     },
     "android": {
       "package": "com.makro.makro",
-      "versionCode": 4,
+      "versionCode": 5,
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",

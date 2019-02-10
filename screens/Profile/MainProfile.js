@@ -29,26 +29,49 @@ class MainProfileScreen extends Component {
   }
 
   handleLogout() {
+    const isFacebook = this.props.user.user.facebook_access_token !== null;
+
     if (!this.state.loading) {
       this.setState({ loading: true });
-      this.clearBranchSelected(() => {
+
+      if (isFacebook) {
+        this.clearBranchSelected()
+          .then(() => {
+            removeUserFromDB()
+              .then(() => {
+                this.props.authenClear();
+                this.setState({ loading: false });
+                this.props.navigation.navigate("AuthenLoading");
+              })
+              .catch(error => {
+                console.log("logout error :" + error);
+                this.props.authenClear();
+                this.setState({ loading: false });
+                this.props.navigation.navigate("AuthenLoading");
+              });
+          })
+          .catch(error => {
+            console.log("logout error :" + error);
+          });
+      } else {
         removeUserFromDB()
           .then(() => {
             this.props.authenClear();
             this.setState({ loading: false });
-            this.props.navigation.navigate("Authen");
+            this.props.navigation.navigate("AuthenLoading");
           })
-          .catch(() => {
+          .catch(error => {
+            console.log("logout error :" + error);
             this.props.authenClear();
             this.setState({ loading: false });
-            this.props.navigation.navigate("Authen");
+            this.props.navigation.navigate("AuthenLoading");
           });
-      });
+      }
     }
   }
 
-  clearBranchSelected(cb) {
-    new Promise((resolve, reject) => {
+  clearBranchSelected() {
+    return new Promise((resolve, reject) => {
       this.props.makeConfigAsync(
         {
           key: "branch",
@@ -58,8 +81,6 @@ class MainProfileScreen extends Component {
         resolve,
         reject
       );
-    }).then(() => {
-      cb();
     });
   }
 

@@ -327,7 +327,6 @@ class LoginScreen extends Component {
               style={{ flex: 1 }}
               type={BarCodeScanner.Constants.Type.back}
               onBarCodeScanned={this.handleBarcodeReaded}
-              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.ean13]}
             />
             <TouchableOpacity
               style={{

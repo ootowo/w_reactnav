@@ -259,7 +259,7 @@ class CouponScreen extends Component {
       <View style={{ flex: 1 }}>
         <View style={styles.container}>
           <FlatList
-            style={{ padding: 10 }}
+            style={{ margin: 10, flex: 1 }}
             data={availableCoupon}
             keyExtractor={item => item.code}
             onRefresh={this.handleRefresh}

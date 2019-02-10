@@ -38,7 +38,9 @@ class CouponRedeemModal extends Component {
   }
 
   render() {
-    const { imagePath } = this.props.modal.coupon_redeem.data;
+    const { imagePath, condition, conditionCambodia } = this.props.modal.coupon_redeem.data;
+    const { language } = this.props.setting.params;
+
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.detail}>
@@ -53,15 +55,9 @@ class CouponRedeemModal extends Component {
             <Image style={styles.couponImage__image} source={{ uri: imagePath }} />
           </View>
           <View style={styles.barcodeViewer}>
-            <Text style={styles.barcodeViewer__title}>เงื่อนไขการใช้คูปอง</Text>
+            <Text style={styles.barcodeViewer__title}>Condition</Text>
             <Text style={styles.barcodeViewer__note}>
-              1. คูปองสามารถใช้ได้ที่แม็คโครทุกสาขา{"\n"}
-              2. แสดงคูปองส่วนลดเงินสดก่อนการชำระเงิน{"\n"}
-              3. จำกัดการใช้ 1 ใบ ต่อ สินค้า 1 ชิ้น{"\n"}
-              4. สงวนสิทธิ์การใช้คูปองที่ไม่สมบูรณ์ฉีกขาด{"\n"}
-              5. คูปองนี้ไม่สามารถเปลี่ยนหรือทอนเป็นเงินสดได้{"\n"}
-              6. คูปองนี้หมดอายุวันที่ 30 ก.ย. 2554 หรือจนกว่าสินค้าจะหมด{"\n"}
-              7. คูปองส่วนลดไม่สามารถใช้ร่วมกับรายการส่งเสริมการขายอื่นได้
+              {language == "en" ? condition : conditionCambodia}
             </Text>
           </View>
         </ScrollView>

@@ -51,15 +51,15 @@ class MainMenuScreen extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      new Promise((resolve, reject) => {
-        this.props.syncAuthen(resolve, reject);
-      }).then(res => {
-        if (isEmpty(res)) {
-          this.props.navigation.navigate("Authen");
-        }
-      });
-    }, 1000);
+    // setTimeout(() => {
+    //   new Promise((resolve, reject) => {
+    //     this.props.syncAuthen(resolve, reject);
+    //   }).then(res => {
+    //     if (isEmpty(res)) {
+    //       this.props.navigation.navigate("Authen");
+    //     }
+    //   });
+    // }, 1000);
 
     this.reCalculateCounter();
     const isFacebook = this.props.user.user.facebook_access_token !== null;

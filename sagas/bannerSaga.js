@@ -3,6 +3,7 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import moment from "moment";
 
 import { getBanner } from "../apis/bannerApi";
+import { isEmpty } from "../utils/validate";
 
 export function* getFetchBanner() {
   try {
@@ -20,20 +21,23 @@ export function* getFetchBanner() {
           validTo = moment(result["valid_to_date"], "YYYY-MM-DD HH:mm:ss"),
           now = Date.now();
         if (validFrom <= now && validTo >= now) {
-          if (result.destination.trim().toLowerCase() == "home") {
-            donePayload.home.push(result);
-          } else if (result.destination.trim().toLowerCase() == "coupon") {
-            donePayload.coupon.push(result);
-          } else if (result.destination.trim().toLowerCase() == "makro mail") {
-            donePayload.mail.push(result);
-          } else if (result.destination.trim().toLowerCase() == "catalog") {
-            donePayload.catalog.push(result);
+          if (!isEmpty(result.destination)) {
+            if (result.destination.trim().toLowerCase() == "home") {
+              donePayload.home.push(result);
+            } else if (result.destination.trim().toLowerCase() == "coupon") {
+              donePayload.coupon.push(result);
+            } else if (result.destination.trim().toLowerCase() == "makro mail") {
+              donePayload.mail.push(result);
+            } else if (result.destination.trim().toLowerCase() == "catalog") {
+              donePayload.catalog.push(result);
+            }
           }
         }
       });
       yield put(fetchBannerDone(donePayload));
     }
   } catch (error) {
+    console.log(error);
     yield put(fetchBannerReject(error));
   }
 }

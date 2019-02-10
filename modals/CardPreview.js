@@ -55,8 +55,7 @@ class CardPreviewModal extends Component {
                     text={user.member_code}
                   />
                   <Text style={styles.cardView__wrapper_text}>
-                    {!isEmpty(user.first_name) && user.first_name}{" "}
-                    {!isEmpty(user.last_name) && user.last_name}
+                    {!isEmpty(user.name) && user.name}
                   </Text>
                   <Text style={{ color: "#000000", fontSize: 18, fontWeight: "bold" }} />
                 </View>

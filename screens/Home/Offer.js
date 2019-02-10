@@ -124,12 +124,14 @@ class OfferScreen extends Component {
       <View style={styles.container}>
         <List
           containerStyle={{
+            flex: 1,
             marginTop: 0,
             borderTopWidth: 0,
             borderBottomWidth: 0
           }}
         >
           <FlatList
+            style={{ flex: 1 }}
             data={this.state.data}
             renderItem={({ item }) => (
               <ListItem

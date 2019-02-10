@@ -1,4 +1,4 @@
-import { createSwitchNavigator } from "react-navigation";
+import { createSwitchNavigator, createAppContainer } from "react-navigation";
 
 import AuthenStack from "./AuthenStack";
 import MainStack from "./MainStack";
@@ -11,7 +11,7 @@ const generalConfig = {
   },
   initialRouteName: "AuthenLoading"
 };
-export default createSwitchNavigator(
+const mainNav = createSwitchNavigator(
   {
     AuthenLoading: AuthenLoadingScreen,
     Main: MainStack,
@@ -19,3 +19,4 @@ export default createSwitchNavigator(
   },
   generalConfig
 );
+export default createAppContainer(mainNav);

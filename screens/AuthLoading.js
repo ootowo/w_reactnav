@@ -20,7 +20,7 @@ class AuthLoadingScreen extends Component {
       this.props.syncAuthen(resolve, reject);
     })
       .then(result => {
-        if (result) {
+        if (!isEmpty(result)) {
           this.props.navigation.navigate("Main");
         } else {
           this.props.navigation.navigate("Authen");

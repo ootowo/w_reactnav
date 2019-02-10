@@ -26,6 +26,7 @@ import {
 export function* callAuthenLoginSaga({ payload, resolve, reject }) {
   try {
     const result = yield call(authenCheck, payload);
+    // console.log("authen" + JSON.stringify(result));
     if (!isEmpty(result.data)) {
       const userData = result.data[0];
       yield call(saveUserToDB, userData);

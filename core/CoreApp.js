@@ -94,12 +94,14 @@ class CoreApp extends Component {
         </View>
       );
     } else {
+      const { params } = this.props.setting;
+      const language = params.language;
       return (
         <IntlProvider
-          locale={this.props.setting.params.language}
-          messages={lang[this.props.setting.params.language]}
+          locale={language}
+          messages={lang[language]}
           textComponent={Text}
-          key={this.props.setting.params.language}
+          key={language}
         >
           <View style={{ width: "100%", height: "100%" }}>
             <MainStack />
