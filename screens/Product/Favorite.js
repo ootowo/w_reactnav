@@ -36,9 +36,9 @@ class FavoriteScreen extends Component {
         title: "Otto Heavy Duty Blender",
         image: {
           uri:
-            "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
+            "https://img10.jd.co.th/n0/jfs/t13/76/28441736/67525/88369413/5b764e81N1914df9a.jpg!q70.jpg"
         },
-        price: 2590.0
+        price: "$2,590"
       }
     ];
     this.setState({ data: mockup });

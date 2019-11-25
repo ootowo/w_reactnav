@@ -16,11 +16,14 @@ class CartScreen extends Component {
     this.state = {
       cartData: [
         {
-          name: "Carnation Unsweeted",
+          name: "OTTO Powerblender",
           qty: 1,
-          price: 1029,
-          special_price: 1000,
-          image: { uri: "https://dynamic-cdn-makro.makroclick.com/bIaaxXP42.png" }
+          price: "2,000",
+          special_price: "1,990",
+          image: {
+            uri:
+              "https://img10.jd.co.th/n0/jfs/t13/76/28441736/67525/88369413/5b764e81N1914df9a.jpg!q70.jpg"
+          }
         }
       ]
     };
@@ -36,8 +39,8 @@ class CartScreen extends Component {
         <Text style={styles.productItem__detail_name} numberOfLines={2}>
           {item.name}
         </Text>
-        <Text style={styles.productItem__detail_price}>{item.special_price.toFixed(2)} USD</Text>
-        <Text style={styles.productItem__detail_oldprice}>{item.price.toFixed(2)} USD</Text>
+        <Text style={styles.productItem__detail_price}>${item.special_price}</Text>
+        <Text style={styles.productItem__detail_oldprice}>${item.price}</Text>
       </View>
       <View style={{ justifyContent: "center" }}>
         <View style={styles.productItem__udQty}>
@@ -97,18 +100,14 @@ class CartScreen extends Component {
       <View style={styles.container}>
         {cartData.length > 0 ? (
           <View style={{ flex: 1 }}>
-            <FlatList
-              data={cartData}
-              renderItem={this.renderProductItem}
-            />
+            <FlatList data={cartData} renderItem={this.renderProductItem} />
             <Text style={{ color: "#FF0000", textAlign: "center", paddingVertical: 10 }}>
               + Add More Product
             </Text>
             <View style={styles.footer}>
               <View style={styles.footer__detail}>
                 <Text>
-                  Total Price:{" "}
-                  <Text style={{ color: "#FF0000", fontWeight: "bold" }}>1000.00 USD</Text>
+                  Total Price: <Text style={{ color: "#FF0000", fontWeight: "bold" }}>$1,990</Text>
                 </Text>
               </View>
               <TouchableOpacity

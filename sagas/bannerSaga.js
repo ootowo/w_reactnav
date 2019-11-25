@@ -16,24 +16,26 @@ export function* getFetchBanner() {
         mail: [],
         catalog: []
       };
-      data.map(result => {
-        const validFrom = moment(result["valid_from_date"], "YYYY-MM-DD HH:mm:ss"),
-          validTo = moment(result["valid_to_date"], "YYYY-MM-DD HH:mm:ss"),
-          now = Date.now();
-        if (validFrom <= now && validTo >= now) {
-          if (!isEmpty(result.destination)) {
-            if (result.destination.trim().toLowerCase() == "home") {
-              donePayload.home.push(result);
-            } else if (result.destination.trim().toLowerCase() == "coupon") {
-              donePayload.coupon.push(result);
-            } else if (result.destination.trim().toLowerCase() == "makro mail") {
-              donePayload.mail.push(result);
-            } else if (result.destination.trim().toLowerCase() == "catalog") {
-              donePayload.catalog.push(result);
+      if (!isEmpty(data)) {
+        data.map(result => {
+          const validFrom = moment(result["valid_from_date"], "YYYY-MM-DD HH:mm:ss"),
+            validTo = moment(result["valid_to_date"], "YYYY-MM-DD HH:mm:ss"),
+            now = Date.now();
+          if (validFrom <= now && validTo >= now) {
+            if (!isEmpty(result.destination)) {
+              if (result.destination.trim().toLowerCase() == "home") {
+                donePayload.home.push(result);
+              } else if (result.destination.trim().toLowerCase() == "coupon") {
+                donePayload.coupon.push(result);
+              } else if (result.destination.trim().toLowerCase() == "makro mail") {
+                donePayload.mail.push(result);
+              } else if (result.destination.trim().toLowerCase() == "catalog") {
+                donePayload.catalog.push(result);
+              }
             }
           }
-        }
-      });
+        });
+      }
       yield put(fetchBannerDone(donePayload));
     }
   } catch (error) {

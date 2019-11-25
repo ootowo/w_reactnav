@@ -54,8 +54,13 @@ class ShelfSelectorScreen extends Component {
   setShelfStyle = id => {
     this.setState({ selectedShelf: id });
     const oldSetting = this.props.setting.params;
+    const memberCode = this.props.user.user.member_code;
     new Promise((resolve, reject) => {
-      this.props.makeConfigAsync({ key: "shelf", value: id, oldSetting }, resolve, reject);
+      this.props.makeConfigAsync(
+        { key: "shelf", value: id, oldSetting, memberCode },
+        resolve,
+        reject
+      );
     })
       .then(success => {})
       .catch(error => {
@@ -144,7 +149,8 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  setting: state.settingReducer
+  setting: state.settingReducer,
+  user: state.userReducer
 });
 const mapDispatchToProps = dispatch => bindActionCreators({ makeConfigAsync }, dispatch);
 export default connect(

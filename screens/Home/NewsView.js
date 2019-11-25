@@ -32,8 +32,6 @@ class NewsView extends Component {
     const { language } = this.props.setting.params;
     const newsDetail = this.props.navigation.getParam("news_data");
 
-    console.log(newsDetail);
-
     let newsTitle = "",
       newsContent = "";
     if (language == "en") {
@@ -46,24 +44,22 @@ class NewsView extends Component {
 
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.wrapper}>
-          <WebView
-            style={{
-              flex: 1,
-              width: Dimensions.get("window").width,
-              height: Dimensions.get("window").height
-            }}
-            source={{
-              html: mockHtml(
-                newsDetail.file_path,
-                newsTitle,
-                newsContent,
-                newsDetail.url_link,
-                this.props.fontSize.size
-              )
-            }}
-          />
-        </ScrollView>
+        <WebView
+          style={{
+            flex: 1,
+            width: Dimensions.get("window").width,
+            height: Dimensions.get("window").height
+          }}
+          source={{
+            html: mockHtml(
+              newsDetail.file_path,
+              newsTitle,
+              newsContent,
+              newsDetail.url_link,
+              this.props.fontSize.size
+            )
+          }}
+        />
       </View>
     );
   }

@@ -5,12 +5,15 @@ import "intl/locale-data/jsonp/th";
 import { addLocaleData } from "react-intl";
 import { AppLoading, Asset, Font } from "expo";
 import { Provider } from "react-redux";
-import { useScreens } from "react-native-screens";
-import { View, StatusBar, Platform } from "react-native";
-// import firebase from "react-native-firebase";
+import { View, StatusBar, Platform, AppRegistry } from "react-native";
 import React from "react";
 
-// import firebase from 'expo-firebase-app';
+import firebase from "expo-firebase-app";
+import "expo-firebase-auth";
+import "expo-firebase-analytics";
+import "expo-firebase-database";
+import "expo-firebase-messaging";
+import "expo-firebase-instance-id";
 
 import {
   Entypo,
@@ -22,18 +25,18 @@ import {
 } from "@expo/vector-icons";
 
 import CoreApp from "./core/CoreApp";
+import bgMessaging from "./utils/bgMessaging";
 import configureStore from "./store";
 
-// firebase.initializeApp()
-
+Asset;
 const enLocale = require("react-intl/locale-data/en");
 const thLocale = require("react-intl/locale-data/th");
 const kaLocale = require("react-intl/locale-data/ka");
 
 addLocaleData([...enLocale, ...thLocale, ...kaLocale]);
-// useScreens();
 
 console.disableYellowBox = true;
+
 const cacheImages = images => {
   return images.map(image => {
     if (typeof image === "string") {
@@ -48,18 +51,14 @@ const cacheFonts = fonts => {
   return fonts.map(font => Font.loadAsync(font));
 };
 
-// Firebase Auth
-// firebase
-//   .auth()
-//   .signInAnonymously()
-//   .then(credential => {
-//     console.log("Firebase Authen Credential: " + credential);
-//   });
-
 class App extends React.Component {
   state = {
     isReady: false
   };
+
+  componentDidMount() {
+    firebase.analytics();
+  }
 
   async _loadAssetsAsync() {
     const imageAssets = cacheImages([
@@ -131,3 +130,4 @@ class App extends React.Component {
 }
 
 export default App;
+AppRegistry.registerHeadlessTask("EXFirebaseBackgroundMessage", () => bgMessaging);

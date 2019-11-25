@@ -15,7 +15,7 @@ import moment from "moment";
 
 class CheckoutScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "Payment",
+    title: "Checkout",
     headerTintColor: "#000000",
     headerBackTitle: null
   });
@@ -25,11 +25,14 @@ class CheckoutScreen extends Component {
     this.state = {
       cartData: [
         {
-          name: "Carnation Unsweeted",
+          name: "OTTO Powerblender",
           qty: 1,
-          price: 1029,
-          special_price: 1000,
-          image: { uri: "https://dynamic-cdn-makro.makroclick.com/bIaaxXP42.png" }
+          price: "1,990",
+          special_price: "2,000",
+          image: {
+            uri:
+              "https://img10.jd.co.th/n0/jfs/t13/76/28441736/67525/88369413/5b764e81N1914df9a.jpg!q70.jpg"
+          }
         }
       ],
       emailEditDialogVisible: false,
@@ -64,8 +67,8 @@ class CheckoutScreen extends Component {
         <Text style={styles.productItem__detail_name} numberOfLines={2}>
           {item.name}
         </Text>
-        <Text style={styles.productItem__detail_price}>{item.special_price.toFixed(2)} USD</Text>
-        <Text style={styles.productItem__detail_oldprice}>{item.price.toFixed(2)} USD</Text>
+        <Text style={styles.productItem__detail_price}>${item.special_price}</Text>
+        <Text style={styles.productItem__detail_oldprice}>${item.price}</Text>
       </View>
       <View style={{ justifyContent: "center" }}>
         <View style={styles.productItem__udQty}>
@@ -91,7 +94,7 @@ class CheckoutScreen extends Component {
     return (
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
-          <View style={styles.checkout__channel}>
+          {/* <View style={styles.checkout__channel}>
             <Text style={styles.checkout__channel_header}>Delivery Channel</Text>
             <View style={styles.checkout__channel_selector}>
               <TouchableOpacity
@@ -108,7 +111,7 @@ class CheckoutScreen extends Component {
                 <Text style={styles.checkout__channel_selector_button_text}>Delivery</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </View> */}
           {/* <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Pickup Date</Text>
@@ -122,6 +125,22 @@ class CheckoutScreen extends Component {
               </Text>
             </View>
           </View> */}
+          <View style={styles.checkout__detail}>
+            <View style={styles.checkout__detail_header}>
+              <Text style={styles.checkout__detail_header_title}>Pickup Date &amp; Branch</Text>
+              <Text
+                style={styles.checkout__detail_header_right}
+                onPress={() => navigate("PickupSelector")}
+              >
+                Edit
+              </Text>
+            </View>
+            <View style={styles.checkout__detail_desc}>
+              <Text style={styles.checkout__detail_desc_text}>
+                {moment(pickedDate).format("DD MMM YYYY HH:mm")}, Makro Siem Reap
+              </Text>
+            </View>
+          </View>
           {/* <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Shipping Address</Text>
@@ -139,7 +158,7 @@ class CheckoutScreen extends Component {
               </Text>
             </View>
           </View> */}
-          {/* <View style={styles.checkout__detail}>
+          <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Tax Invoice Address</Text>
               <Text
@@ -155,7 +174,7 @@ class CheckoutScreen extends Component {
                 174 Oom Noi, Samut Sakorn, Thailand 74130
               </Text>
             </View>
-          </View> */}
+          </View>
           <View style={styles.checkout__detail}>
             <View style={styles.checkout__detail_header}>
               <Text style={styles.checkout__detail_header_title}>Email address</Text>
@@ -179,7 +198,13 @@ class CheckoutScreen extends Component {
         <View style={styles.footer}>
           <View style={styles.footer__detail}>
             <Text>
-              Total Price: <Text style={{ color: "#FF0000", fontWeight: "bold" }}>฿1000.00</Text>
+              Total Amout: <Text style={{ color: "#FF0000", fontWeight: "bold" }}>$2,000</Text>
+            </Text>
+            <Text>
+              Saving Today: <Text style={{ color: "#FF0000", fontWeight: "bold" }}>$10</Text>
+            </Text>
+            <Text>
+              Net Amount: <Text style={{ color: "#FF0000", fontWeight: "bold" }}>$1,990</Text>
             </Text>
           </View>
           <TouchableOpacity
@@ -306,7 +331,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#FF0000",
     justifyContent: "center",
-    height: 60
+    height: 70
   },
   footer__checkoutButton_text: { color: "#FFFFFF", fontWeight: "bold" }
 });

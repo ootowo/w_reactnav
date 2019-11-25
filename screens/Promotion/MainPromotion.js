@@ -51,11 +51,10 @@ class MainPromotionScreen extends Component {
         title: "Otto Heavy Duty Blender",
         image: {
           uri:
-            "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
+            "https://img10.jd.co.th/n0/jfs/t13/76/28441736/67525/88369413/5b764e81N1914df9a.jpg!q70.jpg"
         },
-        price: 2590.0,
-        special_price: 1000.0,
-        offer: "Earn more 2 pcs"
+        price: "$2,590",
+        special_price: "$1,000"
       }
     ];
     this.setState({ data: mockup });
@@ -140,7 +139,7 @@ class MainPromotionScreen extends Component {
                 {item.title}
               </Text>
               {item.special_price ? (
-                <Text style={styles.productItem__title_price}>{item.special_price} USD</Text>
+                <Text style={styles.productItem__title_price}>{item.special_price}</Text>
               ) : null}
               <Text
                 style={
@@ -149,7 +148,7 @@ class MainPromotionScreen extends Component {
                     : styles.productItem__title_price
                 }
               >
-                {item.price} USD
+                {item.price}
               </Text>
               {item.offer ? (
                 <View style={styles.productItem__title_offer}>

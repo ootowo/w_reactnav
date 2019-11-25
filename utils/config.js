@@ -1,17 +1,21 @@
 export const _PUSH_ENDPOINT = "";
 
-// Developement Site
+// Development Site
 // export const _API_ENDPOINT = "https://developers.awesys.asia/Makro/";
 // export const _HOST = "https://developers.awesys.asia/";
 
 // Production Site
 export const _API_ENDPOINT = "https://makrocambodia.ada-soft.com/";
 export const _HOST = "https://makrocambodia.ada-soft.com/";
+export const _OPENCART_ENDPOINT = "http://makrocambodia.ada-soft.com:81/";
+export const _OPENCART_SHOP_SECRET_KEY = "Vwi8rc4JxNDnOyLI5iSLA4oN2ktcYOm4";
+export const _OPENCART_ADMIN_SECRET_KEY = "hObsvwEPfC7Oxr3G0PxxMtBDtjIVVRfe";
 
-export const _VERSION = "1.0.2";
+export const _VERSION = "1.0.6";
 export const _DEFAULT_SETTING = {
   ringtone: false,
   notification: false,
+  location: false,
   language: "en",
   shelf: 1,
   branch: null

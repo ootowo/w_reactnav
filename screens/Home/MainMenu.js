@@ -18,11 +18,13 @@ import {
   openSocialModal,
   openSelectBranchModal,
   openAuthenModal,
-  openRewardEarnedModal
+  openRewardEarnedModal,
+  openAnnouceModal
 } from "../../actions/modalAction";
 import { setCountingInternal, setCountingExternal } from "../../actions/countingAction";
 import { makeConfigAsync } from "../../actions/settingAction";
 import { authenClear, syncAuthen } from "../../actions/userAction";
+import { fetchPopup } from "../../actions/popupAction";
 import { _HOST } from "../../utils/config";
 
 import ProfileHeader from "../../components/ProfileHeader";
@@ -44,30 +46,39 @@ class MainMenuScreen extends Component {
     this.reCalculateCounter = this.reCalculateCounter.bind(this);
     this.navigateGrantCheck = this.navigateGrantCheck.bind(this);
     this.clearBranchSelected = this.clearBranchSelected.bind(this);
+    this.checkAvailablePopup = this.checkAvailablePopup.bind(this);
   }
 
   async onPressOpenWebSite(address) {
     await WebBrowser.openBrowserAsync(address);
   }
 
-  componentDidMount() {
-    // setTimeout(() => {
-    //   new Promise((resolve, reject) => {
-    //     this.props.syncAuthen(resolve, reject);
-    //   }).then(res => {
-    //     if (isEmpty(res)) {
-    //       this.props.navigation.navigate("Authen");
-    //     }
-    //   });
-    // }, 1000);
+  componentWillMount() {}
 
+  componentDidMount() {
     this.reCalculateCounter();
+    this.checkAvailablePopup();
     const isFacebook = this.props.user.user.facebook_access_token !== null;
     if (this.props.setting.params.branch == null && !isEmpty(this.props.user.user) && !isFacebook) {
       this.props.openSelectBranchModal();
     }
 
     // this.props.openRewardEarnedModal();
+  }
+
+  checkAvailablePopup() {
+    new Promise((resolve, reject) => {
+      const memberCode = this.props.user.user.member_code ? this.props.user.user.member_code : null;
+      this.props.fetchPopup(memberCode, resolve, reject);
+    })
+      .then(res => {
+        if (res.length > 0) {
+          this.props.openAnnouceModal(res[0]);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   reCalculateCounter() {
@@ -436,10 +447,12 @@ const mapDispatchToProps = dispatch =>
       openSelectBranchModal,
       openAuthenModal,
       openRewardEarnedModal,
+      openAnnouceModal,
       setCountingInternal,
       setCountingExternal,
       makeConfigAsync,
       authenClear,
+      fetchPopup,
       syncAuthen
     },
     dispatch

@@ -10,7 +10,9 @@ import ProfileHeader from "../../components/ProfileHeader";
 class MainProductScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     headerLeft: <ProfileHeader navigation={navigation} />,
-    headerRight: <CardHeader />
+    headerRight: <CardHeader />,
+    headerBackTitle: null,
+    headerTintColor: "#000000"
   });
 
   render() {

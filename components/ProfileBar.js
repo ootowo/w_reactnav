@@ -7,7 +7,7 @@ import { isEmpty } from "../utils/validate";
 
 class ProfileBar extends Component {
   render() {
-    const { user, showSummary } = this.props;
+    const { user, showSummary, rewardData } = this.props;
     return (
       <View style={styles.profileBar}>
         <View style={styles.profileBar__profile}>
@@ -23,16 +23,16 @@ class ProfileBar extends Component {
           </View>
           <View style={styles.profileBar__profile_name}>
             <Text style={styles.profileBar__profile_name_text}>
-              {/* {!isEmpty(user.first_name) && user.first_name}{" "}
-              {!isEmpty(user.last_name) && user.last_name} */}
-              Jongkol Rojanasitthisak
+              {!isEmpty(rewardData) && rewardData.memberName}
             </Text>
           </View>
         </View>
         {showSummary && (
           <View style={styles.profileBar__summary}>
             <Text style={styles.profileBar__summary_title}>Total Spending</Text>
-            <Text style={styles.profileBar__summary_detail}>0 Baht</Text>
+            <Text style={styles.profileBar__summary_detail}>
+              {!isEmpty(rewardData) ? rewardData.currentPoint : 0} Baht
+            </Text>
           </View>
         )}
       </View>

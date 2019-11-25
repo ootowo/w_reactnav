@@ -22,6 +22,7 @@ import {
   removeUserFromDB,
   deConstructureFacebookData
 } from "../apis/authenApi";
+import { makeNotificationToken } from "../apis/settingApi";
 
 export function* callAuthenLoginSaga({ payload, resolve, reject }) {
   try {
@@ -35,9 +36,9 @@ export function* callAuthenLoginSaga({ payload, resolve, reject }) {
         yield call(resolve, userData);
       }
     } else {
-      yield put(authenLoginReject("User not found"));
+      yield put(authenLoginReject("Your user is not found, please contact Makro Cambodia"));
       if (reject) {
-        yield call(reject, "User not found");
+        yield call(reject, "Your user is not found, please contact Makro Cambodia");
       }
     }
   } catch (error) {

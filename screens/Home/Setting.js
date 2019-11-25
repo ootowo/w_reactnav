@@ -17,11 +17,14 @@ import {
 } from "native-base";
 import call from "react-native-phone-call";
 import { FormattedMessage } from "react-intl";
-import Expo from "expo";
+import { Constants } from "expo";
+import firebase from "expo-firebase-app";
 
 import { checkNotificationGrant } from "../../apis/settingApi";
 import { makeConfig, makeConfigAsync } from "../../actions/settingAction";
 import HeaderTitle from "../../components/HeaderTitle";
+import { updatePushTokenData } from "../../apis/notificationApi";
+import { isEmpty } from "../../utils/validate";
 
 class SettingScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -51,8 +54,9 @@ class SettingScreen extends Component {
 
   setConfig({ key, value }) {
     const oldSetting = this.props.setting.params;
+    const memberCode = this.props.user.user.member_code;
     return new Promise((resolve, reject) => {
-      this.props.makeConfigAsync({ key, value, oldSetting }, resolve, reject);
+      this.props.makeConfigAsync({ key, value, oldSetting, memberCode }, resolve, reject);
     });
   }
 
@@ -70,11 +74,11 @@ class SettingScreen extends Component {
                       <FormattedMessage id="setting.version" />
                     </Text>
                     <Text note numberOfLines={1}>
-                      3.4 (17)
+                      {Constants.manifest.version}
                     </Text>
                   </Body>
                 </ListItem>
-                <ListItem>
+                {/* <ListItem>
                   <Body>
                     <Text>
                       <FormattedMessage id="setting.ringtones" />
@@ -89,7 +93,7 @@ class SettingScreen extends Component {
                       }}
                     />
                   </Right>
-                </ListItem>
+                </ListItem> */}
                 <ListItem>
                   <Body>
                     <Text>
@@ -102,7 +106,7 @@ class SettingScreen extends Component {
                   <Right>
                     <Switch
                       value={this.props.setting.params.notification}
-                      onValueChange={value => {
+                      onValueChange={async value => {
                         if (value) {
                           const grant = checkNotificationGrant();
                           if (grant !== "granted") {
@@ -110,8 +114,13 @@ class SettingScreen extends Component {
                             this.setState({
                               ringtones_disabled: false
                             });
+                            const token = await firebase.iid().getToken();
+                            if (!isEmpty(this.props.user.user)) {
+                              updatePushTokenData(this.props.user.user.id, token);
+                            }
                           }
                         } else {
+                          updatePushTokenData(this.props.user.user.id, null);
                           if (this.props.setting.params.ringtone) {
                             this.setConfig({
                               key: "ringtone",
@@ -206,7 +215,8 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => ({
-  setting: state.settingReducer
+  setting: state.settingReducer,
+  user: state.userReducer
 });
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ makeConfig, makeConfigAsync }, dispatch);

@@ -10,6 +10,7 @@ import {
 import {
   fetchConfigFromDB,
   setConfigToDB,
+  syncConfigToServer,
   setNotification,
   setRingtoneNotification
 } from "../apis/settingApi";
@@ -27,10 +28,12 @@ function* callMakeConfigAsyncSaga({ payload, resolve, reject, skip }) {
     }
   }
   try {
-    const result = yield call(setConfigToDB, {
+    const newConfig = {
       ...payload.oldSetting,
       [payload.key]: payload.value
-    });
+    };
+    const result = yield call(setConfigToDB, newConfig);
+    yield call(syncConfigToServer, newConfig, payload.memberCode);
     yield call(resolve, result.res);
     yield put(makeConfigAsyncDone());
   } catch (e) {

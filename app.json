@@ -5,11 +5,8 @@
     "slug": "makro-app",
     "privacy": "public",
     "sdkVersion": "32.0.0",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "1.0.3",
+    "platforms": ["ios", "android"],
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/app_icon/icon_white.png",
     "splash": {
@@ -21,19 +18,20 @@
     "facebookDisplayName": "Makro Cambodia",
     "facebookScheme": "fb2221072034804982",
     "updates": {
+      "enabled": false,
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "buildNumber": "1",
       "supportsTablet": false,
-      "bundleIdentifier": "com.makro.makro"
+      "bundleIdentifier": "com.makro.makro",
+      "publishBundlePath": "ios/makro-cambodia/Supporting/shell-app.bundle",
+      "publishManifestPath": "ios/makro-cambodia/Supporting/shell-app-manifest.json"
     },
     "android": {
       "package": "com.makro.makro",
-      "versionCode": 5,
+      "versionCode": 13,
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
@@ -49,13 +47,22 @@
         "com.sec.android.provider.badge.permission.READ",
         "com.sec.android.provider.badge.permission.WRITE",
         "com.sonyericsson.home.permission.BROADCAST_BADGE"
-      ]
+      ],
+      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json",
+      "googleServicesFile": "android/app/google-services.json"
     },
     "androidStatusBar": {
       "barStyle": "light-content"
     },
     "packagerOpts": {
       "nonPersistent": true
-    }
+    },
+    "isDetached": true,
+    "detach": {
+      "iosExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/ios-v2.10.2-sdk32.0.0-c59c23cd-1d49-49d2-a633-d03f9d554cf6.tar.gz",
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.10.5-sdk32.0.0-cfdf42e8-f9b5-4ddd-84fd-2f2aacffe2c1.tar.gz"
+    },
+    "scheme": "expe450b2c4e859472e818e528f7681f768"
   }
 }

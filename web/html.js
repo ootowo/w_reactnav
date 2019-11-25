@@ -30,6 +30,8 @@ export const mockHtml = (image, title, content, url, size = 17) => `
                 font-size: ${size}px;
             }
             .content {
+                width: 100%;
+                word-wrap: break-word;
                 font-size: ${size}px;
             }
         </style>
@@ -40,7 +42,7 @@ export const mockHtml = (image, title, content, url, size = 17) => `
             ${image != null ? `<img class="thumbnail" src="${image}" />` : ""}
             ${title != null ? `<h1>${title}</h1><br />` : ""}
             <div class="content">
-                ${content != null ? content : ""}
+                ${content != null ? content.replace(/(?:\r\n|\r|\n)/g, "<br />") : ""}
                 ${url != null ? url : ""}
             </div>
         </div>

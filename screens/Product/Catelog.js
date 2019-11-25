@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-
 import {
   View,
   ScrollView,
@@ -8,30 +7,45 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Alert
 } from "react-native";
-import { Container, Header, Item, Input, Icon, Button } from "native-base";
+import { Container, Content, Header, Item, Input, List, ListItem, Icon, Button } from "native-base";
 import { LinearGradient } from "expo";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 import { openShippingCheckModal } from "../../actions/modalAction";
+import { fetchCatagory } from "../../apis/opencartApi";
 
 import css from "../../styles";
 
 class CatelogScreen extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      categories: []
+    };
     this.checkIndexIsEven = this.checkIndexIsEven.bind(this);
   }
 
   componentDidMount() {
+    // fetchCatagory()
+    //   .then(res => {
+    //     const { data } = res;
+    //     if (data && data.success) {
+    //       this.setState({ categories: data.data });
+    //     }
+    //   })
+    //   .catch(err => {
+    //     Alert.alert(err);
+    //   });
     this.checkShippingAddress();
   }
 
   checkShippingAddress() {
-    this.props.openShippingCheckModal();
+    // this.props.openShippingCheckModal();
   }
 
   checkIndexIsEven(n) {
@@ -39,50 +53,8 @@ class CatelogScreen extends Component {
   }
 
   render() {
+    const { categories } = this.state;
     const { navigate } = this.props.navigation;
-    const categoryList = [
-      {
-        image_src: {
-          uri:
-            "https://www.istudy.org.uk/wp-content/uploads/2017/08/PP18-DIPLOMA-IN-PROFESSIONAL-CHEF-1-768x461.jpg"
-        },
-        title: "Coffee Shop"
-      },
-      {
-        image_src: {
-          uri:
-            "https://www.marketing91.com/wp-content/uploads/2017/08/Difference-between-retailer-wholesaler-and-distributor.jpg"
-        },
-        title: "Retailer"
-      },
-      {
-        image_src: {
-          uri:
-            "https://static1.squarespace.com/static/57d2e5c5bebafbc1a4a62ae0/t/57fe73dcd1758e96456e080b/1476293737480/MOTION+CROIX.jpg?format=1000w"
-        },
-        title: "Bakery"
-      },
-      {
-        image_src: {
-          uri: "https://media-cdn.tripadvisor.com/media/photo-s/11/45/43/2c/restaurant-by-night.jpg"
-        },
-        title: "Restaurant"
-      },
-      {
-        image_src: {
-          uri:
-            "https://pix10.agoda.net/hotelImages/871/871705/871705_16112815520049163655.jpg?s=1024x768"
-        },
-        title: "Hotel And Spa"
-      },
-      {
-        image_src: {
-          uri:
-            "https://s3-ap-southeast-1.amazonaws.com/builk3storage/project/20160215_023550_project_2010740_big.jpg"
-        },
-        title: "Other"
-      }
-    ];
 
     return (
       <Container>
@@ -92,37 +64,62 @@ class CatelogScreen extends Component {
             <TextInput placeholder="Search..." style={css.search.searchBar__text} />
           </View>
         </View>
-        <ScrollView>
-          <View style={styles.category}>
-            {categoryList.map((item, index) => (
-              <TouchableOpacity
-                style={[
-                  styles.category__item,
-                  this.checkIndexIsEven(index + 1) ? styles.category__item___n2child : null
-                ]}
-                onPress={() => navigate("ProductList")}
-              >
-                <View style={styles.category__item_container}>
-                  <View style={styles.category__item_thumbnail}>
-                    <Image
-                      style={{ width: "100%", height: "100%" }}
-                      source={item.image_src}
-                      resize="cover"
-                    />
-                  </View>
-                  <LinearGradient
-                    colors={["#FF0000", "#b20000"]}
-                    start={[0, 0.5]}
-                    end={[1, 0.5]}
-                    style={styles.category__item_title}
-                  >
-                    <Text style={styles.category__item_title_text}>{item.title}</Text>
-                  </LinearGradient>
+        <View style={styles.category}>
+          <Content>
+            <List>
+              <ListItem onPress={() => navigate("ProductList")}>
+                <Text style={{ fontWeight: "bold" }}>Coffee Shop</Text>
+              </ListItem>
+              <ListItem>
+                <Text style={{ fontWeight: "bold" }}>Retailer</Text>
+              </ListItem>
+              <ListItem>
+                <Text style={{ fontWeight: "bold" }}>Bakery</Text>
+              </ListItem>
+              <ListItem>
+                <Text style={{ fontWeight: "bold" }}>Restaurant</Text>
+              </ListItem>
+              <ListItem>
+                <Text style={{ fontWeight: "bold" }}>Hotel And Spa</Text>
+              </ListItem>
+              <ListItem>
+                <Text style={{ fontWeight: "bold" }}>Other</Text>
+              </ListItem>
+            </List>
+          </Content>
+          {categories.map((item, index) => (
+            <TouchableOpacity
+              key={item.category_id}
+              style={[
+                styles.category__item,
+                this.checkIndexIsEven(index + 1) ? styles.category__item___n2child : null
+              ]}
+              onPress={() => navigate("ProductList", { category_data: item })}
+            >
+              <View style={styles.category__item_container}>
+                <View style={styles.category__item_thumbnail}>
+                  <Image
+                    style={{ width: "100%", height: "100%" }}
+                    source={{
+                      uri: item.image
+                        ? item.image
+                        : "https://pix10.agoda.net/hotelImages/871/871705/871705_16112815520049163655.jpg?s=1024x768"
+                    }}
+                    resize="cover"
+                  />
                 </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
+                <LinearGradient
+                  colors={["#FF0000", "#b20000"]}
+                  start={[0, 0.5]}
+                  end={[1, 0.5]}
+                  style={styles.category__item_title}
+                >
+                  <Text style={styles.category__item_title_text}>{item.name}</Text>
+                </LinearGradient>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </Container>
     );
   }

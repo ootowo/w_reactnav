@@ -13,6 +13,9 @@ import { bindActionCreators } from "redux";
 import HeaderTitle from "../../components/HeaderTitle";
 import ProfileBar from "../../components/ProfileBar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { isEmpty } from "../../utils/validate";
+
+import { fetchRewardData } from "../../apis/rewardApi";
 
 class MainRewardScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -37,19 +40,45 @@ class MainRewardScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [
-        // {
-        //   thumbnail: require("../../assets/banner.jpg"),
-        //   title: "Accumulate purchase of participating items Makro Jadhai May"
-        // },
-        // {
-        //   thumbnail: require("../../assets/banner.jpg"),
-        //   title: "Accumulate purchase of participating items Makro Jadhai June"
-        // }
-      ]
+      loading: false,
+      refreshing: false,
+      data: []
     };
 
     this.renderCouponItem = this.renderCouponItem.bind(this);
+    this.dataLoader = this.dataLoader.bind(this);
+  }
+
+  componentDidMount() {
+    this.dataLoader();
+  }
+
+  handleRefresh() {
+    this.setState(
+      {
+        refreshing: true
+      },
+      () => {
+        this.dataLoader();
+      }
+    );
+  }
+
+  dataLoader() {
+    fetchRewardData(this.props.user.user.member_code)
+      .then(res => {
+        if (!isEmpty(res.data)) {
+          this.setState({
+            data: res.data
+          });
+        }
+        this.setState({ loading: false, refreshing: false });
+      })
+      .catch(error => {
+        this.setState({ loading: false, refreshing: false });
+        console.log(error.message);
+        Alert.alert("Makro", "Error while loading, please try again");
+      });
   }
 
   renderCouponItem = ({ item, index }) => {
@@ -61,13 +90,16 @@ class MainRewardScreen extends Component {
       <TouchableOpacity
         key={index}
         style={styles.programItem}
-        onPress={() => navigate("RewardProgramDetail")}
+        onPress={() => navigate("RewardProgramDetail", { reward_data: item })}
       >
         <View style={styles.programItem__thumbnail}>
-          <Image source={item.thumbnail} style={{ width: "100%", height: thumbnailHeight }} />
+          <Image
+            source={{ uri: item.filePath }}
+            style={{ width: "100%", height: thumbnailHeight }}
+          />
         </View>
         <View style={styles.programItem__title}>
-          <Text style={styles.programItem__title_text}>{item.title}</Text>
+          <Text style={styles.programItem__title_text}>{item.name}</Text>
         </View>
       </TouchableOpacity>
     );

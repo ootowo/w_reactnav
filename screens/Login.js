@@ -18,16 +18,19 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { BarCodeScanner, Permissions, Facebook } from "expo";
+import { BarCodeScanner, Permissions, Facebook, Notifications } from "expo";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FormattedMessage } from "react-intl";
 import Flag from "react-native-flags";
+import firebase from "expo-firebase-app";
 
 import { _FACEBOOK_APP_ID } from "../utils/config";
 import { isEmpty } from "../utils/validate";
 
 import { makeConfigAsync } from "../actions/settingAction";
 import { authenLogin, authenFacebookLogin } from "../actions/userAction";
+import { makeNotificationToken } from "../apis/settingApi";
+import { updatePushTokenData } from "../apis/notificationApi";
 
 const delay = time =>
   new Promise((resolve, reject) => {
@@ -131,8 +134,17 @@ class LoginScreen extends Component {
       new Promise((resolve, reject) => {
         this.props.authenFacebookLogin({ accessToken: token, ...fbData }, resolve, reject);
       })
-        .then(() => {
-          this.props.navigation.navigate("FacebookDone");
+        .then(async userData => {
+          try {
+            const token = await firebase.iid().getToken();
+            const { notification } = this.props.setting.params;
+            if (!isEmpty(userData) && notification) {
+              updatePushTokenData(userData.id, token);
+            }
+            this.props.navigation.navigate("FacebookDone");
+          } catch (error) {
+            console.log(error.message);
+          }
         })
         .catch(error => {
           console.log(error.message);
@@ -141,20 +153,29 @@ class LoginScreen extends Component {
     }
   };
 
-  handleLogin() {
+  handleLogin = async () => {
     if (!isEmpty(this.state.memberCode)) {
       new Promise((resolve, reject) => {
         this.props.authenLogin(this.state.memberCode, resolve, reject);
       })
-        .then(res => {
-          this.props.navigation.navigate("Main");
+        .then(async user => {
+          try {
+            const token = await firebase.iid().getToken();
+            const { notification } = this.props.setting.params;
+            if (!isEmpty(user) && notification) {
+              updatePushTokenData(user.id, token);
+            }
+            this.props.navigation.navigate("Main");
+          } catch (error) {
+            console.log(error.message);
+          }
         })
         .catch(error => {
           console.log(error);
           Alert.alert("Error", error);
         });
     }
-  }
+  };
 
   handleBarcodeReaded = async ({ type, data }) => {
     await delay(500);

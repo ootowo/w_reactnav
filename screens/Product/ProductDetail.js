@@ -1,7 +1,16 @@
 import React, { Component } from "react";
 
-import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ActivityIndicator
+} from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { fetchProductDetail } from "../../apis/opencartApi";
 
 class ProductDetailScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -12,69 +21,118 @@ class ProductDetailScreen extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      loading: true,
+      product: null
+    };
+  }
+
+  componentDidMount() {
+    const productData = this.props.navigation.getParam("product_data");
+    const product = productData;
+    this.setState({ product, loading: false });
+    // fetchProductDetail(productData.id)
+    //   .then(res => {
+    //     const { data } = res;
+    //     if (data && data.success) {
+    //       console.log(data.data);
+    //       this.setState({ product: data.data, loading: false });
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //   });
   }
 
   render() {
-    const fav = true;
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.wrapper}>
-          <View style={styles.productDetail__thumbnail}>
-            <Image
-              style={styles.productDetail__thumbnail_image}
-              source={{
-                uri:
-                  "http://bansmartshop.com/image/cache/data/0update/2014-12/06/620x620xDM2SPD-lglam.jpg.pagespeed.ic.tLSIITBsvr-3-8-1-1-600x600.png"
-              }}
-            />
-          </View>
-          <View style={styles.productDetail__title}>
-            <View style={styles.productDetail__title_head}>
-              <Text style={styles.productDetail__title_head_text}>Otto Heavy Duty Blender</Text>
-              <TouchableOpacity style={styles.productDetail__title_head_favbutton}>
-                {fav ? (
-                  <Ionicons name="ios-heart" size={23} color="#FF0000" />
-                ) : (
-                  <Ionicons name="ios-heart-outline" size={23} color="#FF0000" />
+    const fav = false;
+    const { product, loading } = this.state;
+    if (loading && product === null) {
+      return (
+        <View style={styles.container}>
+          <ActivityIndicator animating size="large" />
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          <ScrollView style={styles.wrapper}>
+            {product.original_image && (
+              <View style={styles.productDetail__thumbnail}>
+                <Image
+                  style={styles.productDetail__thumbnail_image}
+                  source={{
+                    uri: product.original_image
+                  }}
+                />
+              </View>
+            )}
+
+            <View style={styles.productDetail__title}>
+              <View style={styles.productDetail__title_head}>
+                {product.product_description && (
+                  <Text style={styles.productDetail__title_head_text}>
+                    {product.product_description[0].name}
+                  </Text>
                 )}
-              </TouchableOpacity>
+                {/* <TouchableOpacity style={styles.productDetail__title_head_favbutton}>
+                  {fav ? (
+                    <Ionicons name="ios-heart" size={23} color="#FF0000" />
+                  ) : (
+                    <Ionicons name="ios-heart-outline" size={23} color="#FF0000" />
+                  )}
+                </TouchableOpacity> */}
+              </View>
+
+              {product.discounts.length > 0 ? (
+                <>
+                  <Text style={styles.productDetail__title_oldprice}>Price ${product.price}</Text>
+                  <Text style={styles.productDetail__title_newprice}>
+                    Special Price ${product.discounts[0].price}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.productDetail__title_newprice}>Price ${product.price}</Text>
+              )}
+              {/* <View style={styles.productDetail__promo}>
+                <Text style={styles.productDetail__promo_text}>Promotion: Earn more 2 pcs</Text>
+              </View> */}
             </View>
-            <Text style={styles.productDetail__title_oldprice}>Price 2590.00 USD</Text>
-            <Text style={styles.productDetail__title_newprice}>Special Price 1000.00 USD</Text>
-            <View style={styles.productDetail__promo}>
-              <Text style={styles.productDetail__promo_text}>Promotion: Earn more 2 pcs</Text>
+            <View style={styles.productDetail__details}>
+              <View style={styles.productDetail__details_row}>
+                <Text style={styles.productDetail__details_title}>Brand</Text>
+                <Text style={styles.productDetail__details_text}>{product.manufacturer}</Text>
+              </View>
+              <View style={styles.productDetail__details_row}>
+                <Text style={styles.productDetail__details_title}>Details</Text>
+                <Text style={styles.productDetail__details_text}>{product.model}</Text>
+              </View>
+              <View style={styles.productDetail__details_row}>
+                <Text style={styles.productDetail__details_title}>Size</Text>
+                <Text style={styles.productDetail__details_text}>
+                  {product.length} {product.length_class}
+                </Text>
+              </View>
+              {product.sku != " " && (
+                <View style={styles.productDetail__details_row}>
+                  <Text style={styles.productDetail__details_title}>Code</Text>
+                  <Text style={styles.productDetail__details_text}>{product.sku}</Text>
+                </View>
+              )}
             </View>
-          </View>
-          <View style={styles.productDetail__details}>
-            <View style={styles.productDetail__details_row}>
-              <Text style={styles.productDetail__details_title}>Brand</Text>
-              <Text style={styles.productDetail__details_text}>Otto</Text>
-            </View>
-            <View style={styles.productDetail__details_row}>
-              <Text style={styles.productDetail__details_title}>Details</Text>
-              <Text style={styles.productDetail__details_text}>Heavy-Duty Blender</Text>
-            </View>
-            <View style={styles.productDetail__details_row}>
-              <Text style={styles.productDetail__details_title}>Size</Text>
-              <Text style={styles.productDetail__details_text}>1</Text>
-            </View>
-            <View style={styles.productDetail__details_row}>
-              <Text style={styles.productDetail__details_title}>Code</Text>
-              <Text style={styles.productDetail__details_text}>205006</Text>
-            </View>
-          </View>
-        </ScrollView>
-        <TouchableOpacity style={styles.addToCartBtn}>
-          <MaterialIcons
-            style={{ paddingRight: 10 }}
-            name="add-shopping-cart"
-            size={16}
-            color="#FFFFFF"
-          />
-          <Text style={styles.addToCartBtn__text}>Add To Cart</Text>
-        </TouchableOpacity>
-      </View>
-    );
+          </ScrollView>
+          <TouchableOpacity style={styles.addToCartBtn}>
+            <MaterialIcons
+              style={{ paddingRight: 10 }}
+              name="add-shopping-cart"
+              size={16}
+              color="#FFFFFF"
+            />
+            <Text style={styles.addToCartBtn__text}>Add To Cart</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
   }
 }
 

@@ -7,6 +7,7 @@ import settingReducer from "./settingReducer";
 import sysvarReducer from "./sysvarReducer";
 import userReducer from "./userReducer";
 import countingReducer from "./countingReducer";
+import popupReducer from "./popupReducer";
 
 export default combineReducers({
   modalReducer,
@@ -15,5 +16,6 @@ export default combineReducers({
   userReducer,
   bannerReducer,
   fontSizeReducer,
-  countingReducer
+  countingReducer,
+  popupReducer
 });

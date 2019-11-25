@@ -50,14 +50,15 @@ class MainBranchScreen extends Component {
         longitude: 100.523186,
         latitudeDelta,
         longitudeDelta
-      }
+      },
+      navigateButtonVisible: false
     };
 
     this.renderMapView = this.renderMapView.bind(this);
     this.onBranchChange = this.onBranchChange.bind(this);
     this.getDirection = this.getDirection.bind(this);
     this.handleNavigation = this.handleNavigation.bind(this);
-    this.grantLocationAccess = this.grantLocationAccess.bind(this);
+    // this.grantLocationAccess = this.grantLocationAccess.bind(this);
     this.findCurrentCoord = this.findCurrentCoord.bind(this);
   }
 
@@ -119,44 +120,29 @@ class MainBranchScreen extends Component {
   getCurrentLocation = async () => {
     const { status } = await Permissions.getAsync(Permissions.LOCATION);
     if (status !== "granted") {
-      Alert.alert(
-        "Makro Cambodia",
-        "Please grant access your location for finding nearby makro branch",
-        [
-          {
-            text: "Cancel",
-            onPress: () => {},
-            style: "cancel"
-          },
-          {
-            text: "OK",
-            onPress: () => {
-              this.grantLocationAccess();
-            }
-          }
-        ],
-        { cancelable: false }
-      );
+      this.setState({ navigateButtonVisible: false });
     } else {
-      this.findCurrentCoord();
+      this.setState({ navigateButtonVisible: true }, () => {
+        this.findCurrentCoord();
+      });
     }
   };
 
-  grantLocationAccess = async () => {
-    if (Platform.OS === "android" && !Constants.isDevice) {
-      Alert.alert(
-        "Error",
-        "Oops, this will not work on Sketch in an Android emulator. Try it on your device!"
-      );
-    } else {
-      let { status } = await Permissions.askAsync(Permissions.LOCATION);
-      if (status !== "granted") {
-        Alert.alert("Error", "Permission to access location was denied");
-      } else {
-        this.findCurrentCoord();
-      }
-    }
-  };
+  // grantLocationAccess = async () => {
+  //   if (Platform.OS === "android" && !Constants.isDevice) {
+  //     Alert.alert(
+  //       "Error",
+  //       "Oops, this will not work on Sketch in an Android emulator. Try it on your device!"
+  //     );
+  //   } else {
+  //     let { status } = await Permissions.askAsync(Permissions.LOCATION);
+  //     if (status !== "granted") {
+  //       Alert.alert("Error", "Permission to access location was denied");
+  //     } else {
+  //       this.findCurrentCoord();
+  //     }
+  //   }
+  // };
 
   findCurrentCoord = async () => {
     let { coords } = await Location.getCurrentPositionAsync({});
@@ -236,11 +222,13 @@ class MainBranchScreen extends Component {
           </View>
           {this.renderMapView()}
         </View>
-        <TouchableHighlight style={styles.navigateButton} onPress={this.handleNavigation}>
-          <Text style={styles.navigateButton__text}>
-            <FormattedMessage id="branch.navigate" />
-          </Text>
-        </TouchableHighlight>
+        {this.state.navigateButtonVisible && (
+          <TouchableHighlight style={styles.navigateButton} onPress={this.handleNavigation}>
+            <Text style={styles.navigateButton__text}>
+              <FormattedMessage id="branch.navigate" />
+            </Text>
+          </TouchableHighlight>
+        )}
       </View>
     );
   }

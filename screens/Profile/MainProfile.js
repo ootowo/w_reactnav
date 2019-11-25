@@ -2,6 +2,7 @@ import { View, Text, Image, StatusBar, StyleSheet, Linking, Alert } from "react-
 import React, { Component } from "react";
 
 import { Root, Container, Content, List, ListItem, Body, Left } from "native-base";
+import { Constants } from "expo";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
@@ -145,15 +146,15 @@ class MainProfileScreen extends Component {
           <Container>
             <Content>
               <List>
-                {/* <ListItem icon>
-                    <Left>
-                      <Ionicons name="ios-heart" size={20} color="#635F62" />
-                    </Left>
-                    <Body>
-                      <Text>Favorite Products</Text>
-                    </Body>
-                  </ListItem>
-                  <ListItem itemDivider /> */}
+                <ListItem icon>
+                  <Left>
+                    <Ionicons name="ios-heart" size={20} color="#635F62" />
+                  </Left>
+                  <Body>
+                    <Text>Favorite Products</Text>
+                  </Body>
+                </ListItem>
+                <ListItem itemDivider />
                 <ListItem
                   icon
                   onPress={() => {
@@ -169,14 +170,14 @@ class MainProfileScreen extends Component {
                     </Text>
                   </Body>
                 </ListItem>
-                {/* <ListItem icon onPress={() => navigate("MyOrder")}>
+                <ListItem icon onPress={() => navigate("MyOrder")}>
                   <Left>
                     <FontAwesome name="shopping-bag" size={20} color="#808080" />
                   </Left>
                   <Body>
                     <Text>My Order</Text>
                   </Body>
-                </ListItem> */}
+                </ListItem>
                 <ListItem icon onPress={this.handleLogout}>
                   <Left>
                     <FontAwesome name="sign-out" size={20} color="#FF0000" />
@@ -199,7 +200,7 @@ class MainProfileScreen extends Component {
                       color: "#635F62"
                     }}
                   >
-                    <FormattedMessage id="profile.version" /> 3.4 (2018)
+                    <FormattedMessage id="profile.version" /> {Constants.manifest.version}
                   </Text>
                 </ListItem>
               </List>

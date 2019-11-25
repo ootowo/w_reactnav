@@ -11,6 +11,7 @@ import EditShipAddressScreen from "../screens/Product/EditShipAddress";
 import EditInvoiceAddressScreen from "../screens/Product/EditInvoiceAddress";
 import PaymentPendingScreen from "../screens/Product/PaymentPending";
 import AddressSelectorScreen from "../screens/Product/AddressSelector";
+import PickupSelectorScreen from "../screens/Product/PickupSelector";
 
 export default createStackNavigator({
   MainProduct: MainProductScreen,
@@ -22,5 +23,6 @@ export default createStackNavigator({
   CheckoutSuccess: CheckoutSuccessScreen,
   AddressSelector: AddressSelectorScreen,
   EditShipAddress: EditShipAddressScreen,
-  EditInvoiceAddress: EditInvoiceAddressScreen
+  EditInvoiceAddress: EditInvoiceAddressScreen,
+  PickupSelector: PickupSelectorScreen
 });

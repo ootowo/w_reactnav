@@ -2452,12 +2452,125 @@ expo-file-system@~2.0.0:
     expo-file-system-interface "~2.0.0"
     uuid-js "^0.7.5"
 
-expo-firebase-app@^2.0.0:
+expo-firebase-analytics@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-analytics/-/expo-firebase-analytics-2.0.0.tgz#f755b6c022e7347884ab13a23e0e3946f6f85de2"
+  integrity sha512-nlhcm0vjgBXd1pua+hayeuNVa1djPwNEqrsgLsxAGAmNvetivSaos065Cgu9yxixdnDiQitBKOhNVXh0kQpsIA==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-app@^2.0.0, expo-firebase-app@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-firebase-app/-/expo-firebase-app-2.0.0.tgz#1c2158c6423cd2a1bdb7749b96cc52b678126866"
   integrity sha512-rhKErhQybgL5Vbv8HndYVzwoXikL62iCd5e8k5cZZhs6S0TiWEx0anKhALvI2eCGBzQmYHM2sIzbi8DeUemuCw==
   dependencies:
     expo-core "~2.0.0"
+
+expo-firebase-auth@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-auth/-/expo-firebase-auth-2.0.0.tgz#c4ea2e37a48ec19033cd8463c2aec2297c91a6f1"
+  integrity sha512-qY2d5GlNqCIvbccjfBIQHuG+ogCf01HmJIVWWfidcbln2gOfJ3jNdY+1gvcvwQQHEn190hkrkJenjA5SgPC6jQ==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-crashlytics@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-crashlytics/-/expo-firebase-crashlytics-2.0.0.tgz#883a21f9f346e17feba09c588eead41d6067e83e"
+  integrity sha512-nw27i8al7DrGm+ECi+yFeZE1txc7rql0X/xfLzYrkx7AIaaqDzKU2sEyjkhorcVyF0X7Sf2A48SBfy4+6YtNMw==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-database@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-database/-/expo-firebase-database-2.0.0.tgz#fb738b7e6ff973085804de9ae8af4595df1219ac"
+  integrity sha512-5uTN/J+PIroBRTrgZFfthRvXuzjpgI/5itMkwPG3BQRSnmT0eNDz2oLS24ljFlTzcN+QUeMJy6EjcbzVk8U8/Q==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-firestore@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-firestore/-/expo-firebase-firestore-2.0.0.tgz#22c02ceff6395d361f6c0077d7b83432479ed6ee"
+  integrity sha512-lfS1QK5hcfJiNo8QqlC7ZzBb1QjRPQCgoQv0EQvGeqTi4hR5Hsj+Vvb6QsOfQTfq8VyKM6jaZC7SEgOFv9BfIw==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+    js-base64 "^2.4.9"
+
+expo-firebase-functions@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-functions/-/expo-firebase-functions-2.0.0.tgz#20a1fb8a28fbe510f59a5d2ef2aa2288f3a073a8"
+  integrity sha512-dEVsPGOkTDrY7Rk/UYDU3O2fJeUX8btPz03NdaF9x7HZhRgl6QRCYp0aUxkdElklmlet2fmeixbgcqDyE+Uwaw==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-instance-id@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-instance-id/-/expo-firebase-instance-id-2.0.0.tgz#61b301e2c6235168559ffb557a688d31415b2988"
+  integrity sha512-F17vegCPUbLDOXnA7K/zP1S98KIx0iaQUkG+Jo6sSPFYymiy5pNPc8kJVoAp9bANyjQlbQHo9ZprURs3pG56UQ==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-invites@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-invites/-/expo-firebase-invites-2.0.0.tgz#0ce55a1f831e4f2150129b2eaf4694eb4cd5f79d"
+  integrity sha512-tQMqw0e1CkTyuVtUEbAXEjAxc9duHQosx/ciBo1pQ0vt7+QPzIaYFJK6pxuggYVRBdijE0+HCP26hC+9UbeWDg==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-links@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-links/-/expo-firebase-links-2.0.0.tgz#6b50d8bfa8542ca0a0212c368a1bc36b5119de20"
+  integrity sha512-3VSpQFO2B9yCTg0G7HKkXmc3n07FSGf34caeRK3hVkKA3f0FV1ZGxKCNAsnPSPWo5vij0TSSYNP8ofAnCVEdDw==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-messaging@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-messaging/-/expo-firebase-messaging-2.0.0.tgz#0950c226fe485530ac9e6cca7cd2fc61ce9ce8a3"
+  integrity sha512-LRl0oiVNxIM8/M3tXbyz27mOR1GTHIxGlcJKcPuKe1b8wmojghpqKrtdQ/0ePks2xYzOhjbRCmpu0CMd3Uag2w==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-notifications@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-notifications/-/expo-firebase-notifications-2.0.0.tgz#29ca9dda6a5afa7af787881abb3a0db1318c3b8e"
+  integrity sha512-fzD4SGp9wGCyMgwKqO8HgYzQmFvfZB03i2Ve/oMYCQsXe6KCDOzeJ5E69vcifbpGM53qi7rTYfbr5hNWE1GGbA==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-performance@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-performance/-/expo-firebase-performance-2.0.0.tgz#ef7858efe33b57c4c3ff3ed9e9d49123471ea438"
+  integrity sha512-mlSz75waJMIowxAUJ/+KBBtI9keOwzPonYzY/ueowcBGe1FDwagLdKk+71h/9600tH0yzci/blzO6HnDcm+RNA==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-remote-config@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-remote-config/-/expo-firebase-remote-config-2.0.0.tgz#990e2734f098721f92c1a4357777756180f386bc"
+  integrity sha512-/hjX5sb7JjtuYwj4ZrDyhm77y+GwXWqgIUP3T3ak31ixazN4uKyS6FOm1+Eeacc3b9PPlJVjg6VR2ow3z5vc0g==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
+
+expo-firebase-storage@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-firebase-storage/-/expo-firebase-storage-2.0.0.tgz#f3ec97ff606b23288a2386c071ab4ae34d5ce938"
+  integrity sha512-0lNArv8ly7qzvKsRYNkGiFcWqA0XilhEH1RFo1PIdL17q806KGkj7n2jKgsRFPzFeLOBPmqOF0fDEimQ2JaICg==
+  dependencies:
+    expo-core "~2.0.0"
+    expo-firebase-app "~2.0.0"
 
 expo-font-interface@~2.0.0:
   version "2.0.0"
@@ -2693,6 +2806,13 @@ expo@^32.0.0:
     serialize-error "^2.1.0"
     uuid-js "^0.7.5"
     whatwg-fetch "^2.0.4"
+
+expokit@32.0.6:
+  version "32.0.6"
+  resolved "https://registry.yarnpkg.com/expokit/-/expokit-32.0.6.tgz#a3c2adfdb1daa37d4a9ca629323576508f5e7aa4"
+  integrity sha512-un7Ykh0hdLMgWy8EBTfoXX1PIFAcmLUtGkN+/ug1JU8llAVtFvX3isBVw4H9S9Wtkgb+R0TeHeUxjtXy0DUTyw==
+  dependencies:
+    jsc-android "^224109.1.0"
 
 extend-shallow@^1.1.2:
   version "1.1.4"
@@ -3792,6 +3912,11 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
+
+jsc-android@^224109.1.0:
+  version "224109.1.0"
+  resolved "https://registry.yarnpkg.com/jsc-android/-/jsc-android-224109.1.0.tgz#9749ec92f1e284b3c09befe7c47cc6e60b1f0cdf"
+  integrity sha512-mhALFynePc/wJsUt9BJuH13mSK/dGWtBO/pcYwVV1I0A7iduyqy3fSoAt1b0yI+/B3TzlGyue/gqjPxsqG1HRQ==
 
 jsesc@^1.3.0:
   version "1.3.0"
@@ -5712,6 +5837,11 @@ react-native-platform-touchable@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-platform-touchable/-/react-native-platform-touchable-1.1.1.tgz#fde4acc65eea585d28b164d0c3716a42129a68e4"
   integrity sha1-/eSsxl7qWF0osWTQw3FqQhKaaOQ=
+
+react-native-push-notification-popup@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-push-notification-popup/-/react-native-push-notification-popup-1.2.0.tgz#857540c3c719287a43f1e9c38c3be3bc0d830673"
+  integrity sha512-QXa63FuU1dT78vPXecDyg/z4XliMm94yJ4xbLjq18gCieFGcNRmia0SSA00GrDBX/bdvmB65IAEDm4VEICU7lw==
 
 react-native-reanimated@1.0.0-alpha.11:
   version "1.0.0-alpha.11"

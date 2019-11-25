@@ -80,8 +80,8 @@ let navigationConfig = {
 export default createBottomTabNavigator(
   {
     Home: HomeStack,
-    // Product: ProductStack,
-    // Promotion: PromotionStack,
+    Product: ProductStack,
+    Promotion: PromotionStack,
     Branch: BranchStack,
     Profile: ProfileStack
   },
