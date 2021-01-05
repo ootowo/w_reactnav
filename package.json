@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^9.0.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "expo": "^32.0.0",
     "expo-firebase-analytics": "^2.0.0",
     "expo-firebase-app": "^2.0.0",
