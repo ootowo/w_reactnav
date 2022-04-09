@@ -32,7 +32,7 @@
     "expokit": "32.0.6",
     "intl": "^1.2.5",
     "js-base64": "^2.4.9",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "native-base": "^2.8.2",
     "pouchdb-react-native": "^6.4.1",
     "react": "16.5.0",
